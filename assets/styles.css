@@ -1,0 +1,79 @@
+.navbar-custom {
+    background-color: black;
+}
+
+/* Remove blue outline on focus */
+.form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da; /* You can adjust the border color if needed */
+}
+
+/* Customize the search button color */
+.btn-search {
+    background-color: darkblue;
+    border-color: darkblue;
+    font-weight: bold;
+}
+
+.btn-search:hover, .btn-help:hover {
+    background-color: #3385ff;
+    border-color: #3385ff;
+}
+
+/* Adjust margins for the "Account" button */
+.btn-account, .btn-help, .btn-cart {
+    margin-right: 5px;
+    border: none;
+}
+
+/* Change background color of "Account" button on hover */
+.navbar-custom .btn-account:hover {
+    background-color: #3385ff; /* Same hover color as the search button */
+}
+
+/* Customize "Sign in" button color */
+.btn-signin {
+    background-color: darkblue;
+    border-color: darkblue;
+    color: white; /* Text color on the button */
+    font-weight: bold; /* Make the text bolder */
+    width: 90%;
+    border-radius: 5px
+}
+
+.btn-signin:hover {
+    background-color: #3385ff; /* Lighter hover color */
+    border-color: #3385ff;
+}
+
+.under-account:hover{
+    background-color: rgba(0, 123, 255, 0.2); /* Adjust the alpha value for transparency */
+        border-color: transparent;
+        color: #212529; /* Set the desired text color */
+}
+
+/* Customize "Live Chat" button color */
+.btn-live-chat {
+    background-color: darkblue;
+    border-color: darkblue;
+    color: white; /* Text color on the button */
+    font-weight: bold; /* Make the text bolder */
+    width: 90%; /* Make the button full width of the dropdown */
+    display: block;
+    margin: 0 auto;
+}
+
+.btn-live-chat:hover {
+    background-color: #3385ff; /* Lighter hover color */
+    border-color: #3385ff;
+}
+
+/* Customize "Cart" button color */
+.btn-cart {
+    border: none;
+}
+
+.btn-cart:hover {
+    background-color: #3385ff; /* Lighter hover color */
+    border-color: #3385ff;
+}
