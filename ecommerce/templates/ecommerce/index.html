@@ -10,6 +10,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
+    <script src="{% static 'javascript/slideshow.js' %}"></script>
+
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
 </head>
 <body>
@@ -80,14 +82,118 @@
 
     <!-- Black Colored Card with List Items as Links -->
 <div class="container mt-4">
-    <div class="custom-card black-card">
-        <ul class="custom-list">
-            <li><a href="#" class="nav-link"><i class="bi bi-shop"></i>Supermarket</a></li>
-            <li><a href="#" class="nav-link"><i class="bi bi-building"></i>Home & Office</a></li>
-            <li><a href="#" class="nav-link"><i class="bi bi-tablet"></i>Phones & Tablets</a></li>
-            <li><a href="#" class="nav-link"><i class="bi bi-laptop"></i>Computing</a></li>
-            <li><a href="#" class="nav-link"><i class="bi bi-controller"></i>Gaming</a></li>
-        </ul>
+    <div class="row">
+         <!-- First Card -->
+         <div class="col-md-2">
+            <div class="custom-card black-card" style="height:180px;">
+                <ul class="custom-list">
+                    <li><a href="#" class="nav-link"><i class="bi bi-shop"></i>Supermarket</a></li>
+                    <li><a href="#" class="nav-link"><i class="bi bi-building"></i>Home & Office</a></li>
+                    <li><a href="#" class="nav-link"><i class="bi bi-tablet"></i>Phones & Tablets</a></li>
+                    <li><a href="#" class="nav-link"><i class="bi bi-laptop"></i>Computing</a></li>
+                    <li><a href="#" class="nav-link"><i class="bi bi-controller"></i>Gaming</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Second Card -->
+        <div class="col-md-8" style="margin-left: -50px; ">
+            <div class="custom-card second-card" style="height: 500px;">
+                <!-- Add your content for the second card here -->
+                <div class="slideshow-container">
+                    <!-- Slide 1 -->
+                        <div class="mySlides">
+                            <div class="arrow left-arrow">
+                                <i class="bi bi-arrow-left"></i>
+                            </div>
+                            <div class="arrow right-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <a href="#">
+                                <img src="{% static 'images/first.png' %}" alt="Slide 1" class="img-fluid slide-image">
+                            </a>
+                        </div>
+
+                     <!-- Slide 2 -->
+                     <div class="mySlides">
+                        <div class="arrow left-arrow">
+                            <i class="bi bi-arrow-left"></i>
+                        </div>
+                        <div class="arrow right-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                        <a href="#">
+                            <img src="{% static 'images/second.jpg' %}" alt="Slide 1" class="img-fluid slide-image">
+                        </a>
+                    </div>
+
+                     <!-- Slide 3 -->
+                     <div class="mySlides">
+                        <div class="arrow left-arrow">
+                            <i class="bi bi-arrow-left"></i>
+                        </div>
+                        <div class="arrow right-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                        <a href="#">
+                            <img src="{% static 'images/third.jpg' %}" alt="Slide 1" class="img-fluid slide-image">
+                        </a>
+                    </div>
+
+                     <!-- Slide 4 -->
+                     <div class="mySlides">
+                        <div class="arrow left-arrow">
+                            <i class="bi bi-arrow-left"></i>
+                        </div>
+                        <div class="arrow right-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                        <a href="#">
+                            <img src="{% static 'images/fourth.jpg' %}" alt="Slide 1" class="img-fluid slide-image">
+                        </a>
+                    </div>
+
+                     <!-- Slide 5 -->
+                     <div class="mySlides">
+                        <div class="arrow left-arrow">
+                            <i class="bi bi-arrow-left"></i>
+                        </div>
+                        <div class="arrow right-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                        <a href="#">
+                            <img src="{% static 'images/fifth.jpg' %}" alt="Slide 1" class="img-fluid slide-image">
+                        </a>
+                    </div>
+
+                     <!-- Slide 6 -->
+                     <div class="mySlides">
+                        <div class="arrow left-arrow">
+                            <i class="bi bi-arrow-left"></i>
+                        </div>
+                        <div class="arrow right-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                        <a href="#">
+                            <img src="{% static 'images/sixth.jpg' %}" alt="Slide 1" class="img-fluid slide-image">
+                        </a>
+                    </div>
+
+                     <!-- Slide 7 -->
+                     <div class="mySlides">
+                        <div class="arrow left-arrow">
+                            <i class="bi bi-arrow-left"></i>
+                        </div>
+                        <div class="arrow right-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                        <a href="#">
+                            <img src="{% static 'images/seventh.jpg' %}" alt="Slide 1" class="img-fluid slide-image">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
