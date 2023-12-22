@@ -97,6 +97,7 @@ body{
     color: white; /* Set the text color to white or any other color that suits your design */
     border-radius: 10px; /* Optional: Add rounded corners */
     margin-right: 10px;
+    position: relative;
 }
 
 .custom-list {
@@ -170,4 +171,28 @@ body{
 
 .right-arrow {
     right: 10px;
+}
+
+/* Add styles for the navigation circles */
+.slide-navigation {
+    position: absolute;
+    bottom: 5px; /* Adjust this value to your preference */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    margin: 0 5px;
+    background-color: #bbb; /* color for inactive circles */
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.active {
+    background-color: #3385ff; /* Blue color for active circle */
 }
