@@ -94,7 +94,7 @@ body{
     padding: 15px; /* Adjust the padding as needed */
     border-radius: 10px; /* Optional: Add rounded corners */
     max-width: 200px; /* Adjust the maximum width as needed */
-    margin-left: -70px;
+    
 }
 
 .second-card{
@@ -215,14 +215,16 @@ body{
 .black-card-beneath {
     background-color: black;
     border-radius: 10px;
-    margin-left: -70px; /* Adjust the margin to align with the first card */
-    margin-right: -30px; /* Adjust the margin to align with the last card */
     margin-top: 10px;
     padding: 15px;
+    width: 100%;
+    
 }
 
 .position-relative{
     transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    
 }
 .position-relative:hover{
     transform: translateY(-5px); /* Adjust the translateY value based on your preference */
@@ -231,6 +233,13 @@ body{
 
 .position-relative a{
     text-decoration: none;
+}
+
+.price-reduction-badge{
+    position: absolute; 
+    right: 29%; 
+    top: 5%; 
+    transform: translate(-50%, -50%)
 }
 
 /* Add styles for the top-selling-title class */
@@ -282,4 +291,24 @@ body{
 
 .scroll-to-top-btn:hover {
     background-color: #0056b3;
+}
+
+/* Media query for smaller screens (adjust the breakpoint as needed) */
+@media (min-width: 992px) {
+    .form-control {
+      width: 600px !important; /* Adjust the width as needed */
+    }
+  }
+
+  /* Media query for small screens */
+@media (max-width: 767px) {
+    .third-card {
+        margin-top: 20px; /* Adjust the top margin as needed */
+    }
+
+     .position-relative{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    } 
 }

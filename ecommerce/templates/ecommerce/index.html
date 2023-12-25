@@ -13,77 +13,83 @@
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
 </head>
 <body>
-    
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
         <div class="container-fluid">
+    
+            <!-- Navbar Brand and Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="toggleNavbar()">
+                <span class="navbar-toggler-icon" style="background-color: white;"></span>
+            </button>
+    
             <!-- Navbar Brand -->
-            <a class="navbar-brand ms-5 fs-2 text-white fw-bold" href="#">CHISTEV</a>
-
-            <!-- Search Box -->
-            <form class="d-flex mx-auto ms-5">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input class="form-control me-2" type="search" style="width: 500px;" placeholder="Search Products, brands and categories" aria-label="Search">
-                    <button class="btn btn-outline-light btn-search" type="submit">SEARCH</button>
+            <a class="navbar-brand ms-3 fs-2 text-white fw-bold" href="#">CHISTEV</a>
+    
+            <!-- Navbar Collapse Container -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+    
+                <!-- Search Box -->
+                <form class="d-flex mx-auto my-2 my-lg-0">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input class="form-control" type="search" style="width: 70%;" placeholder="Search Products, brands and categories" aria-label="Search">
+                        <button class="btn btn-outline-light btn-search" type="submit">SEARCH</button>
+                    </div>
+                </form>
+    
+                <!-- Navbar Buttons -->
+                <div class="navbar-nav ms-auto align-items-center">
+    
+                    <!-- Account Button with Dropdown Caret -->
+                    <div class="nav-item dropdown">
+                        <button class="btn btn-outline-light btn-account dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i> Account
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item btn btn-signin text-center" href="#">Sign in</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item btn btn-my-account under-account" href="#"><i class="bi bi-person"></i><span class="ms-2">My Account</span></a></li>
+                            <li><a class="dropdown-item under-account" href="#"><i class="bi bi-bag"></i><span class="ms-2">Orders</span></a></li>
+                            <li><a class="dropdown-item under-account" href="#"><i class="bi bi-bookmark"></i><span class="ms-2">Saved Items</span></a></li>
+                        </ul>
+                    </div>
+    
+                    <!-- Help Button with Dropdown Caret -->
+                    <div class="nav-item dropdown">
+                        <button class="btn btn-outline-light btn-help dropdown-toggle" type="button" id="helpDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-question"></i> Help
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="helpDropdown">
+                            <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Help Center</span></a></li>
+                            <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Place an order</span></a></li>
+                            <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Payment options</span></a></li>
+                            <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Track an order</span></a></li>
+                            <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Cancel an order</span></a></li>
+                            <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Returns & Refunds</span></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="btn btn-outline-light btn-live-chat"><i class="bi bi-chat"></i> Live Chat</button></li>
+                        </ul>
+                    </div>
+    
+                    <!-- Cart Button -->
+                    <div class="navbar-text">
+                        <button class="btn btn-outline-light btn-cart" type="button">
+                            <i class="bi bi-cart"></i> Cart
+                        </button>
+                    </div>
+    
                 </div>
-            </form>
-
-            <div class="btn-container d-flex" style="margin-right: 150px; align-items: center;">
-                <!-- Account Button with Dropdown Caret -->
-                <div class="dropdown">
-                <button class="btn btn-outline-light btn-account dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person"></i> Account
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-                    <!-- Add "Sign in" button as the first option -->
-                    <li><a class="dropdown-item btn btn-signin mx-auto text-center" href="#">Sign in</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <!-- Add dropdown items here if needed -->
-                    <!-- "My Account" button -->
-                    <li><a class="dropdown-item btn btn-my-account under-account" href="#"><i class="bi bi-person"></i><span class="ms-2">My Account</span></a></li>
-                    <li><a class="dropdown-item under-account" href="#"><i class="bi bi-bag"></i><span class="ms-2">Orders</span></a></li>
-                    <li><a class="dropdown-item under-account" href="#"><i class="bi bi-bookmark"></i><span class="ms-2">Saved Items</span></a></li>
-                </ul>
-                </div>
-
-                <!-- Help Button with Dropdown Caret -->
-                <div class="dropdown">
-                    <button class="btn btn-outline-light btn-help dropdown-toggle" type="button" id="helpDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-question"></i> Help
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="helpDropdown">
-                        <!-- Add dropdown items for "Help" here if needed -->
-                        <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Help Center</span></a></li>
-                        <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Place an order</span></a></li>
-                        <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Payment options</span></a></li>
-                        <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Track an order</span></a></li>
-                        <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Cancel an order</span></a></li>
-                        <li><a class="dropdown-item under-account" href="#"><span class="ms-2">Returns & Refunds</span></a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><button class="btn btn-outline-light btn-live-chat"><i class="bi bi-chat"></i> Live Chat</button></li>
-                    </ul>
-                </div>
-
-                <!-- Cart Button -->
-                <div class="navbar-text">
-                    <button class="btn btn-outline-light btn-cart" type="button">
-                        <i class="bi bi-cart"></i> Cart
-                    </button>
-                </div>
-
             </div>
-            
         </div>
-
     </nav>
+    
 
     <!-- Black Colored Card with List Items as Links -->
-<div class="container mt-4">
+<div class="container mt-4 mx-auto">
     <div class="row">
          <!-- First Card -->
-         <div class="col-md-2">
-            <div class="custom-card black-card" style="height:180px;">
+         <div class="col-md-2 mb-4">
+            <div class="custom-card black-card mx-auto">
                 <ul class="custom-list">
                     <li><a href="#" class="nav-link"><i class="bi bi-shop"></i>Supermarket</a></li>
                     <li><a href="#" class="nav-link"><i class="bi bi-building"></i>Home & Office</a></li>
@@ -95,8 +101,8 @@
         </div>
 
         <!-- Second Card -->
-        <div class="col-md-8" style="margin-left: -50px; ">
-            <div class="custom-card second-card" style="height: 500px;">
+        <div class="col-md-8">
+            <div class="custom-card second-card mx-auto">
                 <!-- Add your content for the second card here -->
                 <div class="slideshow-container">
                     <!-- Slide 1 -->
@@ -205,9 +211,9 @@
         </div>
 
     <!-- Flex Container for Third and Fourth Cards -->
-    <div class="col-md-2 d-flex flex-column">
+    <div class="col-md-2 d-md-flex flex-md-column mx-auto">
         <!-- Third Card -->
-        <div class="custom-card third-card mb-4" style="height: 220px;">
+        <div class="custom-card third-card mb-4 col-sm-6 mx-auto">
             <!-- Add your content for the third card here -->
             <a href="#">
                 <img src="{% static 'images/third_card_image.jpg' %}" alt="Third Card" class="img-fluid slide-image">
@@ -215,7 +221,7 @@
         </div>
 
         <!-- Fourth Card -->
-        <div class="custom-card fourth-card" style="height: 220px; margin-top: 39px;">
+        <div class="custom-card fourth-card col-sm-6 mx-auto">
             <!-- Add your content for the fourth card here -->
             <a href="#">
                 <img src="{% static 'images/fourth_card_image.jpg' %}" alt="Fourth Card" class="img-fluid slide-image">
@@ -223,19 +229,27 @@
         </div>
     </div>
 </div>
+    
+</div>
 
-<!-- Black Card Beneath the Three Cards -->
+<!-- Scroll-to-Top Button -->
+<button id="scrollToTopBtn" class="btn btn-primary scroll-to-top-btn" title="Go to top">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+
+<!-- Top selling items card -->
 <div class="black-card-beneath">
     <!-- Add your content for the black card here -->
     <h5 class="top-selling-title">Top selling items</h5>
 
     <!-- Images row with Bootstrap grid -->
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-4">
             <div class="position-relative">
                 <a href="#">
                     <img src="{% static 'images/item1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge" style="position: absolute; right: 3px; top: 3px;">-20%</span>
+                    <span class="badge bg-danger price-reduction-badge">-20%</span>
                     <div class="item-name">&nbsp;&nbsp;Snack</div>
                     <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
                     <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
@@ -243,11 +257,11 @@
             </div>
             
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-4">
             <div class="position-relative">
                 <a href="#">
                     <img src="{% static 'images/item2.jpg' %}" alt="Item 2" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge" style="position: absolute; right: 3px; top: 3px;">-10%</span>
+                    <span class="badge bg-danger price-reduction-badge">-10%</span>
                     <div class="item-name">&nbsp;&nbsp;Clock</div>
                     <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;5,000</div> <!-- Add the price here -->
                     <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;4,000</div>
@@ -255,22 +269,22 @@
             </div>
             
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-4">
             <div class="position-relative">
                 <a href="#">
                     <img src="{% static 'images/item3.jpg' %}" alt="Item 3" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge" style="position: absolute; right: 3px; top: 3px;">-5%</span>
+                    <span class="badge bg-danger price-reduction-badge">-5%</span>
                     <div class="item-name">&nbsp;&nbsp;Photocopy Machine</div>
                     <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;16,000</div> <!-- Add the price here -->
                     <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;15,000</div>
                 </a>
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-4">
             <div class="position-relative">
                 <a href="#">
                     <img src="{% static 'images/item4.jpg' %}" alt="Item 4" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge" style="position: absolute; right: 3px; top: 3px;">-24%</span>
+                    <span class="badge bg-danger price-reduction-badge">-24%</span>
                     <div class="item-name">&nbsp;&nbsp;Samsung</div>
                     <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;700,000</div> <!-- Add the price here -->
                     <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;600,000</div>
@@ -278,22 +292,22 @@
             </div>
             
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2 col-md-4">
             <div class="position-relative">
                 <a href="#">
                     <img src="{% static 'images/item5.jpg' %}" alt="Item 5" class="top-selling-image img-fluid">
-                <span class="badge bg-danger price-reduction-badge" style="position: absolute; right: 3px; top: 3px;">-4%</span>
+                <span class="badge bg-danger price-reduction-badge">-4%</span>
                 <div class="item-name">&nbsp;&nbsp;Tablet</div>
                 <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;600,000</div> <!-- Add the price here -->
                 <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;500,000</div>
                 </a>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="position-relative">
+        <div class="col-lg-2 col-md-4">
+            <div class="position-relative mx-auto">
                 <a href="#">
                     <img src="{% static 'images/item6.jpg' %}" alt="Item 6" class="top-selling-image img-fluid">
-                <span class="badge bg-danger price-reduction-badge" style="position: absolute; right: 3px; top: 3px;">-12%</span>
+                <span class="badge bg-danger price-reduction-badge">-12%</span>
                 <div class="item-name">&nbsp;&nbsp;Computer</div>
                 <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;800,000</div> <!-- Add the price here -->
                 <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;700,000</div>
@@ -343,23 +357,9 @@
     </div>
 </div>
 
-            
-<!-- Scroll-to-Top Button -->
-<button id="scrollToTopBtn" class="btn btn-primary scroll-to-top-btn" title="Go to top">
-    <i class="bi bi-arrow-up"></i>
-</button>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
-
-    <script src="{% static 'javascript/slideshow.js' %}" defer></script>
-    <script src="{% static 'javascript/scrollToTop.js' %}" defer></script>
-
-    <footer class="bg-light p-4 mt-5" style="margin-left: -150px; margin-right: -116px;">
+    
+    
+<footer class="bg-light p-4 mt-5">
         <div class="container">
             <div class="row">
                 <!-- First Column -->
@@ -384,9 +384,16 @@
                 </div>
                 </div>
             </div>
-        </div>
-    </footer>
-    
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+
+    <script src="{% static 'javascript/slideshow.js' %}" defer></script>
+    <script src="{% static 'javascript/scrollToTop.js' %}" defer></script>
 </body>
 
 
