@@ -1,3 +1,8 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
 .navbar-custom {
     background-color: black;
 }
@@ -22,7 +27,6 @@
 
 /* Adjust margins for the "Account" button */
 .btn-account, .btn-help, .btn-cart {
-    margin-right: 5px;
     border: none;
 }
 
@@ -80,6 +84,7 @@
 
 body{
     background-color: royalblue;
+    padding-top: 60px;
 }
 
 /* Add the styles for the black-card class */
@@ -195,4 +200,86 @@ body{
 
 .active {
     background-color: #3385ff; /* Blue color for active circle */
+}
+
+/* Add styles for the third-card class */
+.third-card, .fourth-card {
+    background-color: black;
+    border-radius: 10px;
+    margin-left: -4px; /* Adjust the margin to create space between the second and third cards */
+    padding: 0px;
+    width: 250px;
+}
+
+/* Add styles for the black-card-beneath class */
+.black-card-beneath {
+    background-color: black;
+    border-radius: 10px;
+    margin-left: -70px; /* Adjust the margin to align with the first card */
+    margin-right: -30px; /* Adjust the margin to align with the last card */
+    margin-top: 10px;
+    padding: 15px;
+}
+
+.position-relative{
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.position-relative:hover{
+    transform: translateY(-5px); /* Adjust the translateY value based on your preference */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.5); /* Adjust the color and intensity of the box-shadow */
+}
+
+.position-relative a{
+    text-decoration: none;
+}
+
+/* Add styles for the top-selling-title class */
+.top-selling-title {
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* Add styles for the top-selling-image class */
+.top-selling-image {
+    width: 200px; /* Adjust the width as needed */
+    height: 200px; /* Adjust the height as needed */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    object-fit: cover;
+}
+
+/* Add styles for the item-name class */
+.item-name {
+    max-width: 100%;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: white;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item-price {
+    font-size: 12px;
+}
+
+/* Styles for Scroll-to-Top Button */
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    background-color: black;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.scroll-to-top-btn:hover {
+    background-color: #0056b3;
 }
