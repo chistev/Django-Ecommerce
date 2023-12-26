@@ -42,7 +42,8 @@
     color: white; /* Text color on the button */
     font-weight: bold; /* Make the text bolder */
     width: 90%;
-    border-radius: 5px
+    border-radius: 5px;
+    
 }
 
 .btn-signin:hover {
