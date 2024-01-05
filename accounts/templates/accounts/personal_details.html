@@ -4,8 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chistev</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        body{
+            padding: 20px;
+        }
+
+        /* Add style for inactive (disabled) button */
+        #continueButton:disabled {
+            background-color: #6c757d; /* Bootstrap's secondary color */
+        }
+    </style>
 </head>
-<body>
-    rrr
+<body class="bg-dark d-flex align-items-center justify-content-center">
+    <div class="text-white text-center" style="margin-top: 100px;">
+        <h4>Personal Details</h4>
+        <p>We just need you to fill in some details.</p>
+
+        
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name*" required>                
+                <input type="text" class="form-control mt-3" id="last_name" name="last_name" placeholder="Last Name*" required>
+            </div>
+            <button style="width: 100%;" type="submit" id="continueButton" class="mt-3 btn btn-primary btn-block" disabled>Continue</button>
+            <div class="form-check mx-auto">
+                <input class="form-check-input" type="checkbox" value="" id="termsCheckbox" required>
+                <label class="form-check-label" for="termsCheckbox">
+                    I read and consented to the <a href="#" class="text-decoration-none">Terms and Conditions</a>
+                </label>
+            </div>
+        </form>
+        <h4 class="mt-3">Chistev</h4>
+
+    </div>
+
+    <script>
+        // Disable/enable continue button based on checkbox state
+        document.getElementById('termsCheckbox').addEventListener('change', function() {
+            document.getElementById('continueButton').disabled = !this.checked;
+        });
+    </script>
 </body>
 </html>
