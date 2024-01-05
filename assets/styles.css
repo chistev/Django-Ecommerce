@@ -94,8 +94,12 @@ body{
     color: white; /* Set the text color to white or any other color that suits your design */
     padding: 15px; /* Adjust the padding as needed */
     border-radius: 10px; /* Optional: Add rounded corners */
-    max-width: 200px; /* Adjust the maximum width as needed */
+    /* max-width: 200px; */ /* Adjust the maximum width as needed */
     
+}
+
+.my-account-card{
+    width: 300px;
 }
 
 .second-card{
@@ -292,6 +296,10 @@ body{
 
 .scroll-to-top-btn:hover {
     background-color: #0056b3;
+}
+
+.custom-table{
+    background-color: black;
 }
 
 /* Media query for smaller screens (adjust the breakpoint as needed) */
