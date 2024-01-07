@@ -1,28 +1,41 @@
 from django.contrib import messages
-
-from .forms import RegistrationForm
+from django.contrib.auth import authenticate, login as auth_login
+from .forms import RegistrationForm, LoginForm
 from .models import CustomUser, PersonalDetails
-
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate
 
 
+def login_excluded(redirect_to):
+    # This decorator kicks authenticated users out of a view
+    def _method_wrapper(view_method):
+        def _arguments_wrapper(request, *args, **kwargs):
+            if request.user.is_authenticated:
+                # If the user is authenticated, redirect them to the specified URL
+                return redirect(redirect_to)
+            # If the user is not authenticated, proceed with the view
+            return view_method(request, *args, **kwargs)
+        return _arguments_wrapper
+    return _method_wrapper
+
+
+@login_excluded('ecommerce:index')
 def login_or_register(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        password = request.POST.get('password')
 
-        user = authenticate(request, email=email, password=password)
+        # Check if the email exists in the database
+        user = CustomUser.objects.filter(email=email).first()
 
         if user is not None:
-            pass
-            return redirect('')
+            # If the email exists, redirect to the login page
+            return redirect('accounts:login', email=email)
         else:
             return redirect('accounts:register', email=email)
     else:
-        return render(request, 'accounts/login.html')
+        return render(request, 'accounts/login_or_register.html')
 
 
+@login_excluded('ecommerce:index')
 def register(request, email=None):
     if not email:
         # Handle the case where email is not present
@@ -38,7 +51,7 @@ def register(request, email=None):
                 # Passwords match, store relevant details in the session until the registration process is complete
                 request.session['registration_data'] = {
                     'email': email,
-                    'password1': form.cleaned_data['password1'],
+                    'password': form.cleaned_data['password1'],
                 }
                 return redirect('accounts:personal_details')
             else:
@@ -55,6 +68,7 @@ def register(request, email=None):
     return render(request, 'accounts/register.html', {'form': form})
 
 
+@login_excluded('ecommerce:index')
 def personal_details(request):
     # Retrieve stored details from the session
     registration_data = request.session.get('registration_data')
@@ -65,15 +79,7 @@ def personal_details(request):
 
     if request.method == 'POST':
         email = registration_data['email']
-        password = registration_data['password1']
-
-        # Check if a user with the given email already exists
-        existing_user = CustomUser.objects.filter(email=email).first()
-
-        if existing_user:
-            # If user already exists, handle accordingly (redirect, display error, etc.)
-            messages.error(request, 'A user with this email already exists. Please log in.')
-            return redirect('accounts:login_or_register')
+        password = registration_data['password']
 
         # Create a new user
         user = CustomUser.objects.create_user(email=email, password=password)
@@ -90,6 +96,27 @@ def personal_details(request):
         return render(request, 'accounts/personal_details.html',)
 
 
+def login(request, email=None):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password1')
+
+        # Authenticate user
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            # Log in the user
+            auth_login(request, user)
+            return redirect('ecommerce:index')
+        else:
+            messages.error(request, 'Invalid email or password')
+            print("Authentication failed.")
+
+    # If the authentication fails or it's a GET request, render the login form
+    form = LoginForm(initial={'email': email})
+    return render(request, 'accounts/login.html', {'form': form})
+
+
+@login_excluded('ecommerce:index')
 def successful_registration(request):
     return render(request, 'accounts/successful_registration.html')
 def my_account():
@@ -105,7 +132,6 @@ def saved_items():
 
 
 
-def login(request):
-    return render(request, 'accounts/login.html')
 
-
+def terms_and_conditions(request):
+    return render(request, 'accounts/terms_and_conditions.html')

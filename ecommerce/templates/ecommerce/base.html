@@ -53,9 +53,9 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="accountDropdown">
                             {% if user.is_authenticated %}
-                            <li><a class="dropdown-item btn btn-signin text-center mx-auto" href="{% url 'accounts:login' %}">Sign out</a></li>
+                            <li><a class="dropdown-item btn btn-signin text-center mx-auto" href="">Sign out</a></li>
                             {% else %}
-                            <li><a class="dropdown-item btn btn-signin text-center mx-auto" href="{% url 'accounts:login' %}">Sign in</a></li>
+                            <li><a class="dropdown-item btn btn-signin text-center mx-auto" href="{% url 'accounts:login_or_register' %}">Sign in</a></li>
                             {% endif %}
 
                             <li><hr class="dropdown-divider"></li>
