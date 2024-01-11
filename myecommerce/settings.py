@@ -1,3 +1,4 @@
+import configparser
 """
 Django settings for myecommerce project.
 
@@ -39,8 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ecommerce',
     'accounts',
-    'cart'
-
+    'cart',
+    'social_django',
+    'social_core',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +69,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -85,6 +89,16 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+config = configparser.ConfigParser()
+config.read('settings.ini')
+
+SOCIAL_AUTH_FACEBOOK_KEY = config['Facebook']['APP_ID']
+SOCIAL_AUTH_FACEBOOK_SECRET = config['Facebook']['APP_SECRET']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

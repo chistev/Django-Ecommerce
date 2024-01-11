@@ -130,8 +130,5 @@ def orders():
 def saved_items():
     return None
 
-
-
-
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +46,10 @@
         <hr>
 
         <!-- Log in with Facebook button -->
-        <button style="width: 100%;" type="button" class="mt-3 btn btn-primary btn-block">Log in with Facebook</button>
+        <a href="{% url 'social:begin' 'facebook' %}">
+            <button style="width: 100%;" type="button" class="mt-3 btn btn-primary btn-block">Log in with Facebook</button>
+        </a>
+        
 
         <h4 class="mt-3">Chistev</h4>
 

@@ -1,0 +1,5 @@
+# .gitignore
+
+# Ignore sensitive configuration files
+settings.ini
+
