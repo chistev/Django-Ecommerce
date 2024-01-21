@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import CustomLogoutView
 
 app_name = 'accounts'
 
@@ -10,6 +11,7 @@ urlpatterns = [
     path('personal_details/', views.personal_details, name='personal_details'),
     path('successful_registration/', views.successful_registration, name='successful_registration'),
     path('terms_and_conditions/', views.terms_and_conditions, name='terms_and_conditions'),
+    path('sign_out/', CustomLogoutView.as_view(), name='sign_out'),
     path('my-account/', views.my_account, name='my-account'),
     path('orders/', views.orders, name='orders'),
     path('saved-items/', views.saved_items, name='saved-items'),

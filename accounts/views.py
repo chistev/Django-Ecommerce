@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, get_user_model
+from django.contrib.auth.views import LogoutView
+
 from .forms import RegistrationForm, LoginForm
 from .models import CustomUser, PersonalDetails
 from django.shortcuts import render, redirect
@@ -121,7 +123,13 @@ def successful_registration(request):
     return render(request, 'accounts/successful_registration.html')
 
 
+class CustomLogoutView(LogoutView):
+    next_page = '/'  # Redirect to home page after logout, change it according to your needs
 
+    def get_next_page(self):
+        next_page = super().get_next_page()
+        # Additional logic if needed before redirecting
+        return next_page
 def my_account():
     return None
 
