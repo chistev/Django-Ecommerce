@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'cart',
     'social_django',
     'social_core',
+    'anymail',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
