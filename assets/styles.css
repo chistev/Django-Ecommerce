@@ -136,8 +136,10 @@ body{
     margin-right: 8px; /* Adjust the margin between text and icon */
 }
 
+.custom-list a.active,
 .custom-list a:hover {
     color: #3385ff; /* Change the background color on hover */
+    background-color: transparent;
 }
 
 .slideshow-container {
@@ -298,8 +300,25 @@ body{
     background-color: #0056b3;
 }
 
-.custom-table{
+.custom-table {
     background-color: black;
+    border: 1px solid white; /* Add a white border around the table */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    padding: 15px; /* Adjust the padding as needed */
+    margin-bottom: 20px; /* Optional: Add margin at the bottom */
+}
+
+.custom-table th {
+    background-color: black; /* Set the background color to black */
+    color: white; /* Set the text color to white or any other color that suits your design */
+    border: 1px solid white; /* Add a white border around the table header */
+    border-radius: 10px 10px 0 0; /* Optional: Add rounded corners to the top */
+    padding: 10px; /* Adjust the padding as needed */
+}
+
+.custom-table th, .custom-table td {
+    background-color: transparent !important; /* Set the background color to transparent */
+    color: white; /* Set the text color to white or any other color that suits your design */
 }
 
 /* Media query for smaller screens (adjust the breakpoint as needed) */

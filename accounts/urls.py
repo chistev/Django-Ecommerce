@@ -12,7 +12,7 @@ urlpatterns = [
     path('successful_registration/', views.successful_registration, name='successful_registration'),
     path('terms_and_conditions/', views.terms_and_conditions, name='terms_and_conditions'),
     path('sign_out/', CustomLogoutView.as_view(), name='sign_out'),
-    path('my-account/', views.my_account, name='my-account'),
+    path('my_account/', views.my_account, name='my_account'),
     path('orders/', views.orders, name='orders'),
     path('saved-items/', views.saved_items, name='saved-items'),
 ]

@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, get_user_model
 from django.contrib.auth.views import LogoutView
+from django.urls import resolve
 
 from .forms import RegistrationForm, LoginForm
 from .models import CustomUser, PersonalDetails
@@ -130,8 +131,11 @@ class CustomLogoutView(LogoutView):
         next_page = super().get_next_page()
         # Additional logic if needed before redirecting
         return next_page
-def my_account():
-    return None
+
+
+def my_account(request):
+    current_path = resolve(request.path_info).url_name
+    return render(request, 'accounts/my_account.html', {'current_path': current_path})
 
 
 def orders():

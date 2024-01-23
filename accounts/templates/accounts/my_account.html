@@ -52,7 +52,7 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="accountDropdown">
                             {% if user.is_authenticated %}
-                            <li><a class="dropdown-item btn btn-signin text-center mx-auto" href="{% url 'accounts:login' %}">Sign out</a></li>
+                            <li><a class="dropdown-item btn btn-signin text-center mx-auto" href="{% url 'accounts:sign_out' %}">Sign out</a></li>
                             {% else %}
                             <li><a class="dropdown-item btn btn-signin text-center mx-auto" href="{% url 'accounts:login' %}">Sign in</a></li>
                             {% endif %}
@@ -100,7 +100,7 @@
              <div class="col-md-2 mb-4 ">
                 <div class="black-card my-account-card">
                     <ul class="custom-list">
-                        <li><a href="#" class="nav-link"><i class="bi bi-person"></i>My Chistev Account</a></li>
+                        <li><a href="{% url 'accounts:my_account' %}" class="nav-link {% if current_path == 'my_account' %}active{% endif %}"><i class="bi bi-person"></i>My Chistev Account</a></li>
                         <li><a href="#" class="nav-link"><i class="bi bi-bag"></i>Orders</a></li>
                         <li><a href="#" class="nav-link"><i class="bi bi-inbox"></i>Inbox</a></li>
                         <li><a href="#" class="nav-link"><i class="bi bi-bookmark"></i>Saved Items</a></li>
@@ -117,6 +117,7 @@
     
             <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
                 <h5>Account Overview</h5>
+                <hr>
                 <table class="table table-borderless custom-table " style="float: left; width: 40%;">
                     <thead>
                         <tr>
