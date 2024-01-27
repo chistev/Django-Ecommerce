@@ -135,7 +135,10 @@ class CustomLogoutView(LogoutView):
 
 def my_account(request):
     current_path = resolve(request.path_info).url_name
-    return render(request, 'accounts/my_account.html', {'current_path': current_path})
+    user = request.user  # Get the logged-in user
+    personal_details = user.personal_details  # Access the PersonalDetails related object
+    return render(request, 'accounts/my_account.html',
+                  {'current_path': current_path, 'user': user, 'personal_details': personal_details})
 
 
 def orders():

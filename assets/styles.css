@@ -306,6 +306,7 @@ body{
     border-radius: 10px; /* Optional: Add rounded corners */
     padding: 15px; /* Adjust the padding as needed */
     margin-bottom: 20px; /* Optional: Add margin at the bottom */
+    
 }
 
 .custom-table th {
@@ -320,6 +321,11 @@ body{
     background-color: transparent !important; /* Set the background color to transparent */
     color: white; /* Set the text color to white or any other color that suits your design */
 }
+
+#add-default-address:hover{
+    color: #80b3ff; 
+}
+
 
 /* Media query for smaller screens (adjust the breakpoint as needed) */
 @media (min-width: 992px) {
