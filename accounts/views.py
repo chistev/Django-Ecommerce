@@ -146,9 +146,15 @@ def orders(request):
     current_path = resolve(request.path_info).url_name
     return render(request, 'accounts/orders.html', {'current_path': current_path})
 
+
 def closed_orders(request):
     current_path = resolve(request.path_info).url_name
     return render(request, 'accounts/closed_orders.html', {'current_path': current_path})
+
+
+def inbox(request):
+    current_path = resolve(request.path_info).url_name
+    return render(request, 'accounts/inbox.html', {'current_path': current_path})
 
 
 def saved_items():

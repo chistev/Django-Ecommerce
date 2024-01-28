@@ -1,0 +1,26 @@
+{% extends 'ecommerce/base.html' %}
+
+{% block body %}
+<body class="bg-dark">
+    <div class="container mt-4">
+        <div class="row">
+             <!-- First Card -->
+             {% include 'accounts/account_navigation.html' %}
+    
+             <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
+                <h5>Inbox Messages</h5>
+                <hr>
+                <div class="row mt-4">
+                    <div class="col-md-12 text-center">
+                        <h1><strong><i class="bi bi-inbox"></i></strong></h1>
+                        <p>You don't have any messages</p>
+                        <p style="width: 70%;" class="mx-auto">Here you will be able to see all the messages that we send you. Stay tuned</p>
+                    </div>
+                </div>
+            </div>  
+        
+        </div>
+        
+    </div>
+</body>
+{% endblock %}
