@@ -1,23 +1,22 @@
 {% extends 'ecommerce/base.html' %}
 
 {% block body %}
-
 <body class="bg-dark">
 
     <div class="container mt-4">
         <div class="row">
              <!-- First Card -->
              {% include 'accounts/account_navigation.html' %}
-    
+             
             <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
                 <h5>Account Overview</h5>
                 <hr>
                 <div class="row mt-4">
                     <div class="col-md-3">
-                        <a href="#" class="text-decoration-none">OPEN ORDERS (0)</a>
+                        <a href="{% url 'accounts:orders' %}" class="text-decoration-none open-orders">OPEN ORDERS (0)</a>
                     </div>
                     <div class="col-md-3">
-                        <a href="{% url 'accounts:closed_orders' %}" class="text-decoration-none closed-orders">CLOSED ORDERS (0)</a>
+                        <a href="{% url 'accounts:closed_orders' %}" class="text-decoration-none">CLOSED ORDERS (0)</a>
                     </div>
                 </div>
                 <hr>
@@ -25,9 +24,9 @@
                 <div class="row mt-4">
                     <div class="col-md-12 text-center">
                         <h1><strong><i class="bi bi-bag"></i></strong></h1>
-                        <p>You have placed no orders yet!</p>
-                        <p>All your orders will be saved here for you to access their state anytime.</p>
-                        <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Continue Shopping</a>
+                        <p>No Closed Orders to Display</p>
+                        <p>All your Closed Orders will be saved here.</p>
+                        <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Start Shopping</a>
                     </div>
                 </div>
             </div>

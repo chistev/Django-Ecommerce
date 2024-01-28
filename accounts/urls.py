@@ -14,5 +14,6 @@ urlpatterns = [
     path('sign_out/', CustomLogoutView.as_view(), name='sign_out'),
     path('my_account/', views.my_account, name='my_account'),
     path('orders/', views.orders, name='orders'),
+    path('closed_orders/', views.closed_orders, name='closed_orders'),
     path('saved-items/', views.saved_items, name='saved-items'),
 ]

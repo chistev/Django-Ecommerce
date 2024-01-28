@@ -133,6 +133,7 @@ class CustomLogoutView(LogoutView):
         return next_page
 
 
+
 def my_account(request):
     current_path = resolve(request.path_info).url_name
     user = request.user  # Get the logged-in user
@@ -141,8 +142,13 @@ def my_account(request):
                   {'current_path': current_path, 'user': user, 'personal_details': personal_details})
 
 
-def orders():
-    return None
+def orders(request):
+    current_path = resolve(request.path_info).url_name
+    return render(request, 'accounts/orders.html', {'current_path': current_path})
+
+def closed_orders(request):
+    current_path = resolve(request.path_info).url_name
+    return render(request, 'accounts/closed_orders.html', {'current_path': current_path})
 
 
 def saved_items():
@@ -192,3 +198,5 @@ User = get_user_model()'''
 def security_code_reset(request):
     return render(request, 'accounts/security_code_reset.html')
 '''
+
+

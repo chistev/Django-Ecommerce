@@ -326,6 +326,13 @@ body{
     color: #80b3ff; 
 }
 
+.closed-orders, .open-orders{
+    color: white;
+}
+.closed-orders:hover, .open-orders:hover{
+    color: #3385ff;
+}
+
 
 /* Media query for smaller screens (adjust the breakpoint as needed) */
 @media (min-width: 992px) {

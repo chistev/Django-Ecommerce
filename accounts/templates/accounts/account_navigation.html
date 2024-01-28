@@ -1,0 +1,22 @@
+<div class="col-md-2 mb-4 ">
+    <div class="black-card my-account-card">
+        <ul class="custom-list">
+            <li><a href="{% url 'accounts:my_account' %}" class="nav-link {% if current_path == 'my_account' %}active{% endif %}">
+                <i class="bi bi-person"></i>My Chistev Account</a>
+            </li>
+            <li><a href="{% url 'accounts:orders' %}" 
+                class="nav-link {% if current_path == 'closed_orders' or current_path == 'orders' %}active{% endif %}"><i class="bi bi-bag">
+                </i>Orders</a>
+            </li>
+            <li><a href="#" class="nav-link"><i class="bi bi-inbox"></i>Inbox</a></li>
+            <li><a href="#" class="nav-link"><i class="bi bi-bookmark"></i>Saved Items</a></li>
+            <hr>
+            <li><a href="#">Account Management</a></li>
+            <li><a href="#">Address Book</a></li>
+            <li><a href="#">Newsletter Preferences</a></li>
+            <li><a href="#">Close Account</a></li>
+            <hr>
+                <li><a class="btn btn-signin" href="#">Sign out</a></li>
+        </ul>
+    </div>
+</div>
