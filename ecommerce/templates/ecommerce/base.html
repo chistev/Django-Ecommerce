@@ -71,7 +71,11 @@
                             <li><a class="dropdown-item btn btn-my-account under-account" href="{% url 'accounts:login_or_register' %}"><i class="bi bi-person"></i><span class="ms-2">My Account</span></a></li>
                             {% endif %}
                             
-                            <li><a class="dropdown-item under-account" href="{% url 'accounts:saved-items' %}"><i class="bi bi-bookmark"></i><span class="ms-2">Saved Items</span></a></li>
+                            {% if user.is_authenticated %}
+                            <li><a class="dropdown-item under-account" href="{% url 'accounts:saved_items' %}"><i class="bi bi-bookmark"></i><span class="ms-2">Saved Items</span></a></li>
+                            {% else %}
+                            <li><a class="dropdown-item btn btn-my-account under-account" href="{% url 'accounts:login_or_register' %}"><i class="bi bi-person"></i><span class="ms-2">My Account</span></a></li>
+                            {% endif %}
                         </ul>
                     </div>
     

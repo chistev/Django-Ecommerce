@@ -157,8 +157,10 @@ def inbox(request):
     return render(request, 'accounts/inbox.html', {'current_path': current_path})
 
 
-def saved_items():
-    return None
+def saved_items(request):
+    current_path = resolve(request.path_info).url_name
+    return render(request, 'accounts/saved_items.html', {'current_path': current_path})
+
 
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
