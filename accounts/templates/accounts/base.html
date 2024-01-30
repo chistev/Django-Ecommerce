@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +38,12 @@
         ol {
             padding-left: 20px;
         }
+
+
     </style>
+    {% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    {% endblock %}
 </head>
 <body class="bg-dark d-flex align-items-center justify-content-center">
     <div class="text-white text-center" style="margin-top: 100px;">

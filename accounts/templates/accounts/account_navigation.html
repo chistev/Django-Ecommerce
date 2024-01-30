@@ -15,7 +15,7 @@
 
             <li><a href="{% url 'accounts:saved_items' %}" class="nav-link {% if current_path == 'saved_items' %}active{% endif %}"><i class="bi bi-bookmark"></i>Saved Items</a></li>
             <hr>
-            <li><a href="#">Account Management</a></li>
+            <li><a href="{% url 'accounts:account_management' %}">Account Management</a></li>
             <li><a href="#">Address Book</a></li>
             <li><a href="#">Newsletter Preferences</a></li>
             <li><a href="#">Close Account</a></li>
