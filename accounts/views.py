@@ -168,6 +168,12 @@ def account_management(request):
     return render(request, 'accounts/account_management.html', {'user': user, 'personal_details': personal_details})
 
 
+def basic_details(request):
+    user = request.user  # Get the logged-in user
+    personal_details = user.personal_details
+    return render(request, 'accounts/basic_details.html', {'user': user, 'personal_details': personal_details})
+
+
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
