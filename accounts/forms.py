@@ -19,4 +19,3 @@ class LoginForm(forms.Form):
         label='Password',
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True})
     )
-

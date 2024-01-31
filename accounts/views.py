@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.urls import resolve
 
@@ -133,7 +134,7 @@ class CustomLogoutView(LogoutView):
         return next_page
 
 
-
+@login_required
 def my_account(request):
     current_path = resolve(request.path_info).url_name
     user = request.user  # Get the logged-in user
@@ -142,36 +143,68 @@ def my_account(request):
                   {'current_path': current_path, 'user': user, 'personal_details': personal_details})
 
 
+@login_required
 def orders(request):
     current_path = resolve(request.path_info).url_name
     return render(request, 'accounts/orders.html', {'current_path': current_path})
 
 
+@login_required
 def closed_orders(request):
     current_path = resolve(request.path_info).url_name
     return render(request, 'accounts/closed_orders.html', {'current_path': current_path})
 
 
+@login_required
 def inbox(request):
     current_path = resolve(request.path_info).url_name
     return render(request, 'accounts/inbox.html', {'current_path': current_path})
 
 
+@login_required
 def saved_items(request):
     current_path = resolve(request.path_info).url_name
     return render(request, 'accounts/saved_items.html', {'current_path': current_path})
 
 
+@login_required
 def account_management(request):
     user = request.user  # Get the logged-in user
     personal_details = user.personal_details
     return render(request, 'accounts/account_management.html', {'user': user, 'personal_details': personal_details})
 
 
+@login_required
 def basic_details(request):
     user = request.user  # Get the logged-in user
     personal_details = user.personal_details
     return render(request, 'accounts/basic_details.html', {'user': user, 'personal_details': personal_details})
+
+
+@login_required
+def edit_basic_details(request):
+    user = request.user  # Get the logged-in user
+    personal_details = user.personal_details
+
+    if request.method == 'POST':
+        # Extract form data
+        first_name = request.POST.get('first-name')
+        middle_name = request.POST.get('middle-name')
+        last_name = request.POST.get('last-name')
+
+        # Get the PersonalDetails instance associated with the current user
+        personal_details = request.user.personal_details
+
+        # Update the PersonalDetails model
+        personal_details.first_name = first_name
+        personal_details.middle_name = middle_name
+        personal_details.last_name = last_name
+        personal_details.save()
+
+        # Redirect to a success page
+        return redirect('accounts:basic_details')
+    return render(request, 'accounts/edit_basic_details.html',
+                  {'user': user, 'personal_details': personal_details})
 
 
 def terms_and_conditions(request):

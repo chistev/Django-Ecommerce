@@ -8,30 +8,30 @@
              {% include 'accounts/basic_and_security_details.html' %}
     
             <div class="col-md-8 ms-auto black-card" style="height: auto;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex mb-3">
                     <h5>Profile Details</h5>
-                    <h5>
-                        <a href="{% url 'accounts:edit_basic_details' %}" class="text-decoration-none" >Edit Profile</a>
-                    </h5>
                 </div>
                 
-                <form>
+                <form method="post">
+                    {% csrf_token %}
                     <div class="mb-3">
                         <label for="first-name" class="form-label d-flex">First Name:</label>
-                        <input type="text" class="form-control" id="first-name" value="{{ personal_details.first_name }}" readonly>
+                        <input type="text" class="form-control" id="first-name" name="first-name" value="{{ personal_details.first_name }}">
                     </div>
                     <div class="mb-3">
                         <label for="middle-name" class="form-label d-flex">Middle Name:</label>
-                        <input type="text" class="form-control" id="middle-name" value="{{ personal_details.middle_name }}" readonly>
+                        <input type="text" class="form-control" id="middle-name" name="middle-name" value="{{ personal_details.middle_name }}" >
                     </div>
                     <div class="mb-3">
                         <label for="last-name" class="form-label d-flex">Last Name:</label>
-                        <input type="text" class="form-control" id="last-name" value="{{ personal_details.last_name }}" readonly>
+                        <input type="text" class="form-control" id="last-name" name="last-name" value="{{ personal_details.last_name }}" >
                     </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label d-flex">Email:</label>
-                        <input type="text" class="form-control" id="email" value="{{ user.email }}" readonly>
+
+                    <div style="display: flex; justify-content:right; margin-right: 70px;">
+                        <button type="submit" class="btn btn-primary" style="width: 30%;">Save</button>
                     </div>
+
+                    
                 </form>
                 
             </div>  

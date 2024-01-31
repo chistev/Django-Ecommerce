@@ -60,6 +60,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class PersonalDetails(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='personal_details')
     first_name = models.CharField(max_length=255)
+    middle_name = models.CharField(max_length=255, blank=True)  # Allow blank since middle name might not be present
     last_name = models.CharField(max_length=255)
     # security_code = models.CharField(max_length=4, blank=True, null=True)
 
