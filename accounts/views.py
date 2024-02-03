@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, get_user_model
+from django.contrib.auth import authenticate, login as auth_login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.urls import resolve
@@ -207,6 +207,34 @@ def edit_basic_details(request):
                   {'user': user, 'personal_details': personal_details})
 
 
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('current-password')
+        new_password = request.POST.get('new-password')
+        confirm_password = request.POST.get('confirm-password')
+
+        user = request.user
+
+        # Check if the current password provided matches the user's actual current password
+        if not user.check_password(current_password):
+            # Display an error message if the current password doesn't match
+            messages.error(request, 'Your current password is incorrect.')
+        elif new_password != confirm_password:
+            # Display an error message if the new password and confirmation don't match
+            messages.error(request, 'New password and confirmation do not match.')
+        else:
+            # Set the new password
+            user.set_password(new_password)
+            user.save()
+            # Update the session to prevent the user from being logged out
+            update_session_auth_hash(request, user)
+            # Redirect to a success page or the account page
+            messages.success(request, 'Your password has been changed successfully.')
+            return redirect('accounts:basic_details')
+
+    return render(request, 'accounts/change_password.html')
+
+
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
@@ -251,5 +279,3 @@ User = get_user_model()'''
 def security_code_reset(request):
     return render(request, 'accounts/security_code_reset.html')
 '''
-
-
