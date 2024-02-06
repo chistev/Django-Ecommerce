@@ -1,0 +1,30 @@
+{% extends 'ecommerce/base.html' %}
+
+{% block body %}
+
+<body class="bg-dark">
+
+    <div class="container mt-4">
+        <div class="row">
+             <!-- First Card -->
+             {% include 'accounts/account_navigation.html' %}
+    
+            <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
+                <h5>Address Book</h5>
+                <hr>
+                <!-- Add the bag icon in the middle -->
+                <div class="row mt-4">
+                    <div class="col-md-12 text-center">
+                        <h1><strong><i class="bi bi-book"></i></strong></h1>
+                        <p>You have not added any address yet!</p>
+                        <p style="width: 70%;" class="mx-auto">Add your shipping addresses here for a fast purchase experience! 
+                            You will be able to add, modify or delete them at any time.</p>
+                        <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Add New Address</a>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+</body>
+{% endblock %}

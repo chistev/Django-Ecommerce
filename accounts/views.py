@@ -260,6 +260,11 @@ def delete_account(request):
     return render(request, 'accounts/delete_account.html')
 
 
+@login_required
+def address_book(request):
+    return render(request, 'accounts/address_book.html')
+
+
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
@@ -305,3 +310,5 @@ User = get_user_model()'''
 def security_code_reset(request):
     return render(request, 'accounts/security_code_reset.html')
 '''
+
+
