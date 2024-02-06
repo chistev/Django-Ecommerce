@@ -207,6 +207,7 @@ def edit_basic_details(request):
                   {'user': user, 'personal_details': personal_details})
 
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         current_password = request.POST.get('current-password')
@@ -219,6 +220,9 @@ def change_password(request):
         if not user.check_password(current_password):
             # Display an error message if the current password doesn't match
             messages.error(request, 'Your current password is incorrect.')
+        elif new_password == current_password:
+            # Display an error message if the new password is the same as the current password
+            messages.error(request, 'Your new password cannot be the same as your current password.')
         elif new_password != confirm_password:
             # Display an error message if the new password and confirmation don't match
             messages.error(request, 'New password and confirmation do not match.')
@@ -235,8 +239,30 @@ def change_password(request):
     return render(request, 'accounts/change_password.html')
 
 
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        # Check if the user confirms the deletion
+        if request.POST.get('confirm_delete'):
+            user = request.user  # Get the logged-in user
+            entered_password = request.POST.get('Password')  # Get the password entered by the user
+
+            # Check if the entered password matches the user's actual password
+            if user.check_password(entered_password):
+                # Password matches, proceed with deletion
+                user.delete()
+                messages.success(request, 'Your account has been successfully deleted.')
+                return redirect('ecommerce:index')  # Redirect to the index page or any other page
+            else:
+                # Password doesn't match, show an error message
+                messages.error(request, 'Incorrect password. Please try again.')
+
+    return render(request, 'accounts/delete_account.html')
+
+
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
+
 
 '''class ForgotPasswordForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control bg-secondary text-white', 'readonly': 'readonly'}))

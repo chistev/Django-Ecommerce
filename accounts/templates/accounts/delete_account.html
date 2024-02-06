@@ -1,0 +1,82 @@
+{% extends 'accounts/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<body class="bg-dark" style="margin-top: -140px;">
+    <div class="container">
+        <div class="row" >
+             <!-- First Card -->
+             {% include 'accounts/basic_and_security_details.html' %}
+    
+            <div class="col-md-8 ms-auto black-card" 
+            style="height: auto;">
+                <div class="mb-3">
+                    <h5>We hate to see you go</h5>
+                    <p style="width: 83%;" class="ms-5">Before you delete your account, we would want you to know that this action will delete your data. 
+                        If that's what you want, please proceed with entering your password to confirm that it's you.</p>
+                </div>
+
+                <!-- Error Messages -->
+                {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}" 
+                    role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                {% endif %} 
+                <form method="post" id="delete-account-form">
+                    {% csrf_token %}
+                    <div class="mb-4 ms-5">
+                        <input type="email" class="form-control bg-secondary text-white" name="email" required value="{{ user.email }}" readonly>
+                    </div>
+                    <div class="mb-4 ms-5" >
+                        <input type="password" placeholder="Password" class="form-control" id="Password" name="Password" >
+                    </div>
+
+                    <div style="display: flex; justify-content:left; ">
+                        <button type="submit" class="btn btn-primary ms-5" style="width: 82%;">Close my account</button>
+                    </div>
+
+                    <!-- Hidden input field to capture confirmation -->
+                    <input type="hidden" name="confirm_delete" value="1">
+                    
+                </form>
+
+                <!-- Additional text -->
+                <p class="ms-5" style="font-size: small; margin-top: 10px; width: 83%;">
+                    Please read this carefully: You are about to submit a request for us to permanently close your Chistev account and delete your data.
+                    Once your account has been closed, all of the products and services accessed through your account will no longer be available to you.
+                </p>
+                
+            </div>          
+        
+    </div>
+        
+    </div>
+</body>
+<script>
+    // Function to display a confirmation box when the form is submitted
+    document.getElementById("delete-account-form").addEventListener("submit", function(event) {
+        // Check if the password entered by the user matches their existing password in the database
+        var enteredPassword = document.getElementById('Password').value;
+        
+        // Display a confirmation box if the password matches
+        if (enteredPassword.trim() !== '') {
+            var result = confirm("Are you sure you want to close your account?");
+            // If the user confirms, proceed with form submission
+            if (!result) {
+                // Prevent the form from submitting if the user cancels
+                event.preventDefault();
+            }
+        } 
+        else {
+            // Show an error message if the password field is empty
+            alert('Please enter your password.');
+            event.preventDefault(); // Prevent form submission
+        }
+    });
+</script>
+
+{% endblock %}

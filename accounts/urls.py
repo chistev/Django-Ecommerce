@@ -21,4 +21,5 @@ urlpatterns = [
     path('basic_details/', views.basic_details, name='basic_details'),
     path('edit_basic_details/', views.edit_basic_details, name='edit_basic_details'),
     path('change_password/', views.change_password, name='change_password'),
+    path('delete_account/', views.delete_account, name='delete_account'),
 ]
