@@ -1,5 +1,7 @@
 from django import forms
 
+from accounts.models import Address
+
 
 class RegistrationForm(forms.Form):
     email = forms.EmailField(label='Email address', widget=forms.EmailInput(attrs={'class': 'form-control',
@@ -19,3 +21,57 @@ class LoginForm(forms.Form):
         label='Password',
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True})
     )
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['first_name', 'last_name', 'address', 'additional_info', 'state', 'city']
+
+    def __init__(self, *args, **kwargs):
+        super(AddressForm, self).__init__(*args, **kwargs)
+
+        self.fields['first_name'].label = "First Name"
+        self.fields['last_name'].label = "Last Name"
+        self.fields['address'].label = "Delivery Address"
+        self.fields['additional_info'].label = "Additional Information"
+
+
+        # Add custom attributes and styling to individual fields
+        self.fields['first_name'].widget.attrs.update({
+            'class': 'form-control',
+            'id': 'firstName',  # ID for the first name field
+            'style': 'width: 350px !important;',
+            'name': 'first_name'
+        })
+
+        self.fields['last_name'].widget.attrs.update({
+            'class': 'form-control',
+            'id': 'lastName',  # ID for the last name field
+            'style': 'width: 350px !important;',
+            'name': 'last_name'
+        })
+
+        self.fields['address'].widget.attrs.update({
+            'class': 'form-control',
+            'id': 'address',  # ID for the last name field
+            'style': 'width: 100% !important;',
+            'placeholder': 'Enter your Address',
+            'name': 'address'
+        })
+
+        self.fields['additional_info'].widget.attrs.update({
+            'class': 'form-control',
+            'id': 'additional_info',  # ID for the last name field
+            'style': 'width: 100% !important;',
+            'placeholder': 'Enter Additional Information',
+            'name': 'additional_info'
+        })
+
+        self.fields['state'].widget.attrs.update({
+            'class': 'form-select',
+            'id': 'state',
+            'style': 'width: 350px !important',
+            'name': 'state'
+        })
+

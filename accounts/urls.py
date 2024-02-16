@@ -23,4 +23,7 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
     path('delete_account/', views.delete_account, name='delete_account'),
     path('address_book/', views.address_book, name='address_book'),
+    path('address_book_create/', views.address_book_create, name='address_book_create'),
+    path('get_cities/', views.get_cities, name='get_cities'),
+
 ]

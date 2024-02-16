@@ -2,10 +2,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
+from django.http import JsonResponse
 from django.urls import resolve
 
-from .forms import RegistrationForm, LoginForm
-from .models import CustomUser, PersonalDetails
+from .forms import RegistrationForm, LoginForm, AddressForm
+from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect
 
 
@@ -263,6 +264,65 @@ def delete_account(request):
 @login_required
 def address_book(request):
     return render(request, 'accounts/address_book.html')
+
+
+def address_book_create(request):
+    if request.method == 'POST':
+        # Bind form with POST data
+        form = AddressForm(request.POST)
+
+        if form.is_valid():
+            # Get the logged-in user
+            user = request.user
+            # Save or update personal details for the user
+            personal_details, created = PersonalDetails.objects.get_or_create(user=user)
+            personal_details.first_name = form.cleaned_data['first_name']
+            personal_details.last_name = form.cleaned_data['last_name']
+            personal_details.save()
+
+            # Save address details
+            address_instance = form.save(commit=False)
+            address_instance.user = user
+            address_instance.save()
+
+            # Redirect the user to a success page
+            return redirect('accounts:address_book')
+        else:
+            # Render the form again with validation errors
+            user = request.user
+            personal_details = user.personal_details
+            states = State.objects.all()
+            context = {
+                'user': user,
+                'personal_details': personal_details,
+                'states': states,
+                'form': form,
+            }
+            return render(request, 'accounts/address_book_create.html', context)
+
+    else:
+        # Handle GET request, render the address book creation form
+        form = AddressForm()
+        user = request.user  # Get the logged-in user
+        personal_details = user.personal_details
+        initial_first_name = personal_details.first_name if personal_details else ''  # Initial first name
+        initial_last_name = personal_details.last_name if personal_details else ''  # Initial last name
+        initial_data = {'first_name': initial_first_name, 'last_name': initial_last_name}
+        form = AddressForm(initial=initial_data)
+        states = State.objects.all()
+        context = {
+            'user': user,
+            'personal_details': personal_details,
+            'states': states,
+            'form': form,
+        }
+        return render(request, 'accounts/address_book_create.html', context)
+
+
+def get_cities(request):
+    state_id = request.GET.get('state_id')
+    cities = City.objects.filter(state_id=state_id).values('id', 'name')
+    return JsonResponse({'cities': list(cities)})
 
 
 def terms_and_conditions(request):
