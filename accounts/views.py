@@ -263,9 +263,16 @@ def delete_account(request):
 
 @login_required
 def address_book(request):
-    return render(request, 'accounts/address_book.html')
+    # Retrieve the user's addresses
+    user_addresses = Address.objects.filter(user=request.user)
+
+    context = {
+        'user_addresses': user_addresses
+    }
+    return render(request, 'accounts/address_book.html', context)
 
 
+@login_required
 def address_book_create(request):
     if request.method == 'POST':
         # Bind form with POST data
@@ -372,3 +379,5 @@ def security_code_reset(request):
 '''
 
 
+def address_book_edit(request):
+    return render(request, 'accounts/address_book_edit.html')

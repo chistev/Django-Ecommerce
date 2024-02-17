@@ -12,16 +12,39 @@
             <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
                 <h5>Address Book</h5>
                 <hr>
-                <!-- Add the bag icon in the middle -->
-                <div class="row mt-4">
-                    <div class="col-md-12 text-center">
-                        <h1><strong><i class="bi bi-book"></i></strong></h1>
-                        <p>You have not added any address yet!</p>
-                        <p style="width: 70%;" class="mx-auto">Add your shipping addresses here for a fast purchase experience! 
-                            You will be able to add, modify or delete them at any time.</p>
-                        <a href="{% url 'accounts:address_book_create' %}" class="btn btn-primary btn-lg mt-2">Add New Address</a>
+
+                {% if user.addresses.all %}
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <ul class="list-group">
+                                {% for address in user.addresses.all %}
+                                    <li class="list-group-item">
+                                        <strong>{{ address.first_name }} {{ address.last_name }}</strong><br>
+                                        {{ address.address }}<br>
+                                        {% if address.additional_info %}{{ address.additional_info }}<br>{% endif %}
+                                        {{ address.city }}, {{ address.state }}
+
+                                        <!-- Pen icon for editing address -->
+                                        <a href="{% url 'accounts:address_book_edit' %}" style="display: block;">
+                                            <i class="bi bi-pen"></i>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                {% else %}
+                    <div class="row mt-4">
+                        <div class="col-md-12 text-center">
+                            <h1><i class="bi bi-book"></i></h1>
+                            <p>You have not added any address yet!</p>
+                            <p style="width: 70%;" class="mx-auto">Add your shipping addresses here for a fast purchase experience! 
+                                You will be able to add, modify or delete them at any time.</p>
+                            <a href="{% url 'accounts:address_book_create' %}" class="btn btn-primary btn-lg mt-2">Add New Address</a>
+                        </div>
+                    </div>
+                {% endif %}
+                
             </div>
         
         </div>
