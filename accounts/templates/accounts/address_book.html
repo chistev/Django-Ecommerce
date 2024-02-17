@@ -25,7 +25,7 @@
                                         {{ address.city }}, {{ address.state }}
 
                                         <!-- Pen icon for editing address -->
-                                        <a href="{% url 'accounts:address_book_edit' %}" style="display: block;">
+                                        <a href="{% url 'accounts:address_book_edit' address_id=address.id %}" style="display: block;">
                                             <i class="bi bi-pen"></i>
                                         </a>
                                     </li>

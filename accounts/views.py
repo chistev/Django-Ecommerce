@@ -7,7 +7,7 @@ from django.urls import resolve
 
 from .forms import RegistrationForm, LoginForm, AddressForm
 from .models import CustomUser, PersonalDetails, State, City, Address
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 
 def login_excluded(redirect_to):
@@ -379,5 +379,20 @@ def security_code_reset(request):
 '''
 
 
-def address_book_edit(request):
-    return render(request, 'accounts/address_book_edit.html')
+def address_book_edit(request, address_id):
+    # Fetch the address object from the database
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    if request.method == 'POST':
+        # Create an instance of the AddressForm and populate it with the POST data and instance
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:address_book')  # Redirect to the address book page after successful update
+    else:
+        # Populate the form with the existing address details
+        form = AddressForm(instance=address)
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'accounts/address_book_edit.html', context)

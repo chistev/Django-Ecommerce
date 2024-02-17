@@ -24,7 +24,7 @@ urlpatterns = [
     path('delete_account/', views.delete_account, name='delete_account'),
     path('address_book/', views.address_book, name='address_book'),
     path('address_book_create/', views.address_book_create, name='address_book_create'),
-    path('address_book_edit/', views.address_book_edit, name='address_book_edit'),
+    path('address_book_edit/<int:address_id>/', views.address_book_edit, name='address_book_edit'),
     path('get_cities/', views.get_cities, name='get_cities'),
 
 ]
