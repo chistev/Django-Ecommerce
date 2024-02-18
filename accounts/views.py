@@ -140,8 +140,13 @@ def my_account(request):
     current_path = resolve(request.path_info).url_name
     user = request.user  # Get the logged-in user
     personal_details = user.personal_details  # Access the PersonalDetails related object
+
+    # Retrieve user's addresses
+    user_addresses = Address.objects.filter(user=user)
+
     return render(request, 'accounts/my_account.html',
-                  {'current_path': current_path, 'user': user, 'personal_details': personal_details})
+                  {'current_path': current_path, 'user': user, 'personal_details': personal_details,
+                   'user_addresses': user_addresses})
 
 
 @login_required

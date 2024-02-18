@@ -28,25 +28,56 @@
                 </table>
 
                 <!-- Second table on the right -->
-            <table class="table table-borderless custom-table" style="float: right; width: 40%; height: 40%;">
-                <thead>
-                    <tr>
-                        <th>Address Book</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Your default shipping address:</td>
-                    </tr>
-                    <tr>
-                        <td>123 Main Street, Cityville</td>
-                    </tr>
-                    <!-- Add more rows for other address details if needed -->
-                    <tr id="add-default-address">
-                        <td><a href="#" class="text-decoration-none" >ADD DEFAULT ADDRESS</a></td>
-                    </tr>
-                </tbody>
-            </table>
+                {% if user_addresses %}
+                <table class="table table-borderless custom-table" style="float: right; width: 40%; height: 40%;">
+                    <thead>
+                        <tr>
+                            <th>Address Book</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for address in user_addresses %}
+                        <tr>
+                            <td><b>Your default shipping address:</b></td>
+                        </tr>
+                        <tr>
+                            <td>{{ address.address }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ address.city }}, {{ address.state }}</td>
+                        </tr>
+                        {% if address.additional_info %}
+                        <tr>
+                            <td>Additional Info: {{ address.additional_info }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr id="add-default-address">
+                            <td><a href="{% url 'accounts:address_book_edit' address_id=address.id %}" class="text-decoration-none" >UPDATE DEFAULT ADDRESS</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                            <table class="table table-borderless custom-table" style="float: right; width: 40%; height: 40%;">
+                                <thead>
+                                    <tr>
+                                        <th>Address Book</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Your default shipping address:</td>
+                                    </tr>
+                                    <tr>
+                                        <td>You have none!</td>
+                                    </tr>
+                                    <!-- Add more rows for other address details if needed -->
+                                    <tr id="add-default-address">
+                                        <td><a href="{% url 'accounts:address_book_create' %}" class="text-decoration-none" >ADD DEFAULT ADDRESS</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                {% endif %}
 
             <!-- Third table -->
             <table class="table table-borderless custom-table" style="float: left; width: 40%; height: 40%;">
@@ -65,25 +96,7 @@
                 </tbody>
             </table>
 
-            <table class="table table-borderless custom-table" style="float: right; width: 40%; height: 40%;">
-                <thead>
-                    <tr>
-                        <th>Newsletter Preferences</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>You are currently not subscribed to any of our newsletters.</td>
-                    </tr>
-                    <tr>
-                        <tr id="add-default-address">
-                            <td><a href="#" class="text-decoration-none" >EDIT NEWSLETTER PREFERENCES</a></td>
-                        </tr>
-                        
-                    </tr>
-                </tbody>
-            </table>
-            </div>  
+        </div>  
         
     </div>
         
