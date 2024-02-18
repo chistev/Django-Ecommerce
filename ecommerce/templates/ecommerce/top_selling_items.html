@@ -1,34 +1,8 @@
-{% extends 'ecommerce/base.html' %}
 {% load static %}
-
-
-{% block body %}
-        <!-- Full-width Black Card Beneath Navbar -->
-    <div class="container-fluid d-flex justify-content-center align-items-center mt-5">
-        <div class="card text-white bg-dark" style="width: 100%;">
-            <div class="card-body text-center">
-                <!-- Cart Icon -->
-                <i class="bi bi-cart" style="font-size: 3em;"></i>
-                <!-- Your cart is empty text -->
-                <p class="card-text mt-3">Your cart is empty!</p>
-                <!-- Additional text -->
-                <p class="card-text mt-3">Browse our categories and discover our best deals!</p>
-                <!-- Start Shopping Button -->
-                <button class="btn btn-primary mt-3" onclick="window.location.href='{% url 'ecommerce:index' %}'">Start Shopping</button>
-
-                <!-- Add any additional content or text here if needed -->
-            </div>
-        </div>
-    </div>
-    
-<!-- Scroll-to-Top Button -->
-<button id="scrollToTopBtn" class="btn btn-primary scroll-to-top-btn" title="Go to top">
-    <i class="bi bi-arrow-up"></i>
-</button>
-
+<!-- Top selling items card -->
 <div class="black-card-beneath">
     <!-- Add your content for the black card here -->
-    <h5 class="top-selling-title">Recently Viewed items</h5>
+    <h5 class="top-selling-title">Top selling items</h5>
 
     <!-- Images row with Bootstrap grid -->
     <div class="row">
@@ -104,8 +78,3 @@
         </div>
     </div>
 </div>
-
-{% include 'ecommerce/top_selling_items.html' %}
-</html>
-
-{% endblock %}

@@ -336,6 +336,7 @@ body{
 }
 
 
+
 /* Media query for smaller screens (adjust the breakpoint as needed) */
 @media (min-width: 992px) {
     .form-control {

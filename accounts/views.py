@@ -268,17 +268,20 @@ def delete_account(request):
 
 @login_required
 def address_book(request):
+    current_path = resolve(request.path_info).url_name
     # Retrieve the user's addresses
     user_addresses = Address.objects.filter(user=request.user)
 
     context = {
-        'user_addresses': user_addresses
+        'user_addresses': user_addresses,
+        'current_path': current_path
     }
     return render(request, 'accounts/address_book.html', context)
 
 
 @login_required
 def address_book_create(request):
+    current_path = resolve(request.path_info).url_name
     if request.method == 'POST':
         # Bind form with POST data
         form = AddressForm(request.POST)
@@ -309,6 +312,7 @@ def address_book_create(request):
                 'personal_details': personal_details,
                 'states': states,
                 'form': form,
+                'current_path': current_path
             }
             return render(request, 'accounts/address_book_create.html', context)
 
@@ -327,8 +331,30 @@ def address_book_create(request):
             'personal_details': personal_details,
             'states': states,
             'form': form,
+            'current_path': current_path
         }
         return render(request, 'accounts/address_book_create.html', context)
+
+
+def address_book_edit(request, address_id):
+    current_path = resolve(request.path_info).url_name
+    # Fetch the address object from the database
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    if request.method == 'POST':
+        # Create an instance of the AddressForm and populate it with the POST data and instance
+        form = AddressForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:address_book')  # Redirect to the address book page after successful update
+    else:
+        # Populate the form with the existing address details
+        form = AddressForm(instance=address)
+
+    context = {
+        'form': form,
+        'current_path': current_path
+    }
+    return render(request, 'accounts/address_book_edit.html', context)
 
 
 def get_cities(request):
@@ -382,22 +408,3 @@ User = get_user_model()'''
 def security_code_reset(request):
     return render(request, 'accounts/security_code_reset.html')
 '''
-
-
-def address_book_edit(request, address_id):
-    # Fetch the address object from the database
-    address = get_object_or_404(Address, id=address_id, user=request.user)
-    if request.method == 'POST':
-        # Create an instance of the AddressForm and populate it with the POST data and instance
-        form = AddressForm(request.POST, instance=address)
-        if form.is_valid():
-            form.save()
-            return redirect('accounts:address_book')  # Redirect to the address book page after successful update
-    else:
-        # Populate the form with the existing address details
-        form = AddressForm(instance=address)
-
-    context = {
-        'form': form,
-    }
-    return render(request, 'accounts/address_book_edit.html', context)
