@@ -1,0 +1,29 @@
+.advertisement {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px; /* Adjust margin-top as needed */
+}
+
+.close-button {
+    position: absolute;
+    top: -10px;
+    right: 470px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+}
+
+.grains-rice-container {
+    background-color: rgba(255, 255, 255, 0.2); /* Adjust the opacity as needed */
+    padding: 5px; /* Add padding as needed */
+    border-radius: 5px; /* Add border radius as needed */
+    position: absolute;
+    bottom: 0; width: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 5px;
+    color: black;
+}

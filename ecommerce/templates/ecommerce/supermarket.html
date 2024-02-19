@@ -1,0 +1,78 @@
+{% extends 'ecommerce/base.html' %}
+{% load static %}
+
+{% block body %}
+<body class="bg-dark">
+    <div class="advertisement">
+        <img src="{% static 'images/supermarket_logo.jpg' %}" style="width: 30%; object-fit: cover;">
+        <button class="close-button" onclick="hideAdvertisement()">X</button>
+    </div>
+    
+    <div class="black-card-beneath">
+        <!-- Images row with Bootstrap grid -->
+        <div class="row" style="display: flex; justify-content: space-between;">
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="#" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/grains_and_rice.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Grains & Rice</b></div>
+                    </a>
+                </div>
+                
+                
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="#" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/food_cupboard.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Food Cupboard</b></div>
+                    </a>
+                </div>
+                
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="#" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/household_care.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Household Care</b></div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="#" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/Laundry.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Laundry</b></div>
+                    </a>
+                </div>
+                
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="#" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/fragrances.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Fragrances</b></div>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="black-card-beneath last-black-card-beneath">
+        <div class="row">
+            <div class="col-md-12" style="color: white;">
+                <h5 class="mb-4">Welcome to Chistev's Online Supermarket Experience!</h5>
+                <h3>Get all you need in one click!</h3>
+                <p class="small">Discover the Ultimate Convenience of Chistev Supermarket Shopping, we're dedicated to enhancing the quality of your life with a simple click. Our commitment to convenience led us to establish an innovative online supermarket that caters to all your needs and desires. Say goodbye to the hassles of navigating through traffic-laden streets – now you can shop from the comfort of your home.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hideAdvertisement() {
+            document.querySelector('.advertisement').style.display = 'none';
+        }
+    </script>
+</body>
+{% endblock %}
