@@ -3,17 +3,14 @@
 
 {% block body %}
 <body class="bg-dark">
-    <div class="advertisement">
-        <img src="{% static 'images/supermarket_logo.jpg' %}" style="width: 30%; object-fit: cover;">
-        <button class="close-button" onclick="hideAdvertisement()">X</button>
-    </div>
+    {% include 'ecommerce/ad.html' %}
     
     <div class="black-card-beneath">
         <!-- Images row with Bootstrap grid -->
         <div class="row" style="display: flex; justify-content: space-between;">
             <div class="col-lg-2 col-md-4">
                 <div class="position-relative ">
-                    <a href="#" style="position: relative; display: inline-block;">
+                    <a href="{% url 'ecommerce:grains_and_rice' %}" style="position: relative; display: inline-block;">
                         <img src="{% static 'images/grains_and_rice.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
                         <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Grains & Rice</b></div>
                     </a>
@@ -68,11 +65,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function hideAdvertisement() {
-            document.querySelector('.advertisement').style.display = 'none';
-        }
-    </script>
 </body>
 {% endblock %}

@@ -1,0 +1,602 @@
+{% extends 'ecommerce/base.html' %}
+{% load static %}
+
+{% block body %}
+<body class="bg-dark">
+    {% include 'ecommerce/ad.html' %}
+
+    <div class="row mt-4">
+        <!-- First Card -->
+        <div class="col-md-2 mb-4 ">
+            <div class="black-card my-account-card ms-5">
+                <ul class="custom-list">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div><b>PRICE (₦)</b></div>
+                        <div><a href="" class="text-decoration-none text-primary" >APPLY</a></div>
+                    </div>
+                    <div id="priceSlider"></div>
+                    <div class="mt-3" style="display: flex; align-items: center; justify-content: space-between;">
+                        <input type="number" id="minPriceInput" min="0" class="priceInput">
+                        <div>-</div>
+                        <input type="number" id="maxPriceInput" min="0" class="priceInput">
+                    </div>
+                    <hr>
+                    <div><b>DISCOUNT PERCENTAGE</b></div>
+                    <label class="container mt-2">
+                        <input type="radio" name="discount" class="circle" value="50">
+                        <span class="checkmark"></span>
+                        50% or more
+                    </label>
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="40">
+                        <span class="checkmark"></span>
+                        40% or more
+                    </label>
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="30">
+                        <span class="checkmark"></span>
+                        30% or more
+                    </label>
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="20">
+                        <span class="checkmark"></span>
+                        20% or more
+                    </label>
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="10">
+                        <span class="checkmark"></span>
+                        10% or more
+                    </label>
+                    <hr>
+
+                    <div><b>PRODUCT RATING</b></div>
+                    <label class="container mt-2">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+                    
+                </ul>
+            </div>
+        </div>
+
+       <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
+           <h5>Rice & Grains</h5>
+           <hr>
+
+           <div class="row">
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;Big Bull Rice</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="text-white">(12)</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <div class="position-relative product-card">
+                    <a href="#">
+                        <img src="{% static 'images/rice_and_grain3.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        
+                        <div class="item-name">&nbsp;&nbsp;select rice whole wheat</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="d-flex">
+                            <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                            <span class="badge bg-danger ms-2">-20%</span>
+                        </div>
+                        <div class="rating">
+                            <div class="static-stars ms-2">
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                                <span class="star">&#9733;</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>    
+            </div>
+        </div>
+           
+       </div>
+   
+       <div class="black-card-beneath">
+        <!-- Add your content for the black card here -->
+        <div style="display: flex; justify-content: space-between;">
+            <h5 class="top-selling-title">Recently Viewed</h5>
+            <a href="" class="text-decoration-none text-primary" >SEE ALL ></a>
+        </div>
+        
+    
+        <!-- Images row with Bootstrap grid -->
+        <div class="row">
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative">
+                    <a href="#">
+                        <img src="{% static 'images/item1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <span class="badge bg-danger price-reduction-badge">-20%</span>
+                        <div class="item-name">&nbsp;&nbsp;Snack</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
+                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
+                    </a>
+                </div>
+                
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative">
+                    <a href="#">
+                        <img src="{% static 'images/item2.jpg' %}" alt="Item 2" class="top-selling-image img-fluid">
+                        <span class="badge bg-danger price-reduction-badge">-10%</span>
+                        <div class="item-name">&nbsp;&nbsp;Clock</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;5,000</div> <!-- Add the price here -->
+                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;4,000</div>
+                    </a>
+                </div>
+                
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative">
+                    <a href="#">
+                        <img src="{% static 'images/item3.jpg' %}" alt="Item 3" class="top-selling-image img-fluid">
+                        <span class="badge bg-danger price-reduction-badge">-5%</span>
+                        <div class="item-name">&nbsp;&nbsp;Photocopy Machine</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;16,000</div> <!-- Add the price here -->
+                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;15,000</div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative">
+                    <a href="#">
+                        <img src="{% static 'images/item4.jpg' %}" alt="Item 4" class="top-selling-image img-fluid">
+                        <span class="badge bg-danger price-reduction-badge">-24%</span>
+                        <div class="item-name">&nbsp;&nbsp;Samsung</div>
+                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;700,000</div> <!-- Add the price here -->
+                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;600,000</div>
+                    </a>
+                </div>
+                
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative">
+                    <a href="#">
+                        <img src="{% static 'images/item5.jpg' %}" alt="Item 5" class="top-selling-image img-fluid">
+                    <span class="badge bg-danger price-reduction-badge">-4%</span>
+                    <div class="item-name">&nbsp;&nbsp;Tablet</div>
+                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;600,000</div> <!-- Add the price here -->
+                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;500,000</div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative mx-auto">
+                    <a href="#">
+                        <img src="{% static 'images/item6.jpg' %}" alt="Item 6" class="top-selling-image img-fluid">
+                    <span class="badge bg-danger price-reduction-badge">-12%</span>
+                    <div class="item-name">&nbsp;&nbsp;Computer</div>
+                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;800,000</div> <!-- Add the price here -->
+                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;700,000</div>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+   <!-- Include noUiSlider library -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js"></script>
+   <script>
+    var priceSlider = document.getElementById('priceSlider');
+
+    noUiSlider.create(priceSlider, {
+        start: [0, 100], // Initial values for the handles
+        connect: true,    // Connect the handles with a colored bar
+        range: {
+            'min': 1,
+            'max': 100
+        }
+    });
+
+    var minPriceInput = document.getElementById('minPriceInput');
+    var maxPriceInput = document.getElementById('maxPriceInput');
+
+    // Update the priceSlider when the min input value changes
+    minPriceInput.addEventListener('input', function() {
+        var minValue = parseFloat(this.value);
+        var maxValue = parseFloat(maxPriceInput.value);
+        priceSlider.noUiSlider.set([minValue, maxValue]);
+    });
+
+    // Update the priceSlider when the max input value changes
+    maxPriceInput.addEventListener('input', function() {
+        var minValue = parseFloat(minPriceInput.value);
+        var maxValue = parseFloat(this.value);
+        priceSlider.noUiSlider.set([minValue, maxValue]);
+    });
+
+    // Update the input fields when the slider handles are moved
+    priceSlider.noUiSlider.on('update', function(values, handle) {
+        var value = Math.round(values[handle]); // Round the value to remove decimal points
+
+        if (handle === 0) {
+            minPriceInput.value = value;
+        } else if (handle === 1) {
+            maxPriceInput.value = value;
+        }
+    });
+
+    // Clear input fields when the user starts editing
+    minPriceInput.addEventListener('focus', function() {
+        this.value = '';
+    });
+
+    maxPriceInput.addEventListener('focus', function() {
+        this.value = '';
+    });
+</script>
+
+    
+</body>
+{% endblock %}
