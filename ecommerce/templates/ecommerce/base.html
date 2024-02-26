@@ -11,14 +11,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <!-- Include noUiSlider CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.css" 
+    integrity="sha512-MKxcSu/LDtbIYHBNAWUQwfB3iVoG9xeMCm32QV5hZ/9lFaQZJVaXfz9aFa0IZExWzCpm7OWvp9zq9gVip/nLMg==" crossorigin="anonymous" 
+    referrerpolicy="no-referrer" />
     
     {% block css %}
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'styles2.css' %}">
     {% endblock %}
 </head>
-<body>
+<body data-min-price="{{ min_price }}" data-max-price="{{ max_price }}">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
         <div class="container-fluid">
@@ -138,8 +140,20 @@
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
 
-    <script src="{% static 'javascript/slideshow.js' %}" defer></script>
-    <script src="{% static 'javascript/scrollToTop.js' %}" defer></script>
+    <!-- Include noUiSlider library -->
+   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js" 
+   integrity="sha512-UOJe4paV6hYWBnS0c9GnIRH8PLm2nFK22uhfAvsTIqd3uwnWsVri1OPn5fJYdLtGY3wB11LGHJ4yPU1WFJeBYQ==" 
+   crossorigin="anonymous" 
+   referrerpolicy="no-referrer">
+</script>
+
+
+<script src="{% static 'javascript/slideshow.js' %}" defer></script>
+<script src="{% static 'javascript/scrollToTop.js' %}" defer></script>
+<script src="{% static 'javascript/productFilter.js' %}" defer></script>
+
+
     
 </body>
 </html>

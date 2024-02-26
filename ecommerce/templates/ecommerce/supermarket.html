@@ -3,6 +3,17 @@
 
 {% block body %}
 <body class="bg-dark">
+
+    <div class="d-flex ms-5">
+        {% for item in breadcrumb %}
+            {% if forloop.last %}
+                <h6 class="mt-4 text-decoration-none"><a href="{{ item.1 }}" style="color: white;">&nbsp;&nbsp;{{ item.0 }}</a></h6>
+            {% else %}
+                <h6 class="mt-4 text-decoration-none"><a href="{{ item.1 }}" style="color: white;">{{ item.0 }} ></a></h6>
+            {% endif %}
+        {% endfor %}
+    </div>
+
     {% include 'ecommerce/ad.html' %}
     
     <div class="black-card-beneath">
@@ -20,7 +31,7 @@
             </div>
             <div class="col-lg-2 col-md-4">
                 <div class="position-relative ">
-                    <a href="#" style="position: relative; display: inline-block;">
+                    <a href="{% url 'ecommerce:food_cupboard' %}" style="position: relative; display: inline-block;">
                         <img src="{% static 'images/food_cupboard.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
                         <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Food Cupboard</b></div>
                     </a>
@@ -29,7 +40,7 @@
             </div>
             <div class="col-lg-2 col-md-4">
                 <div class="position-relative ">
-                    <a href="#" style="position: relative; display: inline-block;">
+                    <a href="{% url 'ecommerce:household_care' %}" style="position: relative; display: inline-block;">
                         <img src="{% static 'images/household_care.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
                         <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Household Care</b></div>
                     </a>
@@ -37,7 +48,7 @@
             </div>
             <div class="col-lg-2 col-md-4">
                 <div class="position-relative ">
-                    <a href="#" style="position: relative; display: inline-block;">
+                    <a href="{% url 'ecommerce:laundry' %}" style="position: relative; display: inline-block;">
                         <img src="{% static 'images/Laundry.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
                         <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Laundry</b></div>
                     </a>
@@ -46,7 +57,7 @@
             </div>
             <div class="col-lg-2 col-md-4">
                 <div class="position-relative ">
-                    <a href="#" style="position: relative; display: inline-block;">
+                    <a href="{% url 'ecommerce:fragrances' %}" style="position: relative; display: inline-block;">
                         <img src="{% static 'images/fragrances.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
                         <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Fragrances</b></div>
                     </a>

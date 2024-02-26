@@ -1,5 +1,3 @@
-// scrollToTop.js
-
 // Get the button
 var scrollToTopBtn = document.getElementById("scrollToTopBtn");
 
