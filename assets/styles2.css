@@ -136,3 +136,7 @@
 .star-none{
     color: grey;
 }
+
+.bi-facebook:hover, .bi-twitter-x:hover{
+    color: #007bff;
+}

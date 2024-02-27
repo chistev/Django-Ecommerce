@@ -13,4 +13,5 @@ urlpatterns = [
     path('laundry/', views.laundry, name='laundry'),
     path('fragrances/', views.fragrances, name='fragrances'),
     path('api/products/', views.filter_products, name='filter_products'),
+    path('product_detail/<int:product_id>/', views.product_detail, name='product_detail'),
 ]

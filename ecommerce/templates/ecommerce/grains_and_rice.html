@@ -32,33 +32,7 @@
                         <input type="number" id="maxPriceInput" class="priceInput" value="{{ max_price }}">
                     </div>
                     <hr>
-                    <div><b>DISCOUNT PERCENTAGE</b></div>
-                    <label class="container mt-2">
-                        <input type="radio" name="discount" class="circle" value="50">
-                        <span class="checkmark"></span>
-                        50% or more
-                    </label>
-                    <label class="container">
-                        <input type="radio" name="discount" class="circle" value="40">
-                        <span class="checkmark"></span>
-                        40% or more
-                    </label>
-                    <label class="container">
-                        <input type="radio" name="discount" class="circle" value="30">
-                        <span class="checkmark"></span>
-                        30% or more
-                    </label>
-                    <label class="container">
-                        <input type="radio" name="discount" class="circle" value="20">
-                        <span class="checkmark"></span>
-                        20% or more
-                    </label>
-                    <label class="container">
-                        <input type="radio" name="discount" class="circle" value="10">
-                        <span class="checkmark"></span>
-                        10% or more
-                    </label>
-                    <hr>
+                    
 
                     <div><b>PRODUCT RATING</b></div>
                     <label class="container mt-2">
@@ -295,9 +269,5 @@
             </div>
         </div>
     </div>
-    
-    <script src="{% static 'javascript/productFilter.js' %}" defer
-        data-min-price="{{ min_price }}"
-        data-max-price="{{ max_price }}"></script>
 </body>
 {% endblock %}

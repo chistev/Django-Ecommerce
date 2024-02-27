@@ -1,7 +1,6 @@
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.db.models import Min, Max
-from django.shortcuts import render
-
+from django.shortcuts import render, get_object_or_404
 
 from ecommerce.models import Product
 
@@ -78,10 +77,6 @@ def filter_products(request):
     return JsonResponse(products_data, safe=False)
 
 
-
-
-
-
 def food_cupboard(request):
     return render(request, 'ecommerce/food_cupboard.html')
 
@@ -96,3 +91,16 @@ def laundry(request):
 
 def fragrances(request):
     return render(request, 'ecommerce/fragrances.html')
+
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+
+    breadcrumb = [
+        ('Home', '/'),
+        ('Supermarket', '/supermarket/'),
+        ('Rice & Grains', '/grains_and_rice/'),
+        (product.name, ''),  # Display the product name directly
+    ]
+
+    return render(request, 'ecommerce/product_detail.html', {'breadcrumb': breadcrumb, 'product': product})
