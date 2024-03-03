@@ -1,8 +1,11 @@
+from django.contrib.humanize.templatetags import humanize
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Count, OuterRef, Subquery
 from django.shortcuts import render, get_object_or_404
 
-from ecommerce.models import Product
+from accounts.forms import AddressForm
+from accounts.models import Address, State
+from ecommerce.models import Product, UserActivity
 
 from django.http import JsonResponse
 
@@ -95,6 +98,37 @@ def fragrances(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
+    # Format the price with commas
+    product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
+    product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
+
+    # Retrieve the user's addresses
+    user_addresses = Address.objects.filter(user=request.user)
+    form = AddressForm(user=request.user)  # Pass the user object to the form
+    states = State.objects.all()  # Retrieve all states from the database
+
+    recently_viewed = []
+    if request.user.is_authenticated:
+        # Save user activity
+        UserActivity.objects.create(user=request.user, product=product)
+
+        # Get subquery to find the most recent timestamp for each product
+        subquery = UserActivity.objects.filter(
+            user=request.user,
+            product=OuterRef('pk')
+        ).order_by('-timestamp').values('timestamp')[:1]
+
+        # Retrieve recently viewed items for the user, excluding duplicates
+        recently_viewed = Product.objects.filter(
+            id__in=UserActivity.objects.filter(user=request.user).annotate(
+                recent_timestamp=Subquery(subquery)
+            ).values('product')
+        )
+
+        # Format the price with commas for each viewed_product
+        for viewed_product in recently_viewed:
+            viewed_product.formatted_old_price = humanize.intcomma(int(viewed_product.old_price))
+            viewed_product.formatted_price = humanize.intcomma(int(viewed_product.new_price))
 
     breadcrumb = [
         ('Home', '/'),
@@ -103,4 +137,7 @@ def product_detail(request, product_id):
         (product.name, ''),  # Display the product name directly
     ]
 
-    return render(request, 'ecommerce/product_detail.html', {'breadcrumb': breadcrumb, 'product': product})
+    return render(request, 'ecommerce/product_detail.html', {'breadcrumb': breadcrumb, 'product': product,
+                                                             'user_address': user_addresses, 'form': form,
+                                                             'states': states, 'recently_viewed': recently_viewed,})
+

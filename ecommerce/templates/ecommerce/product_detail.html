@@ -19,21 +19,21 @@
                    <!-- Product Card --> 
                     <div class="row">
                         <div class="col-md-3 black-card ms-4">
-                            <img src="{% static 'images/download.jpg' %}" alt="Description of your image" class="top-selling-image img-fluid">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="top-selling-image img-fluid">
                             <hr>
-                            <div class="">
+                            <div>
                             <b>
                                 SHARE THIS PRODUCT
                             </b>
                                 
                             </div>
                             <div class="social-icons mt-3 fs-5">
-                                <a href="https://www.facebook.com/yourpage" target="_blank" class="me-3 text-white ">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="me-3 text-white ">
                                     <i class="bi bi-facebook"></i>
-                                </a>
-                                <a href="https://twitter.com/youraccount" target="_blank" class="me-3 text-white">
+                                </a>                                
+                                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank" class="me-3 text-white">
                                     <i class="bi bi-twitter-x"></i>
-                                </a>
+                                </a>                                
                             </div>
                         </div>
 
@@ -45,26 +45,18 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="product-name">Mama'S Pride Premium Parboiled Rice 50 KG@ Promo Price Best Rice</div>
+                            <div class="product-name">{{ product.name }}</div>
                             <hr>
                             <div class="d-flex mt-2">
-                                <div class="text-white fs-5">&nbsp;&nbsp;N&nbsp; 89,970</div>
-                                <div class="slashed-price text-white ms-2 fs-6" style="text-decoration: line-through; font-size: 13px;">N&nbsp;170,000</div>
+                                <div class="text-white fs-5">&nbsp;&nbsp;N&nbsp; {{ product.formatted_price }}</div>
+                                {% if product.old_price > 0 and product.old_price > product.new_price %}
+                                <div class="slashed-price text-white ms-2 fs-6" style="text-decoration: line-through; font-size: 13px;">N&nbsp; {{ product.formatted_old_price }}</div>
                                 <span class="badge bg-danger ms-2 fs-6">{{ product.discount_percentage }}%</span>
+                                {% endif %}
                             </div>
                             <p style="font-size: small; color: grey;">
                                 In stock
                             </p>
-                            <div class="rating">
-                                <div class="static-stars">
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="text-white">(12 verified ratings)</span>
-                                </div>
-                            </div>
                             <div class="">
                                 <a href="" class="btn btn-primary mt-3 mb-2 d-flex justify-content-between align-items-center" style="width: 90%;">
                                     <i class="bi bi-cart"></i>
@@ -81,16 +73,18 @@
             <div class="col-md-3 black-card ms-3">
                 <p class="fw-bold">DELIVERY & RETURNS</p>
                 <hr>
+                
                 <p class="fw-bold">Choose your location</p>
-                <div style="margin-top: -20px;">
-                    <label for="{{ form.city.id_for_label }}" class="form-label text-white">{{ form.city.label }}</label>
-                        <select class="form-select" id="city" name="city" disabled>
+                <div style="margin-top: -10px;">
+                        <select class="form-select" id="state" name="state">
                             <option value="" disabled selected>State</option>
+                            {% for state in states %}
+                                <option value="{{ state.id }}">{{ state.name }}</option>
+                            {% endfor %}
                         </select>
                 </div>
 
-                <div>
-                    <label for="{{ form.city.id_for_label }}" class="form-label text-white">{{ form.city.label }}</label>
+                <div style="margin-top: 10px;">
                         <select class="form-select" id="city" name="city" disabled>
                             <option value="" disabled selected>City</option>
                         </select>
@@ -108,86 +102,7 @@
             <div class="col-md-12 black-card ms-5">
                 <h5>Product Details</h5>
                 <hr>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores, qui sint itaque ratione sunt ut ipsa nemo labore eligendi minus, dolore delectus quibusdam recusandae! Exercitationem quisquam quia culpa modi voluptatem officiis. Sit aliquid rem, non veniam ipsa ad quaerat? Omnis necessitatibus, error voluptatem eligendi autem nihil amet facere ipsa, nemo delectus dolores nesciunt aspernatur earum cupiditate. Voluptate voluptates nobis explicabo iste, excepturi praesentium, architecto sequi cumque amet recusandae in dignissimos dolorum quo! Nesciunt hic sed alias soluta. Quos, laborum facilis ad modi laboriosam reprehenderit vero consequuntur eligendi, minima eveniet dolores perspiciatis autem asperiores impedit suscipit ducimus corrupti corporis cum natus officia dicta iure fuga? Illum quos, expedita quas odio praesentium culpa quibusdam! Autem aliquid repellendus omnis in beatae sint non porro aut accusamus voluptas illum illo earum nisi, similique numquam excepturi enim minima eos nostrum aperiam recusandae eum nesciunt. Placeat neque dolor doloremque consequuntur, modi reiciendis id minima, cum vitae est nihil mollitia expedita blanditiis totam asperiores ut officia obcaecati velit? Aut sapiente aperiam tenetur quam soluta sequi quae iusto quod voluptas eos libero maxime distinctio ab quis architecto illo, enim excepturi obcaecati reiciendis eligendi accusantium. Facilis saepe porro animi totam obcaecati veritatis eveniet, dolores provident sunt assumenda dolore nisi, officia natus dolorem aliquid voluptatem minima molestias, voluptatum ullam nihil nemo quam sequi. Voluptates doloremque pariatur quisquam deleniti qui id eveniet dicta voluptatibus fugit cum, rem unde, culpa at atque consequatur facere soluta nobis tempore voluptatum inventore quibusdam aliquam! Perspiciatis mollitia adipisci, necessitatibus rem distinctio recusandae fuga, obcaecati rerum aut vero quam, earum cumque minus temporibus? Debitis cumque id accusantium eos. Ducimus quod ea ratione optio nulla expedita fugiat id sint deleniti nisi deserunt, eius assumenda impedit. Nihil nulla id, eaque veniam odit sapiente eligendi beatae, nemo culpa amet, ratione eius commodi delectus animi totam. Officiis sunt vitae sequi, maiores ratione labore beatae omnis odit provident neque quas ullam amet, magnam rem ipsa cumque. Placeat consequuntur veritatis, suscipit ipsum dolorem odit, fugit explicabo quas culpa corporis blanditiis inventore eius labore ut! Eos voluptatum numquam nulla itaque dolore quidem obcaecati sequi repellat pariatur? Quod, quo in. Minus ut sed laboriosam incidunt possimus, quaerat et dolorum repudiandae voluptates quia, molestias rerum dicta quidem itaque quod similique facilis. Accusantium, pariatur eligendi. Vitae facere ullam commodi! Officiis eaque, consequuntur cum quos reiciendis, unde neque hic voluptas dolor ad sunt. Nulla doloremque iure aliquam inventore perspiciatis, quo repudiandae porro, ipsum illum neque assumenda sed! Quia esse culpa libero eius? Ab aliquam dolor iusto expedita vel repellendus necessitatibus ratione repudiandae sit repellat, magni saepe et ducimus dicta cumque labore aliquid quas qui error consequatur doloremque porro odit blanditiis. Natus alias et voluptates assumenda nihil illo eveniet debitis facilis laborum, molestias a corrupti sapiente rem fugiat accusamus sint iste enim esse nam provident officia. Minima dolor mollitia nihil illum quaerat consequuntur quia aut dolores, voluptate, quasi fuga molestias, necessitatibus perspiciatis reiciendis praesentium distinctio? Placeat voluptates ducimus dolore maxime velit rerum neque, exercitationem nisi ipsam tempora nemo repellat distinctio, qui magni, illo a modi ex quisquam voluptas quo provident necessitatibus dolores? Deserunt voluptates beatae, voluptas, obcaecati hic laboriosam molestiae dolores omnis excepturi fugiat maiores itaque unde nesciunt fuga eum ducimus asperiores eligendi! Optio natus laboriosam expedita eius harum? Ex assumenda mollitia dolores pariatur dignissimos ipsam quisquam nulla inventore, quas vitae quia fugit deserunt dolorem ad facilis saepe perferendis, nam, explicabo magnam sapiente quasi soluta et optio animi! Nostrum inventore dolores et aspernatur! Laborum ad totam rerum dolores eligendi, officiis itaque. Sunt maiores cupiditate doloremque assumenda quam illum molestiae magni consequatur, repellat error voluptatem culpa repellendus? Nesciunt odio consequatur aspernatur suscipit, laborum distinctio quaerat itaque sequi in provident labore deleniti perspiciatis aperiam porro, voluptates culpa quasi magnam iusto. Quas facere amet quos quae, tempora, vel similique magni vero veritatis nihil reprehenderit fugiat et velit corrupti temporibus autem explicabo tenetur porro numquam. Unde facere minus dolorem cum, inventore optio voluptatem laborum sapiente placeat. Repellendus nobis magnam id nihil vel placeat, reiciendis labore quos facere reprehenderit maiores in exercitationem eius atque temporibus adipisci laborum earum nulla tempore error nesciunt suscipit similique? Expedita vitae ab rem totam vel cupiditate ex saepe voluptatem atque labore corporis amet nostrum, tenetur adipisci, at facere qui nemo deleniti unde earum tempora! Porro laudantium rerum quis deserunt sit reprehenderit veritatis velit, unde, natus, nulla sequi officia consequatur! Voluptatem, placeat libero exercitationem, odio deleniti corporis, porro soluta ullam laudantium quae quo doloribus tempora impedit dolores voluptatum laboriosam quia ut architecto nulla nostrum beatae! Veniam aspernatur, natus tenetur ipsam nisi nemo, voluptate incidunt illo, alias reiciendis quos ad maiores accusamus excepturi consectetur numquam molestiae tempora adipisci. Repellendus impedit error odio eaque hic beatae laudantium! Incidunt ad adipisci quia vel, dolor aspernatur id labore consequatur! Praesentium, iusto placeat. Distinctio facilis deserunt reprehenderit! Necessitatibus possimus natus commodi voluptatibus repellendus laboriosam labore quis vel delectus saepe sunt provident unde adipisci, minima nostrum laborum sequi deleniti nesciunt excepturi odio error voluptatem iure! Veniam molestiae sapiente, dolore ad fugiat et illum molestias dolores? Molestiae eaque, commodi et odio dolorum aspernatur iure nostrum quisquam, perspiciatis perferendis ab, neque alias corporis harum. Sit sed quisquam nam doloremque temporibus expedita cum adipisci debitis commodi eaque. Obcaecati reprehenderit omnis, sit sequi dolores ducimus dignissimos beatae. Dolore praesentium soluta vel qui nam, corporis obcaecati exercitationem, perferendis inventore ipsum eaque dolorem? Recusandae consequatur officia distinctio modi aut voluptatibus dicta. Dolores, laborum eius totam ullam impedit quaerat accusantium earum dolorum animi? Aut ab quidem placeat fuga necessitatibus consequatur ut velit totam.</p>
-            </div>
-        </div>
-
-        <div class="row d-flex mt-2">
-            <div class="col-md-12 black-card ms-5">
-                <h5>Customers who viewed this also viewed</h5>
-                <hr>
-                <div class="row">
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-20%</span>
-                                <div class="item-name">&nbsp;&nbsp;Snack</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
-                            </a>
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item2.jpg' %}" alt="Item 2" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-10%</span>
-                                <div class="item-name">&nbsp;&nbsp;Clock</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;5,000</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;4,000</div>
-                            </a>
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item3.jpg' %}" alt="Item 3" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-5%</span>
-                                <div class="item-name">&nbsp;&nbsp;Photocopy Machine</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;16,000</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;15,000</div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item4.jpg' %}" alt="Item 4" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-24%</span>
-                                <div class="item-name">&nbsp;&nbsp;Samsung</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;700,000</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;600,000</div>
-                            </a>
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item5.jpg' %}" alt="Item 5" class="top-selling-image img-fluid">
-                            <span class="badge bg-danger price-reduction-badge">-4%</span>
-                            <div class="item-name">&nbsp;&nbsp;Tablet</div>
-                            <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;600,000</div> <!-- Add the price here -->
-                            <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;500,000</div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative mx-auto">
-                            <a href="#">
-                                <img src="{% static 'images/item6.jpg' %}" alt="Item 6" class="top-selling-image img-fluid">
-                            <span class="badge bg-danger price-reduction-badge">-12%</span>
-                            <div class="item-name">&nbsp;&nbsp;Computer</div>
-                            <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;800,000</div> <!-- Add the price here -->
-                            <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;700,000</div>
-                            </a>
-                        </div>
-                        
-                    </div>
-                </div>
+                <p>{{ product.description }}</p>
             </div>
         </div>
 
@@ -197,83 +112,56 @@
                     <h5>Recently Viewed</h5>
                     <a href="" class="text-decoration-none text-primary" >SEE ALL ></a>
                 </div>
-                
                 <hr>
                 <div class="row">
+                    {% for viewed_product in recently_viewed %}
                     <div class="col-lg-2 col-md-4">
                         <div class="position-relative">
                             <a href="#">
-                                <img src="{% static 'images/item1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-20%</span>
-                                <div class="item-name">&nbsp;&nbsp;Snack</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
-                            </a>
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item2.jpg' %}" alt="Item 2" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-10%</span>
-                                <div class="item-name">&nbsp;&nbsp;Clock</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;5,000</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;4,000</div>
-                            </a>
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item3.jpg' %}" alt="Item 3" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-5%</span>
-                                <div class="item-name">&nbsp;&nbsp;Photocopy Machine</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;16,000</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;15,000</div>
+                                <img src="{{ viewed_product.image.url }}" alt="{{ viewed_product.name }}" class="top-selling-image img-fluid">
+                                {% if viewed_product.old_price > 0 and viewed_product.old_price > viewed_product.new_price %}
+                                <span class="badge bg-danger price-reduction-badge">{{ viewed_product.discount_percentage }}</span>
+                                {% endif %}
+                                <div class="item-name">&nbsp;&nbsp;{{ viewed_product.name }}</div>
+                                {% if viewed_product.old_price > 0 and viewed_product.old_price > viewed_product.new_price %}
+                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;{{ viewed_product.formatted_price }}</div> <!-- Add the price here -->
+                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;{{ viewed_product.formatted_old_price }}</div>
+                                {% endif %}
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item4.jpg' %}" alt="Item 4" class="top-selling-image img-fluid">
-                                <span class="badge bg-danger price-reduction-badge">-24%</span>
-                                <div class="item-name">&nbsp;&nbsp;Samsung</div>
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;700,000</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;600,000</div>
-                            </a>
-                        </div>
-                        
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{% static 'images/item5.jpg' %}" alt="Item 5" class="top-selling-image img-fluid">
-                            <span class="badge bg-danger price-reduction-badge">-4%</span>
-                            <div class="item-name">&nbsp;&nbsp;Tablet</div>
-                            <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;600,000</div> <!-- Add the price here -->
-                            <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;500,000</div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative mx-auto">
-                            <a href="#">
-                                <img src="{% static 'images/item6.jpg' %}" alt="Item 6" class="top-selling-image img-fluid">
-                            <span class="badge bg-danger price-reduction-badge">-12%</span>
-                            <div class="item-name">&nbsp;&nbsp;Computer</div>
-                            <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;800,000</div> <!-- Add the price here -->
-                            <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;700,000</div>
-                            </a>
-                        </div>
-                        
-                    </div>
+                {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#state').change(function () {
+                var stateId = $(this).val();
+    
+                // Send AJAX request to get cities for the selected state
+                $.ajax({
+                    url: "{% url 'accounts:get_cities' %}",
+                    data: {
+                        'state_id': stateId
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var options = '<option value="" disabled selected>City</option>';
+                        $.each(data.cities, function (key, value) {
+                            options += '<option value="' + value.id + '">' + value.name + '</option>';
+                        });
+                        $('#city').html(options).removeAttr('disabled').removeClass('bg-secondary');
+                    }
+                });
+    
+            });
+        });
+
+    </script>
+    
 </body>
 
 {% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 
-from accounts.models import Address
+from accounts.models import Address, State
 
 
 class RegistrationForm(forms.Form):
@@ -29,6 +29,7 @@ class AddressForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'address', 'additional_info', 'state', 'city']
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Retrieve the user from kwargs
         super(AddressForm, self).__init__(*args, **kwargs)
 
         self.fields['first_name'].label = "First Name"
@@ -36,6 +37,16 @@ class AddressForm(forms.ModelForm):
         self.fields['address'].label = "Delivery Address"
         self.fields['additional_info'].label = "Additional Information"
 
+        # Populate the state field with the user's existing state
+        if user.is_authenticated:  # Checking if the user is authenticated
+            try:
+                # Assuming there's a direct ForeignKey relationship between CustomUser and State
+                user_state = user.addresses.first().state
+            except AttributeError:
+                # Handle the case where the user doesn't have any addresses or the state is not set
+                user_state = None
+            self.fields['state'].queryset = State.objects.all()  # Adjust this queryset based on your State model
+            self.fields['state'].initial = user_state
 
         # Add custom attributes and styling to individual fields
         self.fields['first_name'].widget.attrs.update({
