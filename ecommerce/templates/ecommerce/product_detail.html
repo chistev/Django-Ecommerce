@@ -1,5 +1,6 @@
 {% extends 'ecommerce/base.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block body %}
 <body class="bg-dark">
@@ -108,30 +109,10 @@
 
         <div class="row d-flex mt-2">
             <div class="col-md-12 black-card ms-5">
-                <div class="d-flex justify-content-between">
                     <h5>Recently Viewed</h5>
-                    <a href="" class="text-decoration-none text-primary" >SEE ALL ></a>
-                </div>
                 <hr>
-                <div class="row">
-                    {% for viewed_product in recently_viewed %}
-                    <div class="col-lg-2 col-md-4">
-                        <div class="position-relative">
-                            <a href="#">
-                                <img src="{{ viewed_product.image.url }}" alt="{{ viewed_product.name }}" class="top-selling-image img-fluid">
-                                {% if viewed_product.old_price > 0 and viewed_product.old_price > viewed_product.new_price %}
-                                <span class="badge bg-danger price-reduction-badge">{{ viewed_product.discount_percentage }}</span>
-                                {% endif %}
-                                <div class="item-name">&nbsp;&nbsp;{{ viewed_product.name }}</div>
-                                {% if viewed_product.old_price > 0 and viewed_product.old_price > viewed_product.new_price %}
-                                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;{{ viewed_product.formatted_price }}</div> <!-- Add the price here -->
-                                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;{{ viewed_product.formatted_old_price }}</div>
-                                {% endif %}
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-                </div>
+                <!-- Render the recently viewed products section -->
+                {% render_recently_viewed_products request.user %}
             </div>
         </div>
     </div>

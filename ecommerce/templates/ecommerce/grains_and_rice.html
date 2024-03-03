@@ -1,5 +1,6 @@
 {% extends 'ecommerce/base.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block body %}
 <body class="bg-dark">
@@ -107,7 +108,7 @@
                 {% for product in products %}
                 <div class="col-lg-3 col-md-4 grid-view">
                     <div class="position-relative product-card">
-                        <a href="#">
+                        <a href="{% url 'ecommerce:product_detail' product_id=product.id %}">
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="top-selling-image img-fluid">
                             
                             <div class="item-name">&nbsp;&nbsp;{{ product.name }}</div>
@@ -139,7 +140,7 @@
                 
                 {% for product in products %}
                 <div class="col-lg-12 col-md-4 stacked-view" style="display: none;">
-                        <div class="position-relative product-card">
+                        <div class="position-relative product-card" data-product-id="{{ product.id }}">
                             <!-- First column for product image -->
                             <div class="row"> 
                                 <div class="col-4">
@@ -189,85 +190,26 @@
    
     <div class="black-card-beneath">
         <!-- Add your content for the black card here -->
-        <div style="display: flex; justify-content: space-between;">
             <h5 class="top-selling-title">Recently Viewed</h5>
-            <a href="" class="text-decoration-none text-primary" >SEE ALL ></a>
-        </div>
-        
+        <!-- Render the recently viewed products section -->
+        {% render_recently_viewed_products request.user %}
     
-        <!-- Images row with Bootstrap grid -->
-        <div class="row">
-            <div class="col-lg-2 col-md-4">
-                <div class="position-relative">
-                    <a href="#">
-                        <img src="{% static 'images/item1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
-                        <span class="badge bg-danger price-reduction-badge">-20%</span>
-                        <div class="item-name">&nbsp;&nbsp;Snack</div>
-                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
-                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
-                    </a>
-                </div>
-                
-            </div>
-            <div class="col-lg-2 col-md-4">
-                <div class="position-relative">
-                    <a href="#">
-                        <img src="{% static 'images/item2.jpg' %}" alt="Item 2" class="top-selling-image img-fluid">
-                        <span class="badge bg-danger price-reduction-badge">-10%</span>
-                        <div class="item-name">&nbsp;&nbsp;Clock</div>
-                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;5,000</div> <!-- Add the price here -->
-                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;4,000</div>
-                    </a>
-                </div>
-                
-            </div>
-            <div class="col-lg-2 col-md-4">
-                <div class="position-relative">
-                    <a href="#">
-                        <img src="{% static 'images/item3.jpg' %}" alt="Item 3" class="top-selling-image img-fluid">
-                        <span class="badge bg-danger price-reduction-badge">-5%</span>
-                        <div class="item-name">&nbsp;&nbsp;Photocopy Machine</div>
-                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;16,000</div> <!-- Add the price here -->
-                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;15,000</div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-2 col-md-4">
-                <div class="position-relative">
-                    <a href="#">
-                        <img src="{% static 'images/item4.jpg' %}" alt="Item 4" class="top-selling-image img-fluid">
-                        <span class="badge bg-danger price-reduction-badge">-24%</span>
-                        <div class="item-name">&nbsp;&nbsp;Samsung</div>
-                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;700,000</div> <!-- Add the price here -->
-                        <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;600,000</div>
-                    </a>
-                </div>
-                
-            </div>
-            <div class="col-lg-2 col-md-4">
-                <div class="position-relative">
-                    <a href="#">
-                        <img src="{% static 'images/item5.jpg' %}" alt="Item 5" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge">-4%</span>
-                    <div class="item-name">&nbsp;&nbsp;Tablet</div>
-                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;600,000</div> <!-- Add the price here -->
-                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;500,000</div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-2 col-md-4">
-                <div class="position-relative mx-auto">
-                    <a href="#">
-                        <img src="{% static 'images/item6.jpg' %}" alt="Item 6" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge">-12%</span>
-                    <div class="item-name">&nbsp;&nbsp;Computer</div>
-                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;800,000</div> <!-- Add the price here -->
-                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;700,000</div>
-                    </a>
-                </div>
-                
-            </div>
-        </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all product cards
+            var productCards = document.querySelectorAll('.product-card');
+    
+            // Add click event listener to each product card
+            productCards.forEach(function(card) {
+                card.addEventListener('click', function() {
+                    // Get the product ID from data-product-id attribute
+                    var productId = this.getAttribute('data-product-id');
+                    // Redirect to the product detail page
+                    window.location.href = '/product_detail/' + productId + '/';
+                });
+            });
+        });
+    </script>
 </body>
 {% endblock %}

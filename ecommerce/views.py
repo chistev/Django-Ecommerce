@@ -107,29 +107,6 @@ def product_detail(request, product_id):
     form = AddressForm(user=request.user)  # Pass the user object to the form
     states = State.objects.all()  # Retrieve all states from the database
 
-    recently_viewed = []
-    if request.user.is_authenticated:
-        # Save user activity
-        UserActivity.objects.create(user=request.user, product=product)
-
-        # Get subquery to find the most recent timestamp for each product
-        subquery = UserActivity.objects.filter(
-            user=request.user,
-            product=OuterRef('pk')
-        ).order_by('-timestamp').values('timestamp')[:1]
-
-        # Retrieve recently viewed items for the user, excluding duplicates
-        recently_viewed = Product.objects.filter(
-            id__in=UserActivity.objects.filter(user=request.user).annotate(
-                recent_timestamp=Subquery(subquery)
-            ).values('product')
-        )
-
-        # Format the price with commas for each viewed_product
-        for viewed_product in recently_viewed:
-            viewed_product.formatted_old_price = humanize.intcomma(int(viewed_product.old_price))
-            viewed_product.formatted_price = humanize.intcomma(int(viewed_product.new_price))
-
     breadcrumb = [
         ('Home', '/'),
         ('Supermarket', '/supermarket/'),
@@ -139,5 +116,5 @@ def product_detail(request, product_id):
 
     return render(request, 'ecommerce/product_detail.html', {'breadcrumb': breadcrumb, 'product': product,
                                                              'user_address': user_addresses, 'form': form,
-                                                             'states': states, 'recently_viewed': recently_viewed,})
+                                                             'states': states})
 
