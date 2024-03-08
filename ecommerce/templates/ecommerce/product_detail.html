@@ -41,9 +41,9 @@
                         <div class="col-md-8 black-card ms-3 ">
                             <div class="d-flex">
                                 <div class="ms-auto fs-4 ">
-                                    <a href="https://www.facebook.com/yourpage" target="_blank" class="me-3 text-white">
+                                    <div class="me-3 text-white" onclick="saveProduct({{ product.id }})">
                                         <i class="bi bi-balloon-heart"></i>
-                                    </a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="product-name">{{ product.name }}</div>
@@ -58,12 +58,34 @@
                             <p style="font-size: small; color: grey;">
                                 In stock
                             </p>
-                            <div class="">
-                                <a href="" class="btn btn-primary mt-3 mb-2 d-flex justify-content-between align-items-center" style="width: 90%;">
+                             <form id="add-to-cart-form" action="{% url 'ecommerce:add_to_cart' product.id %}" method="POST">
+                                {% csrf_token %}
+                                <button id="add-to-cart-btn" class="btn btn-primary mt-3 mb-2 d-flex justify-content-between align-items-center" style="width: 90%;">
                                     <i class="bi bi-cart"></i>
                                     <span class="text-center w-100">ADD TO CART</span>
-                                </a>
-                            </div>
+                                </button>
+                            </form> 
+
+                            <!-- <form method="post">
+                                {% csrf_token %}
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-primary me-3">
+                                        <i class="bi bi-dash-lg"></i>
+                                    </button>
+                                    <span>
+                                        1
+                                    </span>
+
+                                    <button class="btn btn-primary ms-3 me-3">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+
+                                    <span>
+                                        (1 item(s) added)
+                                    </span>
+                                </div>
+
+                            </form> -->
                             
                             
                         </div>
@@ -80,7 +102,11 @@
                         <select class="form-select" id="state" name="state">
                             <option value="" disabled selected>State</option>
                             {% for state in states %}
-                                <option value="{{ state.id }}">{{ state.name }}</option>
+                                {% if user_address and user_address.first %}
+                                <option value="{{ state.id }}" {% if state.id == user_address.first.state.id %}selected{% endif %}>{{ state.name }}</option>
+                                {% else %}
+                                    <option value="{{ state.id }}">{{ state.name }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                 </div>
@@ -88,6 +114,11 @@
                 <div style="margin-top: 10px;">
                         <select class="form-select" id="city" name="city" disabled>
                             <option value="" disabled selected>City</option>
+                            {% if user_address and user_address.first %}
+                                {% for city in user_address.first.state.city_set.all %}
+                                    <option value="{{ city.id }}" {% if city.id == user_address.first.city.id %}selected{% endif %}>{{ city.name }}</option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                 </div>
                 <hr>
@@ -116,6 +147,7 @@
             </div>
         </div>
     </div>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
@@ -142,6 +174,26 @@
         });
 
     </script>
+
+<script>
+    $('#add-to-cart-btn').click(function(event) {
+        event.preventDefault();
+        var form = $('#add-to-cart-form');
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(data) {
+                // Handle success (if needed)
+                console.log('Product added to cart');
+            },
+            error: function(data) {
+                // Handle errors (if needed)
+                console.log('Error adding product to cart');
+            }
+        });
+    });
+</script>
     
 </body>
 

@@ -5,6 +5,7 @@ from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse
 from django.urls import resolve
 
+from ecommerce.models import UserActivity
 from .forms import RegistrationForm, LoginForm, AddressForm
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
@@ -170,7 +171,11 @@ def inbox(request):
 @login_required
 def saved_items(request):
     current_path = resolve(request.path_info).url_name
-    return render(request, 'accounts/saved_items.html', {'current_path': current_path})
+
+    saved_products = UserActivity.objects.filter(user=request.user, saved=True).select_related('product')
+
+    return render(request, 'accounts/saved_items.html', {'current_path': current_path,
+                                                         'saved_products': saved_products})
 
 
 @login_required

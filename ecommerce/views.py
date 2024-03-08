@@ -1,11 +1,12 @@
-from django.contrib.humanize.templatetags import humanize
+
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.db.models import Min, Max, Count, OuterRef, Subquery
-from django.shortcuts import render, get_object_or_404
+
+from django.db.models import Min, Max
+from django.shortcuts import render, get_object_or_404, redirect
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
-from ecommerce.models import Product, UserActivity
+from ecommerce.models import Product, Cart, CartItem
 
 from django.http import JsonResponse
 
@@ -98,6 +99,12 @@ def fragrances(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
+    user_cart_items = []
+
+    if request.user.is_authenticated:
+        # Check if the product is in the user's cart
+        user_cart_items = CartItem.objects.filter(cart__user=request.user, product=product)
+
     # Format the price with commas
     product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
     product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
@@ -116,5 +123,25 @@ def product_detail(request, product_id):
 
     return render(request, 'ecommerce/product_detail.html', {'breadcrumb': breadcrumb, 'product': product,
                                                              'user_address': user_addresses, 'form': form,
-                                                             'states': states})
+                                                             'states': states, 'user_cart_items': user_cart_items})
 
+
+def add_to_cart(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, pk=product_id)
+        # Check if the user is authenticated
+        if request.user.is_authenticated:
+            # Get or create the user's cart
+            cart, created = Cart.objects.get_or_create(user=request.user)
+            # Check if the product is already in the cart
+            cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
+            # If the item is already in the cart, increase its quantity
+            if not item_created:
+                cart_item.quantity += 1
+                cart_item.save()
+            return redirect('ecommerce:product_detail', product_id=product_id)
+        else:
+            # If the user is not authenticated, you may want to redirect them to the login page
+            return redirect('accounts:login')  # Adjust the URL name according to your project
+    else:
+        return redirect('ecommerce:product_detail', product_id=product_id)

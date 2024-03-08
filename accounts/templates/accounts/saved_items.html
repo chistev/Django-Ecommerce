@@ -1,4 +1,5 @@
 {% extends 'ecommerce/base.html' %}
+{% load static %}
 
 {% block body %}
 
@@ -10,17 +11,46 @@
              {% include 'accounts/account_navigation.html' %}
     
             <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
-                <h5>Saved Items</h5>
+                 <h5>Saved Items (2)</h5>
                 <hr>
                 <!-- Add the bag icon in the middle -->
-                <div class="row mt-4">
+                <!-- <div class="row mt-4">
                     <div class="col-md-12 text-center">
                         <h1><strong><i class="bi bi-bookmark"></i></strong></h1>
                         <p>You haven’t saved an item yet!</p>
                         <p style="width: 70%;" class="mx-auto">Found something you like? Tap on the heart shaped icon next to the item to add it to your wishlist! All your saved items will appear here.</p>
                         <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Continue Shopping</a>
                     </div>
+                </div> -->
+                {% for user_activity in saved_products %}
+                <div class="border p-3 mb-2">     
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img src="{{ user_activity.product.image.url }}" alt="{{ user_activity.product.name }}" class="top-selling-image img-fluid">
+                        </div>
+    
+                        <!-- Column for product details -->
+                        <div class="col-md-7 d-flex flex-column justify-content-between">
+                            <div class="product-name"> {{ user_activity.product.name }} </div>
+                            <div class="">
+                                <div class="text-white">N&nbsp; {{ user_activity.product.formatted_price }} </div>
+                                <div class="d-flex">
+                                    <div class="slashed-price text-white fs-6" style="text-decoration: line-through; font-size: 13px;">N {{ user_activity.product.discount_percentage }} </div>
+                                <span class="badge bg-danger ms-2 fs-6">{{ user_activity.product.discount_percentage }} %</span>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Column for BUY AND REMOVE -->
+                        <div class="col-md-2 d-flex flex-column justify-content-between ms-auto">
+                            <a href="" class="btn btn-primary mt-2 mb-2" style="width: 100%;">BUY NOW</a>
+                            <div><a href="" class="text-decoration-none text-primary">
+                                <i class="bi bi-trash me-2"></i>REMOVE</a></div>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
+                
             </div>
         
         </div>
