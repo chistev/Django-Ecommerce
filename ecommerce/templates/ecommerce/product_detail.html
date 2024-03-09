@@ -3,6 +3,8 @@
 {% load custom_tags %}
 
 {% block body %}
+
+
 <body class="bg-dark">
     <div class="d-flex ms-5">
         {% for item in breadcrumb %}
@@ -58,34 +60,25 @@
                             <p style="font-size: small; color: grey;">
                                 In stock
                             </p>
-                             <form id="add-to-cart-form" action="{% url 'ecommerce:add_to_cart' product.id %}" method="POST">
+                             <form id="add-to-cart-form" data-product-id="{{ product.id }}" method="POST">
                                 {% csrf_token %}
                                 <button id="add-to-cart-btn" class="btn btn-primary mt-3 mb-2 d-flex justify-content-between align-items-center" style="width: 90%;">
                                     <i class="bi bi-cart"></i>
                                     <span class="text-center w-100">ADD TO CART</span>
                                 </button>
-                            </form> 
 
-                            <!-- <form method="post">
-                                {% csrf_token %}
-                                <div class="d-flex align-items-center">
-                                    <button class="btn btn-primary me-3">
+                                <div id="product-quantity" style="display: none;">
+                                    <button id="remove-product" class="btn btn-primary me-3">
                                         <i class="bi bi-dash-lg"></i>
                                     </button>
-                                    <span>
-                                        1
-                                    </span>
-
-                                    <button class="btn btn-primary ms-3 me-3">
+                                    <span id="product-count">{{ user_cart_items.0.quantity|default:0 }}</span>
+                                    
+                                    <button id="add-product" class="btn btn-primary ms-3 me-3">
                                         <i class="bi bi-plus-lg"></i>
                                     </button>
-
-                                    <span>
-                                        (1 item(s) added)
-                                    </span>
+                                    <span>(<span id="item-count">{{ user_cart_items.0.quantity|default:0 }}</span> item(s) added)</span>
                                 </div>
-
-                            </form> -->
+                            </form> 
                             
                             
                         </div>
@@ -175,25 +168,134 @@
 
     </script>
 
+
 <script>
-    $('#add-to-cart-btn').click(function(event) {
-        event.preventDefault();
-        var form = $('#add-to-cart-form');
-        $.ajax({
-            type: form.attr('method'),
-            url: form.attr('action'),
-            data: form.serialize(),
-            success: function(data) {
-                // Handle success (if needed)
-                console.log('Product added to cart');
-            },
-            error: function(data) {
-                // Handle errors (if needed)
-                console.log('Error adding product to cart');
-            }
+    $(document).ready(function () {
+
+        // Function to update cart count
+        function updateCartCount() {
+            $.ajax({
+                type: 'GET',
+                url: '{% url "ecommerce:cart_count" %}', 
+                dataType: 'json',
+                success: function (data) {
+                    $('#cart-count').text(data.count);
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    // Handle errors if any
+                }
+            });
+        }
+
+         // Call updateCartCount initially to load the initial cart count
+         updateCartCount();
+
+        // Function to add a product to the cart
+        function addToCart(productId) {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "ecommerce:add_to_cart" %}',
+                data: {
+                    'product_id': productId,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // Create and display the Bootstrap alert
+                var alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show d-flex justify-content-center align-items-center" role="alert">
+                        Product added successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+                $('#alert-container').html(alertHtml);
+
+                    // Increment the product quantity displayed on the UI
+                    var currentQuantity = parseInt($('#product-count').text());
+                    $('#product-count').text(currentQuantity + 1);
+                    // Update item count
+                    $('#item-count').text(currentQuantity + 1);
+                    // Hide the "Add to Cart" button and display the quantity div
+                    $('#add-to-cart-btn').hide();
+                    $('#product-quantity').show();
+                    updateCartCount();  // Update cart count after adding the product
+                    // Automatically remove the alert after 5 seconds (5000 milliseconds)
+                    setTimeout(function () {
+                        $('.alert').alert('close');
+                    }, 5000);
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    // Handle errors if any
+                }
+            });
+        }
+
+        // Function to remove a product from the cart
+        function removeFromCart(productId) {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "ecommerce:remove_from_cart" %}',
+                data: {
+                    'product_id': productId,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // Create and display the Bootstrap alert
+                var alertHtml = `
+                <div class="alert alert-success alert-dismissible fade show d-flex justify-content-center align-items-center" role="alert">
+                        Item quantity has been updated!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+                $('#alert-container').html(alertHtml);
+                    // Decrement the product quantity displayed on the UI
+                    var currentQuantity = parseInt($('#product-count').text());
+                    $('#product-count').text(Math.max(0, currentQuantity - 1));
+                    // Update item count
+                    $('#item-count').text(Math.max(0, currentQuantity - 1));
+                    // If the quantity becomes zero, hide the quantity div and show the "Add to Cart" button
+                    if (currentQuantity === 1) {
+                        $('#product-quantity').hide();
+                        $('#add-to-cart-btn').show();
+                    }
+                    updateCartCount();  // Update cart count after removing the product
+                    // Automatically remove the alert after 5 seconds (5000 milliseconds)
+                    setTimeout(function () {
+                        $('.alert').alert('close');
+                    }, 5000);
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    // Handle errors if any
+                }
+            });
+        }
+
+        // Add to cart form submission
+        $('#add-to-cart-form').submit(function (e) {
+            e.preventDefault();
+            var productId = $(this).data('product-id');
+            addToCart(productId);
+        });
+
+        // Increment product quantity on click
+        $('#add-product').click(function (e) {
+            e.preventDefault(); // Prevent default button behavior
+            var productId = $('#add-to-cart-form').data('product-id');
+            addToCart(productId);
+        });
+
+        // Decrement product quantity on click
+        $('#remove-product').click(function (e) {
+            e.preventDefault(); // Prevent default button behavior
+            var productId = $('#add-to-cart-form').data('product-id');
+            removeFromCart(productId);
         });
     });
-</script>
+</script> 
+
+
     
 </body>
 

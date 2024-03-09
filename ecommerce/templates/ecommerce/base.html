@@ -23,6 +23,7 @@
 <body data-min-price="{{ min_price }}" data-max-price="{{ max_price }}">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+        
         <div class="container-fluid">
     
             <!-- Navbar Brand and Toggle Button -->
@@ -91,8 +92,9 @@
                         <!-- Cart Link -->
                         
                         <button class="btn btn-outline-light btn-cart" type="button">
-                            <a href="{% url 'cart:cart' %}" class="btn btn-outline-light btn-cart text-white" role="button">
-                                <i class="bi bi-cart"></i> Cart
+                            <a href="" class="btn btn-outline-light btn-cart text-white" role="button">
+                                
+                                <i class="bi bi-cart"></i> Cart <span id="cart-count">0</span>
                             </a>    
                         </button>
                     </div>
@@ -101,6 +103,11 @@
             </div>
         </div>
     </nav>
+
+     <!-- Alert Container -->
+     <div id="alert-container" class="fixed-top w-100">
+        
+    </div>
 
     {% block body %}
 
@@ -152,6 +159,8 @@
 <script src="{% static 'javascript/slideshow.js' %}" defer></script>
 <script src="{% static 'javascript/scrollToTop.js' %}" defer></script>
 <script src="{% static 'javascript/productFilter.js' %}" defer></script>
+
+
 
 
     

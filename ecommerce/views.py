@@ -1,7 +1,7 @@
 
 from django.contrib.humanize.templatetags.humanize import intcomma
 
-from django.db.models import Min, Max
+from django.db.models import Min, Max, F, Sum
 from django.shortcuts import render, get_object_or_404, redirect
 
 from accounts.forms import AddressForm
@@ -126,22 +126,64 @@ def product_detail(request, product_id):
                                                              'states': states, 'user_cart_items': user_cart_items})
 
 
-def add_to_cart(request, product_id):
-    if request.method == 'POST':
+def add_to_cart(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        product_id = request.POST.get('product_id')
         product = get_object_or_404(Product, pk=product_id)
-        # Check if the user is authenticated
-        if request.user.is_authenticated:
-            # Get or create the user's cart
-            cart, created = Cart.objects.get_or_create(user=request.user)
-            # Check if the product is already in the cart
-            cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
-            # If the item is already in the cart, increase its quantity
-            if not item_created:
-                cart_item.quantity += 1
-                cart_item.save()
-            return redirect('ecommerce:product_detail', product_id=product_id)
+        user = request.user
+
+        # Check if the user has a cart
+        cart, created = Cart.objects.get_or_create(user=user)
+
+        # Check if the product is already in the cart
+        cart_item = CartItem.objects.filter(cart=cart, product=product).first()
+        if cart_item:
+            # If the product is already in the cart, increment the quantity
+            cart_item.quantity = F('quantity') + 1
+            cart_item.save()
         else:
-            # If the user is not authenticated, you may want to redirect them to the login page
-            return redirect('accounts:login')  # Adjust the URL name according to your project
+            # If the product is not in the cart, create a new CartItem
+            CartItem.objects.create(cart=cart, product=product, quantity=1)
+        return JsonResponse({'status': 'success'})
     else:
-        return redirect('ecommerce:product_detail', product_id=product_id)
+        return JsonResponse({'status': 'error'}, status=400)
+
+
+def remove_from_cart(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        product_id = request.POST.get('product_id')
+        product = get_object_or_404(Product, pk=product_id)
+        user = request.user
+
+        # Check if the user has a cart and the product is in the cart
+        cart_item = CartItem.objects.filter(cart__user=user, product=product).first()
+        if cart_item:
+            if cart_item.quantity > 1:
+                # If the quantity is more than 1, decrement the quantity
+                cart_item.quantity = F('quantity') - 1
+                cart_item.save()
+            else:
+                # If the quantity is 1, remove the item from the cart
+                cart_item.delete()
+            return JsonResponse({'status': 'success'})
+        else:
+            # If the product is not in the cart, return an error
+            return JsonResponse({'status': 'error', 'message': 'Product not found in the cart'}, status=404)
+    else:
+        # If the request is not AJAX or not a POST request, return an error
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+def cart_count(request):
+    if request.user.is_authenticated:
+        # Sum the quantities of all cart items for the authenticated user
+        cart_count = CartItem.objects.filter(cart__user=request.user).aggregate(total_quantity=Sum('quantity'))\
+        ['total_quantity']
+        if cart_count is None:
+            cart_count = 0  # Set the count to 0 if no items are found
+        print(cart_count)
+        # Return the cart count as JSON response
+        return JsonResponse({'count': cart_count})
+    else:
+        # Return an error response if the user is not authenticated
+        return JsonResponse({'error': 'User is not authenticated'}, status=401)
