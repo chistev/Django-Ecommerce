@@ -17,4 +17,5 @@ urlpatterns = [
     path('add_to_cart/', views.add_to_cart, name='add_to_cart'),
     path('remove_from_cart/', views.remove_from_cart, name='remove_from_cart'),
     path('api/cart/count/', views.cart_count, name='cart_count'),
+    path('return_policy', views.return_policy, name='return_policy'),
 ]

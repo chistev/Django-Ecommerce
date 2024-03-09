@@ -187,3 +187,7 @@ def cart_count(request):
     else:
         # Return an error response if the user is not authenticated
         return JsonResponse({'error': 'User is not authenticated'}, status=401)
+
+
+def return_policy(request):
+    return render(request, 'ecommerce/return_policy.html')
