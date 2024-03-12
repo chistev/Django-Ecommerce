@@ -1,12 +1,13 @@
 
 from django.contrib.humanize.templatetags.humanize import intcomma
+from django.db import IntegrityError
 
 from django.db.models import Min, Max, F, Sum
 from django.shortcuts import render, get_object_or_404, redirect
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
-from ecommerce.models import Product, Cart, CartItem
+from ecommerce.models import Product, Cart, CartItem, UserActivity
 
 from django.http import JsonResponse
 
@@ -98,12 +99,19 @@ def fragrances(request):
 
 
 def product_detail(request, product_id):
+    # Retrieve the product
     product = get_object_or_404(Product, pk=product_id)
-    user_cart_items = []
 
+    # Retrieve user-related information if the user is authenticated
     if request.user.is_authenticated:
         # Check if the product is in the user's cart
         user_cart_items = CartItem.objects.filter(cart__user=request.user, product=product)
+
+        # Check if the product is saved by the user
+        user_activity_exists = UserActivity.objects.filter(user=request.user, product=product).exists()
+    else:
+        user_cart_items = []
+        user_activity_exists = False
 
     # Format the price with commas
     product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
@@ -114,6 +122,7 @@ def product_detail(request, product_id):
     form = AddressForm(user=request.user)  # Pass the user object to the form
     states = State.objects.all()  # Retrieve all states from the database
 
+    # Prepare breadcrumb navigation
     breadcrumb = [
         ('Home', '/'),
         ('Supermarket', '/supermarket/'),
@@ -121,9 +130,16 @@ def product_detail(request, product_id):
         (product.name, ''),  # Display the product name directly
     ]
 
-    return render(request, 'ecommerce/product_detail.html', {'breadcrumb': breadcrumb, 'product': product,
-                                                             'user_address': user_addresses, 'form': form,
-                                                             'states': states, 'user_cart_items': user_cart_items})
+    # Render the product detail page
+    return render(request, 'ecommerce/product_detail.html', {
+        'breadcrumb': breadcrumb,
+        'product': product,
+        'user_address': user_addresses,
+        'form': form,
+        'states': states,
+        'user_cart_items': user_cart_items,
+        'user_activity_exists': user_activity_exists,
+    })
 
 
 def add_to_cart(request):
@@ -191,3 +207,36 @@ def cart_count(request):
 
 def return_policy(request):
     return render(request, 'ecommerce/return_policy.html')
+
+
+def save_product(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        product_id = request.POST.get('product_id')
+        product = get_object_or_404(Product, pk=product_id)
+
+        # Check if the user is authenticated
+        if request.user.is_authenticated:
+            # Query for the user activity for the current user and product
+            user_activities = UserActivity.objects.filter(user=request.user, product=product)
+
+            if user_activities.exists():
+                # If there are multiple instances, delete all but one
+                if user_activities.count() > 1:
+                    user_activities.exclude(pk=user_activities.first().pk).delete()
+
+                user_activity = user_activities.first()
+                if user_activity.saved:
+                    user_activity.delete()
+                    return JsonResponse({'status': 'unsave'})
+                else:
+                    user_activity.saved = True
+                    user_activity.save()
+                    return JsonResponse({'status': 'save'})
+            else:
+                # Create a new user activity if none exists
+                UserActivity.objects.create(user=request.user, product=product, saved=True)
+                return JsonResponse({'status': 'save'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)

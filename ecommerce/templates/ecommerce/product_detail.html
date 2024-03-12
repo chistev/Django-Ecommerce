@@ -43,8 +43,17 @@
                         <div class="col-md-8 black-card ms-3 ">
                             <div class="d-flex">
                                 <div class="ms-auto fs-4 ">
-                                    <div class="me-3 text-white" onclick="saveProduct({{ product.id }})">
-                                        <i class="bi bi-balloon-heart"></i>
+                                    <div class="me-3 text-white">
+                                        {% if request.user.is_authenticated %}
+                                            {% if user_activity_exists %}
+                                                <i class="bi bi-balloon-heart-fill" data-product-id="{{ product.id }}"></i>
+                                            {% else %}
+                                                <i class="bi bi-balloon-heart" data-product-id="{{ product.id }}"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            <!-- Render heart icon as not saved if user is not authenticated -->
+                                            <i class="bi bi-balloon-heart" data-product-id="{{ product.id }}"></i>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -295,7 +304,62 @@
     });
 </script> 
 
+<script>
+    $(document).ready(function () {
+    // Event listener for clicking on the heart icon
+    $('.bi-balloon-heart, .bi-balloon-heart-fill').click(function () {
+        var iconElement = $(this);  // Capture the icon element
+        var productId = iconElement.data('product-id');
 
+        // Send AJAX request to save or unsave the product
+        $.ajax({
+            type: 'POST',
+            url: '{% url "ecommerce:save_product" %}',
+            data: {
+                'product_id': productId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.status === 'save') {
+                    iconElement.removeClass('bi-balloon-heart').addClass('bi-balloon-heart-fill');
+                    // Create and display the Bootstrap alert
+                    var alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show d-flex justify-content-center align-items-center" role="alert">
+                            Product successfully added to your wishlist
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`;
+                    $('#alert-container').html(alertHtml);
+                    // Automatically remove the alert after 5 seconds (5000 milliseconds)
+                    setTimeout(function () {
+                        $('.alert').alert('close');
+                    }, 5000);
+                } else if (data.status === 'unsave') {
+                    iconElement.removeClass('bi-balloon-heart-fill').addClass('bi-balloon-heart');
+                    // Create and display the Bootstrap alert
+                    var alertHtml = `
+                    <div class="alert alert-success alert-dismissible fade show d-flex justify-content-center align-items-center" role="alert">
+                            The item was removed successfully.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`;
+                    $('#alert-container').html(alertHtml);
+                    // Automatically remove the alert after 5 seconds (5000 milliseconds)
+                    setTimeout(function () {
+                        $('.alert').alert('close');
+                    }, 5000);
+                } else {
+                    alert('Failed to update product status.');
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+                alert('Failed to update product status.');
+            }
+        });
+    });
+});
+
+</script>
     
 </body>
 
