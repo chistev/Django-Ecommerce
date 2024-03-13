@@ -95,7 +95,8 @@ body{
     padding: 15px; /* Adjust the padding as needed */
     border-radius: 10px; /* Optional: Add rounded corners */
     /* max-width: 200px; */ /* Adjust the maximum width as needed */
-    
+    cursor: default !important;
+    user-select: text; /* Ensure that text selection is enabled */
 }
 
 .my-account-card{

@@ -140,3 +140,21 @@
 .bi-facebook:hover, .bi-twitter-x:hover{
     color: #007bff;
 }
+
+/* Add styles for the top-selling-image class */
+.saved-item-image {
+    width: 100px; /* Adjust the width as needed */
+    height: 100px; /* Adjust the height as needed */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    object-fit: cover;
+}
+
+.remove-button {
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+    color: red !important; /* Change to desired background color */
+}
+

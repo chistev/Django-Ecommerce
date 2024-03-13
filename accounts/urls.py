@@ -26,5 +26,6 @@ urlpatterns = [
     path('address_book_create/', views.address_book_create, name='address_book_create'),
     path('address_book_edit/<int:address_id>/', views.address_book_edit, name='address_book_edit'),
     path('get_cities/', views.get_cities, name='get_cities'),
+    path('remove_saved_product/', views.remove_saved_product, name='remove_saved_product'),
 
 ]

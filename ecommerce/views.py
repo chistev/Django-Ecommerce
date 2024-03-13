@@ -1,4 +1,3 @@
-
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.db import IntegrityError
 
@@ -103,6 +102,7 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
 
     # Retrieve user-related information if the user is authenticated
+    user_activity_exists = False  # Initialize saved status as False
     if request.user.is_authenticated:
         # Check if the product is in the user's cart
         user_cart_items = CartItem.objects.filter(cart__user=request.user, product=product)
@@ -111,7 +111,6 @@ def product_detail(request, product_id):
         user_activity_exists = UserActivity.objects.filter(user=request.user, product=product).exists()
     else:
         user_cart_items = []
-        user_activity_exists = False
 
     # Format the price with commas
     product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
@@ -214,9 +213,8 @@ def save_product(request):
         product_id = request.POST.get('product_id')
         product = get_object_or_404(Product, pk=product_id)
 
-        # Check if the user is authenticated
         if request.user.is_authenticated:
-            # Query for the user activity for the current user and product
+            # Query for UserActivity instances for the user and product
             user_activities = UserActivity.objects.filter(user=request.user, product=product)
 
             if user_activities.exists():
@@ -224,18 +222,17 @@ def save_product(request):
                 if user_activities.count() > 1:
                     user_activities.exclude(pk=user_activities.first().pk).delete()
 
+                # Toggle the 'saved' status for the remaining instance
                 user_activity = user_activities.first()
-                if user_activity.saved:
-                    user_activity.delete()
-                    return JsonResponse({'status': 'unsave'})
-                else:
-                    user_activity.saved = True
-                    user_activity.save()
-                    return JsonResponse({'status': 'save'})
+                user_activity.saved = not user_activity.saved
+                user_activity.save()
+                status = 'save' if user_activity.saved else 'unsave'
             else:
-                # Create a new user activity if none exists
+                # Create a new UserActivity instance if none exists
                 UserActivity.objects.create(user=request.user, product=product, saved=True)
-                return JsonResponse({'status': 'save'})
+                status = 'save'
+
+            return JsonResponse({'status': status})
         else:
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
     else:

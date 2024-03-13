@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.http import JsonResponse
 from django.urls import resolve
 
@@ -9,6 +10,7 @@ from ecommerce.models import UserActivity
 from .forms import RegistrationForm, LoginForm, AddressForm
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
+from ecommerce.models import Product
 
 
 def login_excluded(redirect_to):
@@ -172,12 +174,32 @@ def inbox(request):
 def saved_items(request):
     current_path = resolve(request.path_info).url_name
 
+    # Retrieve the count of saved products
+    saved_products_count = UserActivity.objects.filter(user=request.user, saved=True).count()
+
     saved_products = UserActivity.objects.filter(user=request.user, saved=True).select_related('product')
 
-    return render(request, 'accounts/saved_items.html', {'current_path': current_path,
-                                                         'saved_products': saved_products})
+    return render(request, 'accounts/saved_items.html',
+                  {'current_path': current_path,
+                   'saved_products': saved_products,
+                   'saved_products_count': saved_products_count,  # Pass the count to the template
+                   })
 
+def remove_saved_product(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        product_id = request.POST.get('product_id')
+        user = request.user
 
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # Delete the UserActivity instance for the user and product
+            UserActivity.objects.filter(user=user, product_id=product_id).delete()
+            print("Product removed successfully:", product_id)  # Add this print statement
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
 @login_required
 def account_management(request):
     user = request.user  # Get the logged-in user
