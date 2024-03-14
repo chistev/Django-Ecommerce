@@ -20,6 +20,22 @@ function toggleView(view) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+
+    // Get all product cards
+    var productCards = document.querySelectorAll('.product-card');
+    
+    // Add click event listener to each product card
+    productCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+            // Get the product ID from data-product-id attribute
+            var productId = this.getAttribute('data-product-id');
+            console.log("Clicked product ID:", productId);
+            
+            // Redirect to the product detail page
+            window.location.href = '/product_detail/' + productId + '/';
+        });
+    });
+
     // Get the minimum and maximum prices from Django template
     var minPrice = parseFloat(document.body.getAttribute('data-min-price'));
     var maxPrice = parseFloat(document.body.getAttribute('data-max-price'));
@@ -117,11 +133,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     </div>
                 `;
             }
-
+            
             // Create grid view item
             var gridProductItem = createProductItem('grid-view', ['col-lg-3'], `
-            <div class="position-relative product-card">
-                    <a href="#">
+            <div class="position-relative product-card" data-product-id="${product.id}">
+            <a href="/product_detail/${product.id}/">
                         <img src="${product.image_url}" alt="${product.name}" class="top-selling-image img-fluid">
                         <div class="item-name">&nbsp;&nbsp;${product.name}</div>
                         <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;${product.formatted_price}</div>
@@ -144,9 +160,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
         `);
 
+
         // Create stacked view item
         var stackedProductItem = createProductItem('stacked-view', ['col-lg-12'], `
-        <div class="position-relative product-card">
+        <div class="position-relative product-card" onclick="window.location.href = '/product_detail/${product.id}/'">
                     <div class="row"> 
                         <div class="col-4">
                             <img src="${product.image_url}" alt="${product.name}" class="top-selling-image img-fluid">
@@ -184,6 +201,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Ensure the view remains intact after filtering
         var preferredView = localStorage.getItem("preferredView") || "grid";
         toggleView(preferredView);
+        
     }
 
         function createProductItem(viewClass, additionalClasses, innerHTML) {

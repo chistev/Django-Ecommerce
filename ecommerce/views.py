@@ -23,10 +23,11 @@ def supermarket(request):
 
 def grains_and_rice(request):
     # Retrieve the minimum and maximum prices of available products
-    min_price = Product.objects.aggregate(Min('new_price'))['new_price__min']
-    max_price = Product.objects.aggregate(Max('new_price'))['new_price__max']
+    min_price = Product.objects.filter(category='grains_rice').aggregate(Min('new_price'))['new_price__min']
+    max_price = Product.objects.filter(category='grains_rice').aggregate(Max('new_price'))['new_price__max']
 
-    products = Product.objects.all()
+    products = Product.objects.filter(category='grains_rice')
+
     # Calculate the discount percentage for each product
     for product in products:
         if product.old_price != 0:
@@ -49,8 +50,9 @@ def filter_products(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
-    # Filter products based on the price range
-    filtered_products = Product.objects.filter(new_price__gte=min_price, new_price__lte=max_price)
+    # Filter products based on the price range and category
+    filtered_products = Product.objects.filter(category='grains_rice', new_price__gte=min_price,
+                                               new_price__lte=max_price)
 
     # Prepare product data to send to the frontend
     products_data = []
@@ -67,6 +69,7 @@ def filter_products(request):
 
         # Prepare product data to send to the frontend
         product_data = {
+            'id': product.id,  # Include product ID
             'name': product.name,
             'price': product.new_price,
             'old_price': product.old_price,

@@ -107,7 +107,7 @@
            <div class="row" id="productItemsContainer">
                 {% for product in products %}
                 <div class="col-lg-3 col-md-4 grid-view">
-                    <div class="position-relative product-card">
+                    <div class="position-relative product-card" data-product-id="{{ product.id }}">
                         <a href="{% url 'ecommerce:product_detail' product_id=product.id %}">
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="top-selling-image img-fluid">
                             
@@ -195,21 +195,6 @@
         {% render_recently_viewed_products request.user %}
     
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get all product cards
-            var productCards = document.querySelectorAll('.product-card');
     
-            // Add click event listener to each product card
-            productCards.forEach(function(card) {
-                card.addEventListener('click', function() {
-                    // Get the product ID from data-product-id attribute
-                    var productId = this.getAttribute('data-product-id');
-                    // Redirect to the product detail page
-                    window.location.href = '/product_detail/' + productId + '/';
-                });
-            });
-        });
-    </script>
 </body>
 {% endblock %}
