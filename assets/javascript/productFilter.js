@@ -25,16 +25,21 @@ document.addEventListener("DOMContentLoaded", function() {
     var productCards = document.querySelectorAll('.product-card');
     
     // Add click event listener to each product card
-    productCards.forEach(function(card) {
-        card.addEventListener('click', function() {
+productCards.forEach(function(card) {
+    card.addEventListener('click', function(event) {
+        // Check if the clicked element or its ancestor has the class 'remove-product-btn'
+        if (!event.target.classList.contains('add-to-cart-btn') && !event.target.closest('.remove-product-btn') && !event.target.closest('.add-product')) {
             // Get the product ID from data-product-id attribute
             var productId = this.getAttribute('data-product-id');
             console.log("Clicked product ID:", productId);
             
             // Redirect to the product detail page
             window.location.href = '/product_detail/' + productId + '/';
-        });
+        }
     });
+});
+
+    
 
     // Get the minimum and maximum prices from Django template
     var minPrice = parseFloat(document.body.getAttribute('data-min-price'));
@@ -154,8 +159,21 @@ document.addEventListener("DOMContentLoaded", function() {
                         </div>
                         
                         <div class="d-flex justify-content-center">
-                            <a href="" class="btn btn-primary mt-2 mb-2 hide-cart-button" style="width: 90%;">Add To Cart</a>
-                        </div>
+                                <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn hide-cart-button" data-product-id="{{ product.id }}" style="width: 90%;">Add To Cart</button>
+
+                                <div class="d-flex justify-content-between align-items-center" style="display: none !important;">
+                                            
+                                    <button id="remove-product" class="btn btn-primary mb-2 remove-product-btn me-5" data-product-id="{{ product.id }}">
+                                        <i class="bi bi-dash-lg"></i>
+                                    </button>
+
+                                    <span class="product-count text-white" data-product-id="{{ product.id }}">{{ product.cart_quantity|default:0 }}</span>
+
+                                    <button id="add-product" class="btn btn-primary mb-2 add-product ms-5" data-product-id="{{ product.id }}">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
                     </a>
                 </div>
         `);

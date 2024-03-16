@@ -40,6 +40,11 @@ def grains_and_rice(request):
         product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
         product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
 
+        # Retrieve cart items for the current product
+        product.cart_quantity = \
+            CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] \
+            or 0
+
     breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), ('Rice & Grains', '/grains_and_rice/')]
     return render(request, 'ecommerce/grains_and_rice.html', {'breadcrumb': breadcrumb, 'products': products,
                                                               'min_price': min_price, 'max_price': max_price})
@@ -157,12 +162,23 @@ def add_to_cart(request):
         cart_item = CartItem.objects.filter(cart=cart, product=product).first()
         if cart_item:
             # If the product is already in the cart, increment the quantity
-            cart_item.quantity = F('quantity') + 1
+            cart_item.quantity += 1
             cart_item.save()
+
+            # Get the quantity of the specific product in the cart
+            product_quantity = cart_item.quantity
         else:
             # If the product is not in the cart, create a new CartItem
             CartItem.objects.create(cart=cart, product=product, quantity=1)
-        return JsonResponse({'status': 'success'})
+            # Set the product_quantity to 1 since it's the first item added
+            product_quantity = 1
+
+        # Get the updated cart count
+        cart_count = CartItem.objects.filter(cart=cart).aggregate(total_quantity=Sum('quantity'))['total_quantity']
+        if cart_count is None:
+            cart_count = 0  # Set the count to 0 if no items are found
+
+        return JsonResponse({'status': 'success', 'cart_quantity': cart_count, 'product_quantity': product_quantity})
     else:
         return JsonResponse({'status': 'error'}, status=400)
 
@@ -178,12 +194,25 @@ def remove_from_cart(request):
         if cart_item:
             if cart_item.quantity > 1:
                 # If the quantity is more than 1, decrement the quantity
-                cart_item.quantity = F('quantity') - 1
+                cart_item.quantity -= 1
                 cart_item.save()
             else:
+                cart_item.quantity = 0
                 # If the quantity is 1, remove the item from the cart
                 cart_item.delete()
-            return JsonResponse({'status': 'success'})
+
+            # Get the updated cart count
+            cart_count = CartItem.objects.filter(cart=cart_item.cart).aggregate(total_quantity=Sum('quantity'))[
+                'total_quantity']
+            if cart_count is None:
+                cart_count = 0  # Set the count to 0 if no items are found
+
+
+            # Get the quantity of the specific product in the cart
+            product_quantity = cart_item.quantity
+
+            return JsonResponse({'status': 'success', 'cart_quantity': cart_count, 'product_quantity': product_quantity,
+                                 })
         else:
             # If the product is not in the cart, return an error
             return JsonResponse({'status': 'error', 'message': 'Product not found in the cart'}, status=404)
