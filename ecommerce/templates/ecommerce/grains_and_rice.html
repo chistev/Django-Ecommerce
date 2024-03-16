@@ -130,11 +130,11 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center">
-                                <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn hide-cart-button" data-product-id="{{ product.id }}" style="width: 90%;">Add To Cart</button>
+                                <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn" data-product-id="{{ product.id }}"  data-add-to-cart-url="{% url 'ecommerce:add_to_cart' %}" style="width: 90%;">Add To Cart</button>
 
                                 <div class="d-flex justify-content-between align-items-center" style="display: none !important;">
                                             
-                                    <button id="remove-product" class="btn btn-primary mb-2 remove-product-btn me-5" data-product-id="{{ product.id }}">
+                                    <button id="remove-product" class="btn btn-primary mb-2 remove-product-btn me-5" data-product-id="{{ product.id }}" data-remove-from-cart-url="{% url 'ecommerce:remove_from_cart' %}">
                                         <i class="bi bi-dash-lg"></i>
                                     </button>
 
@@ -185,10 +185,10 @@
                                         {% endif %}
                                     </div>
                                     <div>
-                                        <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn" data-product-id="{{ product.id }}" style="width: 90%;">Add To Cart</button>
+                                        <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn" data-product-id="{{ product.id }}"  data-add-to-cart-url="{% url 'ecommerce:add_to_cart' %}" style="width: 90%;">Add To Cart</button>
                                         <div class="d-flex justify-content-between" style="display: none !important">
                                             
-                                            <button id="remove-product" class="btn btn-primary ms-5 mb-2 remove-product-btn" data-product-id="{{ product.id }}">
+                                            <button id="remove-product" class="btn btn-primary ms-5 mb-2 remove-product-btn" data-product-id="{{ product.id }}" data-remove-from-cart-url="{% url 'ecommerce:remove_from_cart' %}">
                                                 <i class="bi bi-dash-lg"></i>
                                             </button>
 
@@ -209,7 +209,7 @@
                 
                 {% endfor %} 
         
-                
+                <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>
             </div>
         </div>
            
@@ -223,134 +223,6 @@
     
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-
-            // Add to cart button click event
-            $('.add-to-cart-btn').click(function (e) {
-                e.preventDefault();
-                var productId = $(this).data('product-id');
-                 addToCart(productId);
-                
-                 // Show the hidden buttons
-                $(this).closest('.product-card').find('.add-to-cart-btn').hide();
-                $(this).closest('.product-card').find('.d-flex.justify-content-between').show();
-            });
     
-            // Function to add a product to the cart
-            function addToCart(productId) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "ecommerce:add_to_cart" %}',
-                    data: {
-                        'product_id': productId,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        
-                        // Update the product count span
-                        updateProductCount(productId, data.product_quantity);
-                        // If the quantity becomes zero, hide the quantity div and show the "Add to Cart" button
-                    if (data.product_quantity === 1) {
-                        $('.remove-product-btn[data-product-id="' + productId + '"]').show();
-                        $('.add-product[data-product-id="' + productId + '"]').show();
-                        $('.product-count[data-product-id="' + productId + '"]').show();
-                        $('.add-to-cart-btn[data-product-id="' + productId + '"]').hide();         
-                    }
-                        // Update the cart count in the UI
-                        updateCartCount();
-                        
-                    },
-                    error: function (xhr, errmsg, err) {
-                        console.log(xhr.status + ": " + xhr.responseText);
-                        // Handle errors if any
-                    }
-                });
-            }
-
-            // Function to update the product count span
-        function updateProductCount(productId, count) {
-            $('.product-count[data-product-id="' + productId + '"]').text(count);
-            
-        }
-    
-            // Function to update cart count
-            function updateCartCount() {
-                $.ajax({
-                    type: 'GET',
-                    url: '{% url "ecommerce:cart_count" %}',
-                    dataType: 'json',
-                    success: function (data) {
-                        $('#cart-count').text(data.count);
-                        
-                    },
-                    error: function (xhr, errmsg, err) {
-                        console.log(xhr.status + ": " + xhr.responseText);
-                        // Handle errors if any
-                    }
-                });
-            }
-            // Call updateCartCount initially to load the initial cart count
-         updateCartCount();
-
-         // Decrement product quantity on click
-        $('.remove-product-btn').click(function (e) {
-            e.preventDefault(); // Prevent default button behavior
-            var productId = $(this).data('product-id');
-            removeFromCart(productId);
-        });
-
-         // Function to remove a product from the cart
-        function removeFromCart(productId) {
-            $.ajax({
-                type: 'POST',
-                url: '{% url "ecommerce:remove_from_cart" %}',
-                data: {
-                    'product_id': productId,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                dataType: 'json',
-                success: function (data) {
-                    
-                    // Update the product count span
-                    updateProductCount(productId, data.product_quantity);
-
-                    // If the quantity becomes zero, hide the quantity div and show the "Add to Cart" button
-                    if (data.product_quantity === 0) {
-                        $('.remove-product-btn[data-product-id="' + productId + '"]').hide();
-                        $('.add-product[data-product-id="' + productId + '"]').hide();
-                        $('.product-count[data-product-id="' + productId + '"]').hide();
-                        $('.add-to-cart-btn[data-product-id="' + productId + '"]').show();         
-                    }
-                    
-
-                        
-                    updateCartCount();  // Update cart count after removing the product
-
-                    
-                },
-                error: function (xhr, errmsg, err) {
-                    console.log(xhr.status + ": " + xhr.responseText);
-                    // Handle errors if any
-                }
-            });
-        }
-
-        // Increment product quantity on click
-        $('.add-product').click(function (e) {
-            e.preventDefault(); // Prevent default button behavior
-            var productId = $(this).data('product-id');
-            addToCart(productId);
-        });
-
-
-
-       
-        });
-
-        
-</script>
 </body>
 {% endblock %}

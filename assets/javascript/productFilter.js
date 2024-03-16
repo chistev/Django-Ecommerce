@@ -297,4 +297,10 @@ productCards.forEach(function(card) {
         if (minPriceParam && maxPriceParam) {
             fetchAndDisplayFilteredProducts();
         }
+
+
     });
+
+
+
+    
