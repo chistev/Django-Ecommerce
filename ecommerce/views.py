@@ -97,11 +97,12 @@ def food_cupboard(request):
 
 def household_care(request):
     context = get_products_data(request, 'household_care')
-    return render(request, 'ecommerce/grains_and_rice.html', context)
+    return render(request, 'ecommerce/household_care.html', context)
 
 
 def laundry(request):
-    return render(request, 'ecommerce/laundry.html')
+    context = get_products_data(request, 'laundry')
+    return render(request, 'ecommerce/laundry.html', context)
 
 
 def fragrances(request):

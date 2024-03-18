@@ -8,6 +8,7 @@ class Product(models.Model):
         ('grains_rice', 'Grains & Rice'),
         ('food_cupboard', 'Food Cupboard'),
         ('household_care', 'Household Care'),
+        ('laundry', 'Laundry'),
         # Add more categories as needed
     ]
     name = models.CharField(max_length=100)
