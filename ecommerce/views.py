@@ -106,7 +106,8 @@ def laundry(request):
 
 
 def fragrances(request):
-    return render(request, 'ecommerce/fragrances.html')
+    context = get_products_data(request, 'fragrances')
+    return render(request, 'ecommerce/fragrances.html', context)
 
 
 def product_detail(request, product_id):
