@@ -1,0 +1,133 @@
+{% extends 'ecommerce/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block body %}
+<body class="bg-dark">
+    <div class="d-flex ms-5">
+        {% for item in breadcrumb %}
+            {% if forloop.last %}
+                <h6 class="mt-4"><a href="{{ item.1 }}" class="text-decoration-none text-white">{{ item.0 }}</a></h6>
+            {% else %}
+                <h6 class="mt-4"><a href="{{ item.1 }}" class="text-decoration-none text-white">{{ item.0 }} ></a></h6>
+            {% endif %}
+        {% endfor %}
+        
+    </div>
+
+    {% include 'ecommerce/ad.html' %}
+
+    <div class="row mt-4">
+        <!-- First Card -->
+        <div class="col-md-2 mb-4 ">
+            <div class="black-card my-account-card ms-5">
+                <ul class="custom-list">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div><b>PRICE (₦)</b></div>
+                        <div><a href="" class="text-decoration-none text-primary" id="applyFilterBtn">APPLY</a></div>
+                    </div>
+                    <div id="priceSlider"></div>
+                    <div class="mt-3" style="display: flex; align-items: center; justify-content: space-between;">
+                        <input type="number" id="minPriceInput" class="priceInput" value="{{ min_price }}">
+                        <div>-</div>
+                        <input type="number" id="maxPriceInput" class="priceInput" value="{{ max_price }}">
+                    </div>
+                    <hr>
+                    
+
+                    <div><b>PRODUCT RATING</b></div>
+                    <label class="container mt-2">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+
+                    <label class="container">
+                        <input type="radio" name="discount" class="circle" value="4">
+                        <span class="checkmark"></span>
+                        <div class="static-stars ms-2">
+                            <span class="star">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="star star-none">&#9733;</span>
+                            <span class="text-white">& above</span>
+                        </div>
+                    </label>
+                    
+                </ul>
+            </div>
+        </div>
+
+       <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
+        <div class="d-flex" style="justify-content: space-between;">
+            {% block specific_content %}
+            <!-- Specific content for child templates goes here -->
+            {% endblock %}
+
+            <div>
+                <i id="stackIcon" class="bi bi-view-stacked" onclick="toggleView('stacked')"></i>
+                <i id="gridIcon" class="bi bi-grid-fill ms-2" onclick="toggleView('grid')"></i>
+            </div>
+           
+        </div>
+           
+           <hr>
+
+           <div class="row" id="productItemsContainer">
+                {% for product in products %}
+                    {% include 'ecommerce/product_list_grid.html' %}
+                {% endfor %} 
+                
+                {% for product in products %}
+                    {% include 'ecommerce/product_list_stacked.html' %}
+                {% endfor %} 
+        
+                <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>
+            </div>
+        </div>
+           
+    </div>
+   
+    <div class="black-card-beneath">
+        <!-- Add your content for the black card here -->
+            <h5 class="top-selling-title">Recently Viewed</h5>
+        <!-- Render the recently viewed products section -->
+        {% render_recently_viewed_products request.user %}
+    
+    </div>
+{% endblock %}
+</body>

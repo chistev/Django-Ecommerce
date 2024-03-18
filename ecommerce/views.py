@@ -1,9 +1,7 @@
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.db import IntegrityError
 
 from django.db.models import Min, Max, F, Sum
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse
+from django.shortcuts import render, get_object_or_404
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
@@ -22,14 +20,12 @@ def supermarket(request):
     return render(request, 'ecommerce/supermarket.html', {'breadcrumb': breadcrumb})
 
 
-def grains_and_rice(request):
-    # Retrieve the minimum and maximum prices of available products
-    min_price = Product.objects.filter(category='grains_rice').aggregate(Min('new_price'))['new_price__min']
-    max_price = Product.objects.filter(category='grains_rice').aggregate(Max('new_price'))['new_price__max']
+def get_products_data(request, category):
+    min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
+    max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
 
-    products = Product.objects.filter(category='grains_rice')
+    products = Product.objects.filter(category=category)
 
-    # Calculate the discount percentage for each product
     for product in products:
         if product.old_price != 0:
             discount = (product.old_price - product.new_price) / product.old_price * 100
@@ -37,18 +33,21 @@ def grains_and_rice(request):
         else:
             product.discount_percentage = 0
 
-        # Format the price with commas for each product
-        product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
-        product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
+        product.formatted_old_price = intcomma(int(product.old_price))
+        product.formatted_price = intcomma(int(product.new_price))
 
-        # Retrieve cart items for the current product
-        product.cart_quantity = \
-            CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] \
-            or 0
+        product.cart_quantity \
+            = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity')
+                                                                                          )['quantity__sum'] or 0
 
-    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), ('Rice & Grains', '/grains_and_rice/')]
-    return render(request, 'ecommerce/grains_and_rice.html', {'breadcrumb': breadcrumb, 'products': products,
-                                                              'min_price': min_price, 'max_price': max_price})
+    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.replace('_', ' ').title(), f'/{category}/')
+                  ]
+    return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
+
+
+def grains_and_rice(request):
+    context = get_products_data(request, 'grains_rice')
+    return render(request, 'ecommerce/grains_and_rice.html', context)
 
 
 def filter_products(request):
@@ -91,32 +90,8 @@ def filter_products(request):
 
 
 def food_cupboard(request):
-    min_price = Product.objects.filter(category='food_cupboard').aggregate(Min('new_price'))['new_price__min']
-    max_price = Product.objects.filter(category='food_cupboard').aggregate(Max('new_price'))['new_price__max']
-
-    products = Product.objects.filter(category='food_cupboard')
-
-    # Calculate the discount percentage for each product
-    for product in products:
-        if product.old_price != 0:
-            discount = (product.old_price - product.new_price) / product.old_price * 100
-            product.discount_percentage = round(discount, 2) * -1  # Make it negative
-        else:
-            product.discount_percentage = 0
-
-        # Format the price with commas for each product
-        product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
-        product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
-
-        # Retrieve cart items for the current product
-        product.cart_quantity = \
-            CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))[
-                'quantity__sum'] \
-            or 0
-
-    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), ('Food Cupboard', '/food_cupboard/')]
-    return render(request, 'ecommerce/food_cupboard.html', {'breadcrumb': breadcrumb, 'products': products,
-                                                            'min_price': min_price, 'max_price': max_price})
+    context = get_products_data(request, 'food_cupboard')
+    return render(request, 'ecommerce/food_cupboard.html', context)
 
 
 def household_care(request):
