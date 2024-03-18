@@ -6,11 +6,7 @@ $('.add-to-cart-btn').click(function (e) {
     var productId = $(this).data('product-id');
     var addToCartUrl = $(this).data('add-to-cart-url');
     
-     addToCart(productId, addToCartUrl);
-     
-     var removeCartUrl = $(this).closest('.product-card').find('.remove-product-btn').data('remove-from-cart-url');
-     removeFromCart(productId, removeCartUrl);
-
+     addToCart(productId, addToCartUrl);     
     
      // Show the hidden buttons
     $(this).closest('.product-card').find('.add-to-cart-btn').hide();
@@ -89,7 +85,7 @@ var productId = $(this).data('product-id');
 var removeCartUrl = $(this).data('remove-from-cart-url');
 removeFromCart(productId, removeCartUrl);
 });
-    
+
 
 // Function to remove a product from the cart
 function removeFromCart(productId, removeCartUrl) {
@@ -132,7 +128,9 @@ console.log(removeCartUrl)
 $('.add-product').click(function (e) {
 e.preventDefault(); // Prevent default button behavior
 var productId = $(this).data('product-id');
-var addToCartUrl = $(this).closest('.product-card').find('.add-to-cart-btn').data('add-to-cart-url');
+ var addToCartUrl = $(this).closest('.product-card').find('.add-to-cart-btn').data('add-to-cart-url');
+/* var addToCartUrl = $(this).data('add-to-cart-url'); */
+console.log(productId, addToCartUrl)
 addToCart(productId, addToCartUrl);
 });
 

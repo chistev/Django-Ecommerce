@@ -3,6 +3,7 @@ from django.db import IntegrityError
 
 from django.db.models import Min, Max, F, Sum
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
@@ -81,7 +82,7 @@ def filter_products(request):
             'discount_percentage': discount_percentage,
             'formatted_price': product.formatted_price,
             'formatted_old_price': product.formatted_old_price,
-            'image_url': product.image.url
+            'image_url': product.image.url,
         }
         products_data.append(product_data)
 

@@ -190,7 +190,7 @@
                                             
                                             <button id="remove-product" class="btn btn-primary ms-5 mb-2 remove-product-btn" data-product-id="{{ product.id }}" data-remove-from-cart-url="{% url 'ecommerce:remove_from_cart' %}">
                                                 <i class="bi bi-dash-lg"></i>
-                                            </button>
+                                        </button>
 
                                             
                                             <span class="product-count" data-product-id="{{ product.id }}">{{ product.cart_quantity|default:0 }}</span>
