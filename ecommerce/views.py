@@ -27,21 +27,22 @@ def get_products_data(request, category):
     products = Product.objects.filter(category=category)
 
     for product in products:
-        if product.old_price != 0:
-            discount = (product.old_price - product.new_price) / product.old_price * 100
-            product.discount_percentage = round(discount, 2) * -1  # Make it negative
+        if product.old_price is not None:  # Check if old_price is not None
+            if product.old_price != 0:
+                discount = (product.old_price - product.new_price) / product.old_price * 100
+                product.discount_percentage = round(discount, 2) * -1  # Make it negative
+            else:
+                product.discount_percentage = 0
         else:
             product.discount_percentage = 0
 
-        product.formatted_old_price = intcomma(int(product.old_price))
+        product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
         product.formatted_price = intcomma(int(product.new_price))
 
-        product.cart_quantity \
-            = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity')
-                                                                                          )['quantity__sum'] or 0
+        product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
 
-    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.replace('_', ' ').title(), f'/{category}/')
-                  ]
+    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.replace('_', ' ').title(), f'/{category}/')]
+
     return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
 
 
@@ -95,7 +96,8 @@ def food_cupboard(request):
 
 
 def household_care(request):
-    return render(request, 'ecommerce/household_care.html')
+    context = get_products_data(request, 'household_care')
+    return render(request, 'ecommerce/grains_and_rice.html', context)
 
 
 def laundry(request):

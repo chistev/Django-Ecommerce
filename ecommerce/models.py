@@ -7,11 +7,12 @@ class Product(models.Model):
     CATEGORY_CHOICES = [
         ('grains_rice', 'Grains & Rice'),
         ('food_cupboard', 'Food Cupboard'),
+        ('household_care', 'Household Care'),
         # Add more categories as needed
     ]
     name = models.CharField(max_length=100)
     image = models.ImageField()
-    old_price = models.DecimalField(max_digits=10, decimal_places=2)
+    old_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     new_price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_percentage = models.IntegerField(default=0)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
