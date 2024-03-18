@@ -12,6 +12,7 @@
                 <h6 class="mt-4"><a href="{{ item.1 }}" class="text-decoration-none text-white">{{ item.0 }} ></a></h6>
             {% endif %}
         {% endfor %}
+        
     </div>
     
 
@@ -106,107 +107,11 @@
 
            <div class="row" id="productItemsContainer">
                 {% for product in products %}
-                <div class="col-lg-3 col-md-4 grid-view">
-                    <div class="position-relative product-card" data-product-id="{{ product.id }}">
-                        <a href="{% url 'ecommerce:product_detail' product_id=product.id %}">
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="top-selling-image img-fluid">
-                            
-                            <div class="item-name">&nbsp;&nbsp;{{ product.name }}</div>
-                            <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;{{ product.formatted_price }}</div>
-                            {% if product.old_price > 0 and product.old_price > product.new_price %}
-                            <div class="d-flex">
-                                <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;{{ product.formatted_old_price }}</div>
-                                <span class="badge bg-danger ms-2">{{ product.discount_percentage }}%</span>
-                            </div>
-                            {% endif %}
-                            <div class="rating">
-                                <div class="static-stars ms-2">
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="star">&#9733;</span>
-                                    <span class="text-white">(12)</span>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-center">
-                                <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn" data-product-id="{{ product.id }}"  data-add-to-cart-url="{% url 'ecommerce:add_to_cart' %}" style="width: 90%;">Add To Cart</button>
-
-                                <div class="d-flex justify-content-between align-items-center" style="display: none !important;">
-                                            
-                                    <button id="remove-product" class="btn btn-primary mb-2 remove-product-btn me-5" data-product-id="{{ product.id }}" data-remove-from-cart-url="{% url 'ecommerce:remove_from_cart' %}">
-                                        <i class="bi bi-dash-lg"></i>
-                                    </button>
-
-                                    <span class="product-count text-white" data-product-id="{{ product.id }}">{{ product.cart_quantity|default:0 }}</span>
-
-                                    <button id="add-product" class="btn btn-primary mb-2 add-product ms-5" data-product-id="{{ product.id }}">
-                                        <i class="bi bi-plus-lg"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    
-                </div>
+                    {% include 'ecommerce/product_list_grid.html' %}
                 {% endfor %} 
                 
                 {% for product in products %}
-                <div class="col-lg-12 col-md-4 stacked-view" style="display: none;">
-                        <div class="position-relative product-card" data-product-id="{{ product.id }}">
-                            <!-- First column for product image -->
-                            <div class="row"> 
-                                <div class="col-4">
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="top-selling-image img-fluid">
-                                </div>
-                
-                                <div class="col-4">
-                                    <div class="item-name">&nbsp;&nbsp;{{ product.name }}</div>
-                                    <div class="rating">
-                                        <div class="static-stars ms-2">
-                                            <span class="star">&#9733;</span>
-                                            <span class="star">&#9733;</span>
-                                            <span class="star">&#9733;</span>
-                                            <span class="star">&#9733;</span>
-                                            <span class="star">&#9733;</span>
-                                            <span class="text-white">(12)</span>
-                                        </div>
-                                    </div>
-                                </div>
-                
-                                <div class="col-4 d-flex flex-column justify-content-between">
-                                    <div class="ms-auto">
-                                        <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;{{ product.formatted_price }}</div>
-                                        {% if product.old_price > 0 and product.old_price > product.new_price %}
-                                            <div class= "d-flex">
-                                                <div class="slashed-price text-white ms-2" style="text-decoration: line-through; font-size: 13px;">N&nbsp;{{ product.formatted_old_price }}</div>
-                                                <span class="badge bg-danger ms-2">{{ product.discount_percentage }}%</span>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn" data-product-id="{{ product.id }}"  data-add-to-cart-url="{% url 'ecommerce:add_to_cart' %}" style="width: 90%;">Add To Cart</button>
-                                        <div class="d-flex justify-content-between" style="display: none !important">
-                                            
-                                            <button id="remove-product" class="btn btn-primary ms-5 mb-2 remove-product-btn" data-product-id="{{ product.id }}" data-remove-from-cart-url="{% url 'ecommerce:remove_from_cart' %}">
-                                                <i class="bi bi-dash-lg"></i>
-                                        </button>
-
-                                            
-                                            <span class="product-count" data-product-id="{{ product.id }}">{{ product.cart_quantity|default:0 }}</span>
-
-
-                                            <button id="add-product" class="btn btn-primary me-3 mb-2 add-product" data-product-id="{{ product.id }}">
-                                                <i class="bi bi-plus-lg"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
-                </div>
-                
+                    {% include 'ecommerce/product_list_stacked.html' %}
                 {% endfor %} 
         
                 <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>

@@ -91,7 +91,32 @@ def filter_products(request):
 
 
 def food_cupboard(request):
-    return render(request, 'ecommerce/food_cupboard.html')
+    min_price = Product.objects.filter(category='food_cupboard').aggregate(Min('new_price'))['new_price__min']
+    max_price = Product.objects.filter(category='food_cupboard').aggregate(Max('new_price'))['new_price__max']
+
+    products = Product.objects.filter(category='food_cupboard')
+
+    # Calculate the discount percentage for each product
+    for product in products:
+        if product.old_price != 0:
+            discount = (product.old_price - product.new_price) / product.old_price * 100
+            product.discount_percentage = round(discount, 2) * -1  # Make it negative
+        else:
+            product.discount_percentage = 0
+
+        # Format the price with commas for each product
+        product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
+        product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
+
+        # Retrieve cart items for the current product
+        product.cart_quantity = \
+            CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))[
+                'quantity__sum'] \
+            or 0
+
+    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), ('Food Cupboard', '/food_cupboard/')]
+    return render(request, 'ecommerce/food_cupboard.html', {'breadcrumb': breadcrumb, 'products': products,
+                                                            'min_price': min_price, 'max_price': max_price})
 
 
 def household_care(request):
@@ -109,6 +134,13 @@ def fragrances(request):
 def product_detail(request, product_id):
     # Retrieve the product
     product = get_object_or_404(Product, pk=product_id)
+
+    # Recalculate the discount percentage for the individual product
+    if product.old_price != 0:
+        discount = (product.old_price - product.new_price) / product.old_price * 100
+        product.discount_percentage = round(discount, 2) * -1  # Make it negative
+    else:
+        product.discount_percentage = 0
 
     # Retrieve user-related information if the user is authenticated
     user_activity_exists = False  # Initialize saved status as False
