@@ -1,0 +1,50 @@
+{% extends 'ecommerce/common_base2.html' %}
+{% load static %}
+
+{% block specific_content %}
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:android_phones' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/android_phones.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Android Phones</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:iphones' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/iphones.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Iphones</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:cellphones' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/cellphones.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Accessories</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:cellphones' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/cellphones.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Cellphones</b></div>
+                    </a>
+                </div>
+            </div>
+
+            
+        </div>
+{% endblock %}
+
+{% block description %}
+                <h5 class="mb-4">Shop Everything Phones and Phone Accessories on Chistev!</h5>
+                <p class="small">Smartphones and tablets have become a part of our everyday lives. The functions of these gadgets have gone beyond basic cellphone communication to limitless abilities. In today’s world, a phone is a camera, a scanner, and even an assistant, thanks to the advancement and infusion of artificial intelligence (AI). Here at Chistev, we created a particular category that holds an assortment of the best cellphones, smartphones, and phone accessories from top brands.</p>
+                <h5 class="mb-3">Phone accessories give your phone life</h5>
+                <p class="small">Do you want to make your phone appear new without changing it? The secret is for you to buy new phone accessories. Buy beautiful phone cases, mobile covers, screen guards, phone stand or any other accessory from Chistev.</p>
+{% endblock %}

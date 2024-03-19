@@ -24,6 +24,11 @@ def home_and_office(request):
     breadcrumb = [('Home', '/'), ('Home and Office', '/home_and_office/')]
     return render(request, 'ecommerce/home_and_office.html', {'breadcrumb': breadcrumb})
 
+
+def phones_and_tablets(request):
+    breadcrumb = [('Home', '/'), ('Phones and Tablets', '/phones_and_tablets/')]
+    return render(request, 'ecommerce/phones_and_tablets.html', {'breadcrumb': breadcrumb})
+
 def get_products_data(request, category):
     min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
     max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
@@ -308,4 +313,20 @@ def fridge():
 
 
 def washing_machine():
+    return None
+
+
+def android_phones():
+    return None
+
+
+def iphones():
+    return None
+
+
+def accessories():
+    return None
+
+
+def cellphones():
     return None
