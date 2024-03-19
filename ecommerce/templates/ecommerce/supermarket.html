@@ -1,24 +1,7 @@
-{% extends 'ecommerce/base.html' %}
+{% extends 'ecommerce/common_base2.html' %}
 {% load static %}
 
-{% block body %}
-<body class="bg-dark">
-
-    <div class="d-flex ms-5">
-        {% for item in breadcrumb %}
-            {% if forloop.last %}
-                <h6 class="mt-4 text-decoration-none"><a href="{{ item.1 }}" style="color: white;">&nbsp;&nbsp;{{ item.0 }}</a></h6>
-            {% else %}
-                <h6 class="mt-4 text-decoration-none"><a href="{{ item.1 }}" style="color: white;">{{ item.0 }} ></a></h6>
-            {% endif %}
-        {% endfor %}
-    </div>
-
-    {% include 'ecommerce/ad.html' %}
-    
-    <div class="black-card-beneath">
-        <!-- Images row with Bootstrap grid -->
-        <div class="row" style="display: flex; justify-content: space-between;">
+{% block specific_content %}
             <div class="col-lg-2 col-md-4">
                 <div class="position-relative ">
                     <a href="{% url 'ecommerce:grains_and_rice' %}" style="position: relative; display: inline-block;">
@@ -63,18 +46,11 @@
                     </a>
                 </div>
             </div>
-            
         </div>
-    </div>
+{% endblock %}
 
-    <div class="black-card-beneath last-black-card-beneath">
-        <div class="row">
-            <div class="col-md-12" style="color: white;">
+{% block description %}
                 <h5 class="mb-4">Welcome to Chistev's Online Supermarket Experience!</h5>
                 <h3>Get all you need in one click!</h3>
                 <p class="small">Discover the Ultimate Convenience of Chistev Supermarket Shopping, we're dedicated to enhancing the quality of your life with a simple click. Our commitment to convenience led us to establish an innovative online supermarket that caters to all your needs and desires. Say goodbye to the hassles of navigating through traffic-laden streets – now you can shop from the comfort of your home.</p>
-            </div>
-        </div>
-    </div>
-</body>
 {% endblock %}

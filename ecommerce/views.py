@@ -20,6 +20,10 @@ def supermarket(request):
     return render(request, 'ecommerce/supermarket.html', {'breadcrumb': breadcrumb})
 
 
+def home_and_office(request):
+    breadcrumb = [('Home', '/'), ('Home and Office', '/home_and_office/')]
+    return render(request, 'ecommerce/home_and_office.html', {'breadcrumb': breadcrumb})
+
 def get_products_data(request, category):
     min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
     max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
@@ -281,3 +285,27 @@ def save_product(request):
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
+
+
+def air_conditoner():
+    return None
+
+
+def fan():
+    return None
+
+
+def freezer():
+    return None
+
+
+def microwave():
+    return None
+
+
+def fridge():
+    return None
+
+
+def washing_machine():
+    return None

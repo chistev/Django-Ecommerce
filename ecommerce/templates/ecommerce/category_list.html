@@ -1,0 +1,8 @@
+<div class="col-lg-2 col-md-4">
+    <div class="position-relative">
+        <a href="{% url 'ecommerce:category_detail' category.slug %}" style="position: relative; display: inline-block;">
+            <img src="{% static category.image %}" alt="Item 1" class="top-selling-image img-fluid">
+            <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>{{ category.name }}</b></div>
+        </a>
+    </div>
+</div>
