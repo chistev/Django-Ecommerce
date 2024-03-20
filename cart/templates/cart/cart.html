@@ -45,7 +45,7 @@
                             </button>
                             <span id="product-count">{{ user_cart_items.0.quantity|default:0 }}</span>
                             
-                            <button id="add-product" class="btn btn-primary ms-3 ">
+                            <button id="add-product" class="btn btn-primary ms-3" data-product-id="{{ cart_item.product.pk }}">
                                 <i class="bi bi-plus-lg"></i>
                             </button>
                         </div>
@@ -195,6 +195,54 @@
         }
     });
 </script>
+
+<script>
+    $(document).ready(function() {
+        // Handle click event of "Add" button
+        $('#add-product').click(function() {
+            var productId = $(this).data('product-id');
+            console.log('Product ID:', productId); // Log the product ID
+            // Perform AJAX request to add product to cart
+            $.ajax({
+                url: '{% url "ecommerce:add_to_cart" %}',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    console.log('Success response:', response); // Log the response
+                    if (response.status === 'success') {
+                        // Update cart count
+                        updateCartCount(response.cart_quantity);
+                        // Inform the user that the product was added to the cart
+                        alert('Product added to cart.');
+                    } else {
+                        // Handle error response
+                        alert('Error adding product to cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.log('Error:', error); // Log the error
+                    alert('Error adding product to cart: ' + error);
+                }
+            });
+        });
+
+        // Function to update cart count on the page
+        function updateCartCount(count) {
+            // Update the cart count element with the new count
+            $('#cart-count').text(count);
+            // Update the cart count displayed in the page title
+            $('h5').text('Cart (' + count + ')');
+            // Update the cart count URL data attribute for future updates
+            $('#cartCountUrl').data('count', count);
+        }
+    });
+</script>
+
 
 
 </body>
