@@ -99,6 +99,10 @@ body{
     user-select: text; /* Ensure that text selection is enabled */
 }
 
+.cart-card{
+    height: 100%;
+}
+
 .my-account-card{
     width: 300px;
 }

@@ -18,32 +18,43 @@
                 {% for cart_item in cart_items %}
                 <div class="d-flex">
                     <div class="col-md-2">
-                        <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="img-fluid mb-3">
+                        <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}">
+                            <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="img-fluid mb-3">
+                        </a>
                         <div><a href="" class="remove-button text-decoration-none text-primary " data-product-id="{{ cart_item.product.pk }}">
                             <i class="bi bi-trash me-2"></i>REMOVE</a>
                         </div>
                     </div>
                 
                     <div class="col-md-6">
-                        <div class="product-name ms-2"> {{ cart_item.product.name }} </div>
+                        <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
+                            <div class="product-name ms-2"> {{ cart_item.product.name }} </div>
+                        </a>
                     </div>
 
                     <div class="col-md-3 black-card ms-auto d-flex flex-column justify-content-between">
                         <div class="ms-auto">
-                            <div class="text-white fs-6 ms-5 mb-2">&nbsp;&nbsp;N&nbsp; {{ cart_item.product.formatted_price }}</div>
+                            <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
+                                <div class="text-white fs-6 ms-5 mb-2">&nbsp;&nbsp;N&nbsp; {{ cart_item.product.formatted_price }}</div>
+                            </a>
                             {% if cart_item.product.old_price > 0 and cart_item.product.old_price > cart_item.product.new_price %}
                                 <div class="d-flex ms-auto">
-                                <div class="slashed-price text-white fs-6" style="text-decoration: line-through; font-size: 13px;">N&nbsp; {{ cart_item.product.formatted_old_price }}</div>
-                                <span class="badge bg-danger ms-2 small">{{ cart_item.product.discount_percentage }}%</span>
-                            </div>
-                        {% endif %}
+                                    <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
+                                        <div class="slashed-price text-white fs-6" style="text-decoration: line-through; font-size: 13px;">N&nbsp; {{ cart_item.product.formatted_old_price }}</div>
+                                    </a>
+                                    <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
+                                        <span class="badge bg-danger ms-2 small">{{ cart_item.product.discount_percentage }}%</span>
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
                         
-                        <div class="d-flex ms-auto">
-                            <button id="remove-product" class="btn btn-primary me-3">
+                        <div class="d-flex ms-auto align-items-center">
+                            <button id="remove-product" class="btn btn-primary me-3 {% if cart_item.product.is_single_quantity %}disabled{% endif %}" {% if cart_item.product.is_single_quantity %}disabled{% endif %} data-product-id="{{ cart_item.product.pk }}" data-product-quantity="{{ cart_item.product.quantity }}">
                                 <i class="bi bi-dash-lg"></i>
                             </button>
-                            <span id="product-count">{{ user_cart_items.0.quantity|default:0 }}</span>
+                            
+                            <span id="product-count" class="product-count" data-product-id="{{ cart_item.product.pk }}">{{ cart_item.quantity }}</span>
                             
                             <button id="add-product" class="btn btn-primary ms-3" data-product-id="{{ cart_item.product.pk }}">
                                 <i class="bi bi-plus-lg"></i>
@@ -58,11 +69,28 @@
                 
             </div>
 
-            <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>  
-            
+            <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>            
             
         </div>
-    
+        
+        <div class="col-md-3 black-card cart-card mx-auto">
+            <p class="fw-bold fs-6">CART SUMMARY</p>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <div class="fw-bold">Subtotal</div>
+                <div class="fw-bold">N 14,125</div>
+            </div>
+            <div class="small text-secondary">Delivery fees not included yet.</div>
+            <hr>
+            <button class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;">Checkout (N 14,125)</button>
+        </div>
+
+        <div class="col-md-3 black-card cart-card mx-auto">
+            <p class="fw-bold fs-6">Returns are easy</p>
+            <hr>
+            <div>Free return within 7 days for ALL eligible items</div>
+            <div>details</div>
+        </div>
     </div>
 </div>      
 
@@ -216,6 +244,13 @@
                     if (response.status === 'success') {
                         // Update cart count
                         updateCartCount(response.cart_quantity);
+                        updateProductCount(productId, response.product_quantity);
+                        console.log(response.product_quantity)
+                        if (response.product_quantity > 1) {
+                            $('#remove-product').prop('disabled', false);
+                        }
+                        console.log(response.product_quantity)
+
                         // Inform the user that the product was added to the cart
                         alert('Product added to cart.');
                     } else {
@@ -231,6 +266,8 @@
             });
         });
 
+        
+
         // Function to update cart count on the page
         function updateCartCount(count) {
             // Update the cart count element with the new count
@@ -240,9 +277,78 @@
             // Update the cart count URL data attribute for future updates
             $('#cartCountUrl').data('count', count);
         }
+
+        // Function to update product count on the page
+        function updateProductCount(productId, count) {
+            // Update the product count element with the new count
+            $('.product-count[data-product-id="' + productId + '"]').text(count);
+        }
     });
 </script>
 
+<script>
+    $(document).ready(function() {
+        // Handle click event of "Remove" button
+        $('#remove-product').click(function() {
+            var productId = $(this).data('product-id');
+            var productQuantity = parseInt($(this).data('product-quantity'));
+                if (productQuantity === 1) {
+                    $(this).prop('disabled', true);
+                }
+            // Perform AJAX request to remove a unit of product from cart
+            $.ajax({
+                url: '{% url "ecommerce:remove_from_cart" %}', // Your remove from cart URL
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    console.log(response); // Log the response
+                    if (response.status === 'success') {
+                        // Update cart count and product count
+                        updateCartCount(response.cart_quantity);
+                        updateProductCount(productId, response.product_quantity);
+                         // Enable or disable "Remove" button based on product quantity
+                         if (response.product_quantity === 1) {
+                            $('#remove-product').prop('disabled', true);
+                        } else {
+                            $('#remove-product').prop('disabled', false);
+                        }
+                    }
+                    else {
+                        // Handle error response
+                        alert('Error removing item from cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.log('Error:', error); // Log the error
+                    alert('Error removing item from cart: ' + error);
+                }
+            });
+        });
+
+        // Function to update cart count on the page
+        function updateCartCount(count) {
+            // Update the cart count element with the new count
+            $('#cart-count').text(count);
+            // Update the cart count displayed in the page title
+            $('h5').text('Cart (' + count + ')');
+            // Update the cart count URL data attribute for future updates
+            $('#cartCountUrl').data('count', count);
+        }
+
+        // Function to update product count on the page
+        function updateProductCount(productId, count) {
+            // Update the product count element with the new count
+            $('.product-count[data-product-id="' + productId + '"]').text(count);
+
+            
+        }
+    });
+</script>
 
 
 </body>

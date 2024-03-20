@@ -30,7 +30,13 @@ def cart_view(request):
             else:
                 item.product.discount_percentage = 0
 
-        return render(request, 'cart/cart.html', {'cart_count': cart_count, 'cart_items':cart_items})
+            # Add product quantity to each item
+            item.product.quantity = item.quantity
+
+            # Add information about whether product count is 1 or not
+            item.product.is_single_quantity = item.quantity == 1
+
+        return render(request, 'cart/cart.html', {'cart_count': cart_count, 'cart_items': cart_items})
     else:
         # Handle the case when the user is not authenticated
         # You may want to redirect the user to the login page or display an error message
