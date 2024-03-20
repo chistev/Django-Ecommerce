@@ -1,0 +1,48 @@
+{% extends 'ecommerce/common_base2.html' %}
+{% load static %}
+
+{% block specific_content %}
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:ps4' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/ps4.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>PS4</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:controllers' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/controllers.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Controllers</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:ps5' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/ps5.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>PS5</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:xbox' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/xbox.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Xbox</b></div>
+                    </a>
+                </div>
+            </div>
+
+            
+        </div>
+{% endblock %}
+
+{% block description %}
+                <h5 class="mb-4">Discover the Ultimate Gaming Experience on Chistev!</h5>
+                <p class="small">Unleash your inner gamer and explore a world of interactive entertainment right at your fingertips.</p>
+{% endblock %}

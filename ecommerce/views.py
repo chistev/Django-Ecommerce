@@ -35,6 +35,10 @@ def computing(request):
     return render(request, 'ecommerce/computing.html', {'breadcrumb': breadcrumb})
 
 
+def gaming(request):
+    breadcrumb = [('Home', '/'), ('Gaming', '/gaming/')]
+    return render(request, 'ecommerce/gaming.html', {'breadcrumb': breadcrumb})
+
 def get_products_data(request, category):
     min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
     max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
@@ -351,4 +355,20 @@ def hard_drive():
 
 
 def printers():
+    return None
+
+
+def ps4():
+    return None
+
+
+def controllers():
+    return None
+
+
+def ps5():
+    return None
+
+
+def xbox():
     return None
