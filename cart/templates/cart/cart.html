@@ -1,111 +1,201 @@
 {% extends 'ecommerce/base.html' %}
 {% load static %}
+{% load humanize %}
+{% load custom_tags %}
 
 
 {% block body %}
-        <!-- Full-width Black Card Beneath Navbar -->
-    <div class="container-fluid d-flex justify-content-center align-items-center mt-5">
-        <div class="card text-white bg-dark" style="width: 100%;">
-            <div class="card-body text-center">
-                <!-- Cart Icon -->
-                <i class="bi bi-cart" style="font-size: 3em;"></i>
-                <!-- Your cart is empty text -->
-                <p class="card-text mt-3">Your cart is empty!</p>
-                <!-- Additional text -->
-                <p class="card-text mt-3">Browse our categories and discover our best deals!</p>
-                <!-- Start Shopping Button -->
-                <button class="btn btn-primary mt-3" onclick="window.location.href='{% url 'ecommerce:index' %}'">Start Shopping</button>
 
-                <!-- Add any additional content or text here if needed -->
-            </div>
-        </div>
-    </div>
-    
-<!-- Scroll-to-Top Button -->
-<button id="scrollToTopBtn" class="btn btn-primary scroll-to-top-btn" title="Go to top">
-    <i class="bi bi-arrow-up"></i>
-</button>
-
-<div class="black-card-beneath">
-    <!-- Add your content for the black card here -->
-    <h5 class="top-selling-title">Recently Viewed items</h5>
-
-    <!-- Images row with Bootstrap grid -->
+<body class="bg-dark">
+<div class="container mt-4">
     <div class="row">
-        <div class="col-lg-2 col-md-4">
-            <div class="position-relative">
-                <a href="#">
-                    <img src="{% static 'images/item1.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge">-20%</span>
-                    <div class="item-name">&nbsp;&nbsp;Snack</div>
-                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;500</div> <!-- Add the price here -->
-                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;250</div>
-                </a>
+
+        <div class="col-md-8 black-card ms-5 ">
+            
+            <h5>Cart ({{ cart_count }})</h5>
+            <hr>
+            <div class="d-flex flex-column">
+                {% for cart_item in cart_items %}
+                <div class="d-flex">
+                    <div class="col-md-2">
+                        <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="img-fluid mb-3">
+                        <div><a href="" class="remove-button text-decoration-none text-primary " data-product-id="{{ cart_item.product.pk }}">
+                            <i class="bi bi-trash me-2"></i>REMOVE</a>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-6">
+                        <div class="product-name ms-2"> {{ cart_item.product.name }} </div>
+                    </div>
+
+                    <div class="col-md-3 black-card ms-auto d-flex flex-column justify-content-between">
+                        <div class="ms-auto">
+                            <div class="text-white fs-6 ms-5 mb-2">&nbsp;&nbsp;N&nbsp; {{ cart_item.product.formatted_price }}</div>
+                            {% if cart_item.product.old_price > 0 and cart_item.product.old_price > cart_item.product.new_price %}
+                                <div class="d-flex ms-auto">
+                                <div class="slashed-price text-white fs-6" style="text-decoration: line-through; font-size: 13px;">N&nbsp; {{ cart_item.product.formatted_old_price }}</div>
+                                <span class="badge bg-danger ms-2 small">{{ cart_item.product.discount_percentage }}%</span>
+                            </div>
+                        {% endif %}
+                        </div>
+                        
+                        <div class="d-flex ms-auto">
+                            <button id="remove-product" class="btn btn-primary me-3">
+                                <i class="bi bi-dash-lg"></i>
+                            </button>
+                            <span id="product-count">{{ user_cart_items.0.quantity|default:0 }}</span>
+                            
+                            <button id="add-product" class="btn btn-primary ms-3 ">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+    
+                </div>
+                <hr>
+                {% endfor %}
+
+                
             </div>
+
+            <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>  
+            
             
         </div>
-        <div class="col-lg-2 col-md-4">
-            <div class="position-relative">
-                <a href="#">
-                    <img src="{% static 'images/item2.jpg' %}" alt="Item 2" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge">-10%</span>
-                    <div class="item-name">&nbsp;&nbsp;Clock</div>
-                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;5,000</div> <!-- Add the price here -->
-                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;4,000</div>
-                </a>
+    
+    </div>
+</div>      
+
+<!-- Modal for confirmation dialog -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Remove From Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
-        </div>
-        <div class="col-lg-2 col-md-4">
-            <div class="position-relative">
-                <a href="#">
-                    <img src="{% static 'images/item3.jpg' %}" alt="Item 3" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge">-5%</span>
-                    <div class="item-name">&nbsp;&nbsp;Photocopy Machine</div>
-                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;16,000</div> <!-- Add the price here -->
-                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;15,000</div>
-                </a>
+            <div class="modal-body">
+                Do you really want to remove this item from the cart?
             </div>
-        </div>
-        <div class="col-lg-2 col-md-4">
-            <div class="position-relative">
-                <a href="#">
-                    <img src="{% static 'images/item4.jpg' %}" alt="Item 4" class="top-selling-image img-fluid">
-                    <span class="badge bg-danger price-reduction-badge">-24%</span>
-                    <div class="item-name">&nbsp;&nbsp;Samsung</div>
-                    <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;700,000</div> <!-- Add the price here -->
-                    <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;600,000</div>
-                </a>
+            <div class="modal-footer d-flex justify-content-between">
+                 <!-- Add save icon to the "Save for Later" button -->
+                <button type="button" class="btn btn-primary btn-block" style="width: 46%;" id="confirmSave">
+                    <i class="bi bi-heart me-2"></i>Save for Later
+                </button>
+                <!-- Add remove icon to the "Remove" button -->
+                <button type="button" class="btn btn-danger btn-block" style="width: 46%;" id="confirmRemove">
+                    <i class="bi bi-trash me-2"></i>Remove Item
+                </button>
             </div>
-            
-        </div>
-        <div class="col-lg-2 col-md-4">
-            <div class="position-relative">
-                <a href="#">
-                    <img src="{% static 'images/item5.jpg' %}" alt="Item 5" class="top-selling-image img-fluid">
-                <span class="badge bg-danger price-reduction-badge">-4%</span>
-                <div class="item-name">&nbsp;&nbsp;Tablet</div>
-                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;600,000</div> <!-- Add the price here -->
-                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;500,000</div>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4">
-            <div class="position-relative mx-auto">
-                <a href="#">
-                    <img src="{% static 'images/item6.jpg' %}" alt="Item 6" class="top-selling-image img-fluid">
-                <span class="badge bg-danger price-reduction-badge">-12%</span>
-                <div class="item-name">&nbsp;&nbsp;Computer</div>
-                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;800,000</div> <!-- Add the price here -->
-                <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;700,000</div>
-                </a>
-            </div>
-            
         </div>
     </div>
 </div>
+    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Handle click event of "Remove" link
+        $('.remove-button').click(function(e) {
+            e.preventDefault(); // Prevent default link behavior
+            var productId = $(this).data('product-id');
+            $('#confirmationModal').modal('show'); // Show confirmation modal
+            $('#confirmRemove').data('product-id', productId); // Store product ID in the "Remove" button
+            $('#confirmSave').data('product-id', productId); // Store product ID for "Save for Later" button
+        });
 
-{% include 'ecommerce/top_selling_items.html' %}
-</html>
+        // Handle click event of "Remove" button in confirmation modal
+        $('#confirmRemove').click(function() {
+            var productId = $(this).data('product-id');
+            // Perform AJAX request to remove product from cart
+            $.ajax({
+                url: '{% url "cart:remove_all_from_cart" %}', // Your remove from cart URL
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    if (response.status === 'success') {
+                        // Reload the page or update the cart dynamically
+                        window.location.reload(); // Reload the page
+                    } else {
+                        // Handle error response
+                        alert('Error removing item from cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    alert('Error removing item from cart: ' + error);
+                }
+            });
+        });
 
+        // Handle click event of "Save for Later" button
+        $('#confirmSave').click(function() {
+            var productId = $(this).data('product-id');
+            console.log('Product ID:', productId); // Log the product ID
+            // Perform AJAX request to save product for later
+            $.ajax({
+                url: '{% url "ecommerce:save_product" %}',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    console.log('Success response:', response); // Log the response
+                    if (response.status === 'save') {
+                        if (response.message === 'already_saved') {
+                            alert('This product is already saved.');
+                        } else {
+                            alert('Product saved for later.');
+                        }
+                        removeProductFromCart(productId);
+                    } else if (response.status === 'unsave') {
+                        alert('Product removed from saved items.');
+                    } else {
+                        // Handle error response
+                        alert('Error saving product for later.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.log('Error:', error); // Log the error
+                    alert('Error saving product for later: ' + error);
+                }
+            });
+        });
+
+        // Function to remove product from cart and refresh the page
+        function removeProductFromCart(productId) {
+            $.ajax({
+                url: '{% url "cart:remove_all_from_cart" %}', // Your remove from cart URL
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    if (response.status === 'success') {
+                        // Reload the page
+                        window.location.reload(); // Reload the page
+                    } else {
+                        // Handle error response
+                        alert('Error removing item from cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    alert('Error removing item from cart: ' + error);
+                }
+            });
+        }
+    });
+</script>
+
+
+</body>
 {% endblock %}

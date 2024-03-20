@@ -129,6 +129,36 @@ def fragrances(request):
     return render(request, 'ecommerce/fragrances.html', context)
 
 
+def get_home_and_office_data(request, category):
+    min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
+    max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
+
+    products = Product.objects.filter(category=category)
+
+    for product in products:
+        if product.old_price is not None:  # Check if old_price is not None
+            if product.old_price != 0:
+                discount = (product.old_price - product.new_price) / product.old_price * 100
+                product.discount_percentage = round(discount, 2) * -1  # Make it negative
+            else:
+                product.discount_percentage = 0
+        else:
+            product.discount_percentage = 0
+
+        product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
+        product.formatted_price = intcomma(int(product.new_price))
+
+        product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    breadcrumb = [('Home', '/'), ('Home and Office', '/home_and_office/'), (category.replace('_', ' ').title(), f'/{category}/')]
+
+    return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
+
+
+def air_conditioner(request):
+    context = get_home_and_office_data(request, 'air_conditioner')
+    return render(request, 'ecommerce/air_conditioner.html', context)
+
 def product_detail(request, product_id):
     # Retrieve the product
     product = get_object_or_404(Product, pk=product_id)
@@ -290,6 +320,11 @@ def save_product(request):
                 user_activity.saved = not user_activity.saved
                 user_activity.save()
                 status = 'save' if user_activity.saved else 'unsave'
+
+                if user_activity.saved:
+                    return JsonResponse({'status': status, 'message': 'already_saved'})
+                else:
+                    return JsonResponse({'status': status})
             else:
                 # Create a new UserActivity instance if none exists
                 UserActivity.objects.create(user=request.user, product=product, saved=True)
@@ -300,10 +335,6 @@ def save_product(request):
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
-
-
-def air_conditoner():
-    return None
 
 
 def fan():

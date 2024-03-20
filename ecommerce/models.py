@@ -10,6 +10,7 @@ class Product(models.Model):
         ('household_care', 'Household Care'),
         ('laundry', 'Laundry'),
         ('fragrances', 'Fragrances'),
+        ('air_conditioner', 'Air Conditioner'),
         # Add more categories as needed
     ]
     name = models.CharField(max_length=100)
