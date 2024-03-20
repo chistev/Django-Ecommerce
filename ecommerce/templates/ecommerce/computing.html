@@ -1,0 +1,48 @@
+{% extends 'ecommerce/common_base2.html' %}
+{% load static %}
+
+{% block specific_content %}
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:laptops' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/laptops.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Laptops</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:flash_drive' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/flash_drive.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Flash Drive</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:hard_drive' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/hard_drive.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Hard Drive</b></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4">
+                <div class="position-relative ">
+                    <a href="{% url 'ecommerce:printers' %}" style="position: relative; display: inline-block;">
+                        <img src="{% static 'images/printers.jpg' %}" alt="Item 1" class="top-selling-image img-fluid">
+                        <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>Printers</b></div>
+                    </a>
+                </div>
+            </div>
+
+            
+        </div>
+{% endblock %}
+
+{% block description %}
+                <h5 class="mb-4">Explore Computer & Computing Accessories Online at Chistev</h5>
+                <p class="small">Computers, regardless of their size and function, are becoming more than just a fast-rising necessity in this generation. With a computing set of your own, you do not have to run around in a time of emergency nor wait upon your television set to watch that classic movie in your comfort zone.</p>
+{% endblock %}

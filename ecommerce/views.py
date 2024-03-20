@@ -25,9 +25,15 @@ def home_and_office(request):
     return render(request, 'ecommerce/home_and_office.html', {'breadcrumb': breadcrumb})
 
 
-def phones_and_tablets(request):
-    breadcrumb = [('Home', '/'), ('Phones and Tablets', '/phones_and_tablets/')]
-    return render(request, 'ecommerce/phones_and_tablets.html', {'breadcrumb': breadcrumb})
+def phones_and_accessories(request):
+    breadcrumb = [('Home', '/'), ('Phones and Accessories', '/phones_and_accessories/')]
+    return render(request, 'ecommerce/phones_and_accessories.html', {'breadcrumb': breadcrumb})
+
+
+def computing(request):
+    breadcrumb = [('Home', '/'), ('Computing', '/computing/')]
+    return render(request, 'ecommerce/computing.html', {'breadcrumb': breadcrumb})
+
 
 def get_products_data(request, category):
     min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
@@ -329,4 +335,20 @@ def accessories():
 
 
 def cellphones():
+    return None
+
+
+def laptops():
+    return None
+
+
+def flash_drive():
+    return None
+
+
+def hard_drive():
+    return None
+
+
+def printers():
     return None
