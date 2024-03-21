@@ -18,6 +18,9 @@ def cart_view(request):
         if cart_count is None:
             cart_count = 0  # Set the count to 0 if no items are found
 
+        # Calculate subtotal
+        subtotal = sum(item.product.new_price * item.quantity for item in cart_items)
+
         # Format the price for each product in the cart
         for item in cart_items:
             item.product.formatted_price = intcomma(int(item.product.new_price))
@@ -35,8 +38,10 @@ def cart_view(request):
 
             # Add information about whether product count is 1 or not
             item.product.is_single_quantity = item.quantity == 1
-
-        return render(request, 'cart/cart.html', {'cart_count': cart_count, 'cart_items': cart_items})
+        # Check if cart is empty
+        is_cart_empty = cart_count == 0
+        return render(request, 'cart/cart.html', {'cart_count': cart_count, 'cart_items': cart_items,
+                                                  'is_cart_empty': is_cart_empty, 'subtotal': subtotal})
     else:
         # Handle the case when the user is not authenticated
         # You may want to redirect the user to the login page or display an error message
