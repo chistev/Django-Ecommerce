@@ -62,13 +62,13 @@
                             <div class="d-flex ms-auto align-items-center">
 
 
-                                <button id="remove-product" class=" remove-product btn-primary me-3 {% if cart_item.product.is_single_quantity %}disabled{% endif %} {% if cart_item.product.is_single_quantity %}disabled{% endif %}" data-product-id="{{ cart_item.product.pk }}" data-product-quantity="{{ cart_item.product.quantity }}">
+                                <button class="remove-product btn-primary me-3 {% if cart_item.product.is_single_quantity %}disabled{% endif %}" data-product-id="{{ cart_item.product.pk }}" data-product-quantity="{{ cart_item.product.quantity }}">
                                     <i class="bi bi-dash-lg"></i>
                                 </button>
                                 
                                 <span class="product-count" data-product-id="{{ cart_item.product.pk }}">{{ cart_item.quantity }}</span>
                                 
-                                <button id="add-product" class=" add-btn btn btn-primary ms-3" data-product-id="{{ cart_item.product.pk }}">
+                                <button class=" add-product btn btn-primary ms-3" data-product-id="{{ cart_item.product.pk }}">
                                     <i class="bi bi-plus-lg"></i>
                                 </button>
                             </div>
@@ -85,11 +85,11 @@
                 <hr>
                 <div class="d-flex justify-content-between">
                     <div class="fw-bold">Subtotal</div>
-                    <div class="fw-bold">N {{ subtotal }}</div>
+                    <div class="fw-bold" id="subtotal">N {{ subtotal|floatformat:"0"|intcomma }}</div>
                 </div>
                 <div class="small text-secondary">Delivery fees not included yet.</div>
                 <hr>
-                <button class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;">Checkout (N {{ subtotal }})</button>
+                <button class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;" id="checkoutButton">Checkout (N {{ subtotal|floatformat:"0"|intcomma }})</button>
                 
                 <div class="fw-bold fs-6 mt-4">Returns are easy</div>
                 <hr>
@@ -233,75 +233,30 @@
     
     <script>
         $(document).ready(function() {
-            // Handle click event of "Add" button
-            $('#add-product').click(function() {
-                var productId = $(this).data('product-id');
-                console.log('Product ID:', productId); // Log the product ID
-                // Perform AJAX request to add product to cart
-                $.ajax({
-                    url: '{% url "ecommerce:add_to_cart" %}',
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
-                    },
-                    success: function(response) {
-                        // Handle success response
-                        console.log('Success response:', response); // Log the response
-                        if (response.status === 'success') {
-                            // Update cart count
-                            updateCartCount(response.cart_quantity);
-                            updateProductCount(productId, response.product_quantity);
-                            console.log(response.product_quantity)
-                            if (response.product_quantity > 1) {
-                                $('#remove-product').prop('disabled', false);
-                            }
-                            console.log(response.product_quantity)
     
-                            // Inform the user that the product was added to the cart
-                            alert('Product added to cart.');
-                        } else {
-                            // Handle error response
-                            alert('Error adding product to cart.');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle AJAX error
-                        console.log('Error:', error); // Log the error
-                        alert('Error adding product to cart: ' + error);
-                    }
-                });
-            });
-    
-            
-    
-            // Function to update cart count on the page
-            function updateCartCount(count) {
-                // Update the cart count element with the new count
-                $('#cart-count').text(count);
-                // Update the cart count displayed in the page title
-                $('h5').text('Cart (' + count + ')');
-                // Update the cart count URL data attribute for future updates
-                $('#cartCountUrl').data('count', count);
+            // Function to update subtotal and checkout button after successful AJAX request
+            function updateCartUI(subtotal) {
+                console.log('Updating subtotal:', subtotal);
+                $('#subtotal').text(' ' + subtotal.toLocaleString());
+                $('#checkoutButton').text('Checkout ( ' + subtotal.toLocaleString() + ')');
             }
     
-            // Function to update product count on the page
-            function updateProductCount(productId, count) {
-                // Update the product count element with the new count
-                $('.product-count[data-product-id="' + productId + '"]').text(count);
+            // Function to enable/disable the remove button based on product quantity
+            function updateRemoveButtonState(productId, productQuantity) {
+                var removeButton = $('.remove-product[data-product-id="' + productId + '"]');
+                if (productQuantity === 1) {
+                    removeButton.prop('disabled', true);
+                } else {
+                    removeButton.prop('disabled', false);
+                }
             }
-        });
-    </script>
     
-    <script>
-        $(document).ready(function() {
             // Handle click event of "Remove" button
-            $('#remove-product').click(function() {
-                var productId = $(this).data('product-id');
-                var productQuantity = parseInt($(this).data('product-quantity'));
-                    if (productQuantity === 1) {
-                        $(this).prop('disabled', true);
-                    }
+            $(document).on('click', '.remove-product', function() {
+                var removeButton = $(this);
+                var productId = removeButton.data('product-id');
+                var productQuantity = parseInt(removeButton.data('product-quantity'));
+                
                 // Perform AJAX request to remove a unit of product from cart
                 $.ajax({
                     url: '{% url "ecommerce:remove_from_cart" %}', // Your remove from cart URL
@@ -312,26 +267,24 @@
                     },
                     success: function(response) {
                         // Handle success response
-                        console.log(response); // Log the response
+                        console.log('Remove from cart response:', response); // Log the response
                         if (response.status === 'success') {
                             // Update cart count and product count
                             updateCartCount(response.cart_quantity);
                             updateProductCount(productId, response.product_quantity);
-                             // Enable or disable "Remove" button based on product quantity
-                             if (response.product_quantity === 1) {
-                                $('#remove-product').prop('disabled', true);
-                            } else {
-                                $('#remove-product').prop('disabled', false);
-                            }
-                        }
-                        else {
+                            // Update remove button state
+                            updateRemoveButtonState(productId, response.product_quantity);
+                             // Update subtotal and checkout button
+                            updateCartUI(response.subtotal);
+                            console.log('Subtotal after update:', response.subtotal);
+                        } else {
                             // Handle error response
                             alert('Error removing item from cart.');
                         }
                     },
                     error: function(xhr, status, error) {
                         // Handle AJAX error
-                        console.log('Error:', error); // Log the error
+                        console.log('Error removing item from cart:', error); // Log the error
                         alert('Error removing item from cart: ' + error);
                     }
                 });
@@ -351,11 +304,50 @@
             function updateProductCount(productId, count) {
                 // Update the product count element with the new count
                 $('.product-count[data-product-id="' + productId + '"]').text(count);
-    
-                
             }
+    
+            // Handle click event of "Add" button
+            $(document).on('click', '.add-product', function() {
+                var addButton = $(this);
+                var productId = addButton.data('product-id');
+                
+                // Perform AJAX request to add product to cart
+                $.ajax({
+                    url: '{% url "ecommerce:add_to_cart" %}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        // Handle success response
+                        console.log('Add to cart response:', response); // Log the response
+                        if (response.status === 'success') {
+                            // Update cart count
+                            updateCartCount(response.cart_quantity);
+                            updateProductCount(productId, response.product_quantity);
+                            // Update remove button state
+                            updateRemoveButtonState(productId, response.product_quantity);
+                             // Update subtotal and checkout button
+                            updateCartUI(response.subtotal);
+                            console.log('Subtotal after update:', response.subtotal);
+                            // Inform the user that the product was added to the cart
+                            alert('Product added to cart.');
+                        } else {
+                            // Handle error response
+                            alert('Error adding product to cart.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle AJAX error
+                        console.log('Error adding product to cart:', error); // Log the error
+                        alert('Error adding product to cart: ' + error);
+                    }
+                });
+            });
         });
     </script>
+    
     
     </body>
     {% endblock %}

@@ -2,6 +2,7 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 
 from django.db.models import Min, Max, F, Sum
 from django.shortcuts import render, get_object_or_404
+from django.template.defaultfilters import floatformat
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
@@ -239,7 +240,16 @@ def add_to_cart(request):
         if cart_count is None:
             cart_count = 0  # Set the count to 0 if no items are found
 
-        return JsonResponse({'status': 'success', 'cart_quantity': cart_count, 'product_quantity': product_quantity})
+        # Fetch cart items after they have been updated
+        cart_items = CartItem.objects.filter(cart=cart)
+
+        # Calculate subtotal
+        subtotal = sum(item.product.new_price * item.quantity for item in cart_items)
+        # Convert subtotal to integer to remove decimals
+        subtotal = int(subtotal)
+        formatted_subtotal = 'N ' + intcomma(subtotal)
+
+        return JsonResponse({'status': 'success', 'cart_quantity': cart_count, 'product_quantity': product_quantity, 'subtotal': formatted_subtotal})
     else:
         return JsonResponse({'status': 'error'}, status=400)
 
@@ -268,11 +278,18 @@ def remove_from_cart(request):
             if cart_count is None:
                 cart_count = 0  # Set the count to 0 if no items are found
 
-
             # Get the quantity of the specific product in the cart
             product_quantity = cart_item.quantity
 
+            # Calculate subtotal
+            cart_items = CartItem.objects.filter(cart=cart_item.cart)
+            subtotal = sum(item.product.new_price * item.quantity for item in cart_items)
+            # Convert subtotal to integer to remove decimals
+            subtotal = int(subtotal)
+            formatted_subtotal = 'N ' + intcomma(subtotal)
+
             return JsonResponse({'status': 'success', 'cart_quantity': cart_count, 'product_quantity': product_quantity,
+                                 'subtotal': formatted_subtotal
                                  })
         else:
             # If the product is not in the cart, return an error
