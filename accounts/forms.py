@@ -38,7 +38,7 @@ class AddressForm(forms.ModelForm):
         self.fields['additional_info'].label = "Additional Information"
 
         # Populate the state field with the user's existing state
-        if user.is_authenticated:  # Checking if the user is authenticated
+        if user and user.is_authenticated:  # Checking if the user is authenticated
             try:
                 # Assuming there's a direct ForeignKey relationship between CustomUser and State
                 user_state = user.addresses.first().state

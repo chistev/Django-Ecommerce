@@ -9,8 +9,8 @@ urlpatterns = [
     path('', include('ecommerce.urls')),
     path('accounts/', include('accounts.urls')),
     path('cart/', include('cart.urls')),
-    path('social-auth/', include('social_django.urls', namespace='social'))
-
+    path('social-auth/', include('social_django.urls', namespace='social')),
+    path('checkout/', include('checkout.urls')),
 ]
 
 # Serve media files during development

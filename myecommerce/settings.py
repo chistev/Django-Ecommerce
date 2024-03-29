@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'social_core',
     'anymail',
     'django.contrib.humanize',
+    'checkout'
 ]
 
 

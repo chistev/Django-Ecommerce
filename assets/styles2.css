@@ -200,3 +200,11 @@
     opacity: 0.5; /* Reduce opacity to visually indicate the button is disabled */
     cursor: not-allowed; /* Change cursor to indicate it's not clickable */
 }
+
+/* Add styles for the top-selling-image class */
+.checkout-image {
+    width: 50px; /* Adjust the width as needed */
+    height: 60px; /* Adjust the height as needed */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    object-fit: cover;
+}

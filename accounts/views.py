@@ -310,8 +310,8 @@ def address_book(request):
 def address_book_create(request):
     current_path = resolve(request.path_info).url_name
     if request.method == 'POST':
-        # Bind form with POST data
-        form = AddressForm(request.POST)
+        # Bind form with POST data and user object
+        form = AddressForm(request.POST, user=request.user)
 
         if form.is_valid():
             # Get the logged-in user
@@ -345,13 +345,13 @@ def address_book_create(request):
 
     else:
         # Handle GET request, render the address book creation form
-        form = AddressForm()
         user = request.user  # Get the logged-in user
         personal_details = user.personal_details
         initial_first_name = personal_details.first_name if personal_details else ''  # Initial first name
         initial_last_name = personal_details.last_name if personal_details else ''  # Initial last name
         initial_data = {'first_name': initial_first_name, 'last_name': initial_last_name}
-        form = AddressForm(initial=initial_data)
+        # Pass the initial data and user object to the form
+        form = AddressForm(initial=initial_data, user=request.user)
         states = State.objects.all()
         context = {
             'user': user,

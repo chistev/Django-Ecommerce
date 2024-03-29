@@ -1,0 +1,278 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles2.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+
+</head>
+<body class="bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+        
+        <div class="container-fluid">
+    
+            <!-- Navbar Brand and Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="toggleNavbar()">
+                <span class="navbar-toggler-icon" style="background-color: white;"></span>
+            </button>
+    
+            <!-- Navbar Brand -->
+            <a class="navbar-brand ms-3 fs-2 text-white fw-bold" href="{% url 'ecommerce:index' %}">CHISTEV</a>
+    
+            <!-- Navbar Collapse Container -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+    
+                <!-- Search Box -->
+                <div class="text-white mx-auto">
+                    Finalize Delivery
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-4 d-flex align-items-center justify-content-center">  
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12 black-card cart-card">
+                        <div class="d-flex justify-content-between">
+                            <div class="fw-bold">1. CUSTOMER ADDRESS</div>
+                            <div><a href="" class="text-decoration-none text-primary" id="applyFilterBtn">CHANGE ></a></div>
+                        </div>
+                        <hr>
+                        {% if not user.addresses.all %}
+                        <div class="small">Add a New Address</div>
+                            <form method="post" action="{% url 'accounts:address_book_create' %}">
+                                {% csrf_token %}
+        
+                            <!-- Input field for first name -->
+                            <div style="display: flex; justify-content: space-between;">
+                                <div class="mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label text-white">{{ form.first_name.label }}</label>
+                                    {{ form.first_name }}
+                                </div>
+                                
+                                <div class= "mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label text-white">{{ form.last_name.label }}</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+        
+                            <div class="mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label text-white">{{ form.address.label }}</label>
+                                {{ form.address }}
+                            </div>
+        
+                            <div class="mb-3">
+                                <label for="{{ form.additional_info.id_for_label }}" class="form-label text-white">{{ form.additional_info.label }}</label>
+                                {{ form.additional_info }}
+                            </div>
+        
+                            
+                            
+                            <div style="display: flex; justify-content: space-between;">
+                                <div class="mb-3">
+                                    <label for="{{ form.state.id_for_label }}" class="form-label text-white">{{ form.state.label }}</label>
+                                    {{ form.state }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <!-- Add a message for city selection -->
+                                    <div id="city-selection-message" class="text-danger" style="display: none;">
+                                        Please select a city.
+                                    </div>
+        
+                                    <label for="{{ form.city.id_for_label }}" class="form-label text-white">{{ form.city.label }}</label>
+                                    <select class="form-select bg-secondary" id="city" name="city" style="width: 350px !important" disabled>
+                                        <option value="" disabled selected>City</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div style="display: flex; justify-content:right;">
+                                <button type="submit" class="btn btn-primary" style="width: 10%;">Save</button>
+                            </div>
+                            </form>
+                        {% else %}
+                        <div>{{ personal_details.first_name }} {{ personal_details.last_name }}</div>
+                        <div class="d-flex">
+                            <div>{{ user.addresses.first.address }},</div>
+                            <div class="ms-1">{{ user.addresses.first.additional_info }} |</div>
+                            <div class="ms-1">{{ address.state.name }}</div>
+                            <div class="ms-1">{{ address.city.name }}</div>
+                        </div>
+                        
+                    </div>
+                    {% endif %}
+                    <div class="col-md-12 black-card cart-card mt-4">
+                        <div class="fw-bold">2. DELIVERY DETAILS</div>
+                        <hr>
+                        <div class="d-flex">
+                            <label class="container mt-2">
+                                <input type="radio" name="" class="circle" checked>
+                                <span class="checkmark"></span> Door Delivery (from N {{ delivery_fee|floatformat:0|intcomma }})
+                                <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
+                            </label>
+        
+                            <div>
+                                <i class="bi bi-truck fs-3"></i>
+                            </div>
+                        </div>
+        
+                            <div class="border p-3 mb-2">     
+                                <div class="row d-flex flex-column">
+                                    {% for cart_item in cart_items %}
+                                    <div class="col-md-5 mt-1 d-flex">
+                                            <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="img-fluid checkout-image">
+                                            <div class="ms-1">
+                                                <p class="small text-nowrap">{{ cart_item.product.name }}</p>
+                                                <p class="small" style="margin-top: -20px;">QTY:  {{ cart_item.quantity }}</p>
+                                            </div>
+                                                
+                                    </div>
+        
+                                    
+                                    
+                                    {% endfor %}
+                
+                                </div>
+                            </div>
+        
+                            
+                            <div class="d-flex ">
+                                <a href="" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 30%;">Confirm Delivery Details</a>
+                            </div>
+                            
+                                
+                    </div>
+                    
+        
+                    <div class="col-md-12 black-card cart-card mt-4">
+                        <div class="fw-bold">3. PAYMENT METHOD</div>
+                        <hr>
+                        <div>Payment on delivery</div>
+                        <label class="container mt-2">
+                            <input type="radio" name="" class="circle" checked>
+                            <span class="checkmark"></span> Tap & Relax, Pay with Bank Transfer on Delivery
+                            <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
+                        </label>
+                        <div class="border p-3 mb-2 small">     
+                            <div>"PLEASE DO NOT TRANSFER TO OUR DELIVERY AGENT ACCOUNT." You can pay with your card or bank transfer via JumiaPay at the time of delivery; simply inform our delivery agent when your order is being delivered...</div>
+                            <div><a href="" class="text-decoration-none">Details</a></div>
+                        </div>
+                        <hr>
+                        
+                        <div>Pre-pay Now</div>
+                        <label class="container mt-2">
+                            <input type="radio" name="" class="circle" checked>
+                            <span class="checkmark"></span> Pay with Bank Transfer
+                            <div class="small">You will be redirected to our secure checkout page.</b></div>
+                        </label>
+                        
+                        <div class="d-flex ">
+                            <a href="" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 30%;">Confirm Payment Method</a>
+                        </div>
+                    </div>
+        
+                    <div class="col-md-12 text-white mt-1">
+                        <div><a href="" class="text-decoration-none text-white" id="applyFilterBtn">< Go back & continue shopping </a></div>
+                    </div> 
+    
+                </div>   
+            </div>
+
+            <div class="col-md-3 mx-auto">
+                <div class="row">
+                    <div class="col-md-12 black-card cart-card">
+                        <div class="fw-bold fs-6">Order summary</div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <div class="fw-bold">Item's total ({{ total_items_in_cart }})</div>
+                            <div class="fw-bold" id="subtotal">N {{ total_cost|floatformat:"0"|intcomma }}</div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="fw-bold">Delivery Fees</div>
+                            <div class="fw-bold" id="subtotal">N {{ delivery_fee|floatformat:"0"|intcomma }}</div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <div class="fw-bold">Total</div>
+                            <div class="fw-bold" id="subtotal">N {{ total_amount|floatformat:"0"|intcomma }}</div>
+                        </div>
+                        <hr>
+                        <a href="{% url 'checkout:order_success' %}" class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;" onclick="makePayment()">
+                            CONFIRM ORDER
+                        </a> 
+                    </div>
+                    <div class="text-white small">
+                        By proceeding, you are automatically accepting the 
+                        <a href="" class="text-white">Terms & Conditions</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    <script>
+        $(document).ready(function () {
+    
+            $('#state').change(function () {
+                var stateId = $(this).val();
+    
+                // Send AJAX request to get cities for the selected state
+                $.ajax({
+                    url: "{% url 'accounts:get_cities' %}",
+                    data: {
+                        'state_id': stateId
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var options = '<option value="" disabled selected>City</option>';
+                        $.each(data.cities, function (key, value) {
+                            options += '<option value="' + value.id + '">' + value.name + '</option>';
+                        });
+                        $('#city').html(options).removeAttr('disabled').removeClass('bg-secondary');
+                    }
+                });
+    
+            });
+    
+            // Add form submission event listener
+            $('form').submit(function (event) {
+                // Check if state is selected
+                var stateSelected = $('#state').val();
+                // Check if city is selected
+                var citySelected = $('#city').val();
+    
+                // If state is selected but city is not selected
+                if (stateSelected && !citySelected) {
+                    // Show the message for city selection
+                    $('#city-selection-message').show();
+                    // Prevent form submission
+                    event.preventDefault();
+                }
+            });
+        });
+    
+    </script>
+    <script>
+        function makePayment() {
+            FlutterwaveCheckout({
+                public_key: "FLWPUBK_TEST-1fbd549b751836df8df378c9919668d4-X",
+            });
+        }
+    </script>
+</body>
+</html>

@@ -89,7 +89,10 @@
                 </div>
                 <div class="small text-secondary">Delivery fees not included yet.</div>
                 <hr>
-                <button class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;" id="checkoutButton">Checkout (N {{ subtotal|floatformat:"0"|intcomma }})</button>
+                <a href="{% url 'checkout:checkout' %}" class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;">
+                    Checkout (N {{ subtotal|floatformat:"0"|intcomma }})
+                </a>
+                
                 
                 <div class="fw-bold fs-6 mt-4">Returns are easy</div>
                 <hr>

@@ -1,0 +1,288 @@
+{% extends 'ecommerce/base.html' %}
+{% load static %}
+{% load humanize %}
+{% load custom_tags %}
+
+
+{% block body %}
+
+<body class="bg-dark">
+<div class="container mt-4">
+    <div class="row">
+            <div class="col-md-12 black-card cart-card ms-5">
+                <div class="row mt-4">
+                    <div class="col-md-10 text-center mx-auto">
+                        <div class="border p-3 mb-2 d-flex align-items-center" >     
+                            <div style="border-radius: 50%; background-color: grey; width: fit-content;">
+                                <i class="bi bi-check text-success" style="font-size: 90px;"></i>
+                            </div>
+                            <div class="d-flex flex-column align-items-start ms-3">
+                                <div>Thank You for placing an order on Chistev!</div>
+                                <div>Order Nº</div>
+                            </div>
+                            
+                            <a href="" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 20%; height: 30%;">See Order Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-10 mx-auto">
+                        <div class="row">
+                            <div class="col-md-6 text-center">
+                                <div class="border p-3 mb-2 d-flex">     
+                                    <div>
+                                        <i class="bi bi-truck fs-3"></i>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-start">
+                                        <div class="fw-bold ms-3">Door Delivery</div>
+                                        <div class="small ms-3">Delivery between <b>08 April</b> and <b>11 April.</b></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 text-center">
+                                <div class="border p-3 mb-2 d-flex">     
+                                    <div>
+                                        <i class="bi bi-cash fs-3"></i>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <div class="fw-bold ms-3">Pay on delivery: With bank transfer or cash.</div>
+                                        <div class="small ms-3">"PLEASE DO NOT TRANSFER TO OUR DELIVERY AGENT ACCOUNT." You can pay with your card or bank transfer via JumiaPay at the time of delivery; simply inform our delivery agent when your order is being delivered.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                </div>
+            </div>
+            </div>
+</div>      
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Handle click event of "Remove" link
+        $('.remove-button').click(function(e) {
+            e.preventDefault(); // Prevent default link behavior
+            var productId = $(this).data('product-id');
+            $('#confirmationModal').modal('show'); // Show confirmation modal
+            $('#confirmRemove').data('product-id', productId); // Store product ID in the "Remove" button
+            $('#confirmSave').data('product-id', productId); // Store product ID for "Save for Later" button
+        });
+
+        // Handle click event of "Remove" button in confirmation modal
+        $('#confirmRemove').click(function() {
+            var productId = $(this).data('product-id');
+            // Perform AJAX request to remove product from cart
+            $.ajax({
+                url: '{% url "cart:remove_all_from_cart" %}', // Your remove from cart URL
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    if (response.status === 'success') {
+                        // Reload the page or update the cart dynamically
+                        window.location.reload(); // Reload the page
+                    } else {
+                        // Handle error response
+                        alert('Error removing item from cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    alert('Error removing item from cart: ' + error);
+                }
+            });
+        });
+
+        // Handle click event of "Save for Later" button
+        $('#confirmSave').click(function() {
+            var productId = $(this).data('product-id');
+            console.log('Product ID:', productId); // Log the product ID
+            // Perform AJAX request to save product for later
+            $.ajax({
+                url: '{% url "ecommerce:save_product" %}',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    console.log('Success response:', response); // Log the response
+                    if (response.status === 'save') {
+                        if (response.message === 'already_saved') {
+                            alert('This product is already saved.');
+                        } else {
+                            alert('Product saved for later.');
+                        }
+                        removeProductFromCart(productId);
+                    } else if (response.status === 'unsave') {
+                        alert('Product removed from saved items.');
+                    } else {
+                        // Handle error response
+                        alert('Error saving product for later.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.log('Error:', error); // Log the error
+                    alert('Error saving product for later: ' + error);
+                }
+            });
+        });
+
+        // Function to remove product from cart and refresh the page
+        function removeProductFromCart(productId) {
+            $.ajax({
+                url: '{% url "cart:remove_all_from_cart" %}', // Your remove from cart URL
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    if (response.status === 'success') {
+                        // Reload the page
+                        window.location.reload(); // Reload the page
+                    } else {
+                        // Handle error response
+                        alert('Error removing item from cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    alert('Error removing item from cart: ' + error);
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+
+        // Function to update subtotal and checkout button after successful AJAX request
+        function updateCartUI(subtotal) {
+            console.log('Updating subtotal:', subtotal);
+            $('#subtotal').text(' ' + subtotal.toLocaleString());
+            $('#checkoutButton').text('Checkout ( ' + subtotal.toLocaleString() + ')');
+        }
+
+        // Function to enable/disable the remove button based on product quantity
+        function updateRemoveButtonState(productId, productQuantity) {
+            var removeButton = $('.remove-product[data-product-id="' + productId + '"]');
+            if (productQuantity === 1) {
+                removeButton.prop('disabled', true);
+            } else {
+                removeButton.prop('disabled', false);
+            }
+        }
+
+        // Handle click event of "Remove" button
+        $(document).on('click', '.remove-product', function() {
+            var removeButton = $(this);
+            var productId = removeButton.data('product-id');
+            var productQuantity = parseInt(removeButton.data('product-quantity'));
+            
+            // Perform AJAX request to remove a unit of product from cart
+            $.ajax({
+                url: '{% url "ecommerce:remove_from_cart" %}', // Your remove from cart URL
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    console.log('Remove from cart response:', response); // Log the response
+                    if (response.status === 'success') {
+                        // Update cart count and product count
+                        updateCartCount(response.cart_quantity);
+                        updateProductCount(productId, response.product_quantity);
+                        // Update remove button state
+                        updateRemoveButtonState(productId, response.product_quantity);
+                         // Update subtotal and checkout button
+                        updateCartUI(response.subtotal);
+                        console.log('Subtotal after update:', response.subtotal);
+                    } else {
+                        // Handle error response
+                        alert('Error removing item from cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.log('Error removing item from cart:', error); // Log the error
+                    alert('Error removing item from cart: ' + error);
+                }
+            });
+        });
+
+        // Function to update cart count on the page
+        function updateCartCount(count) {
+            // Update the cart count element with the new count
+            $('#cart-count').text(count);
+            // Update the cart count displayed in the page title
+            $('h5').text('Cart (' + count + ')');
+            // Update the cart count URL data attribute for future updates
+            $('#cartCountUrl').data('count', count);
+        }
+
+        // Function to update product count on the page
+        function updateProductCount(productId, count) {
+            // Update the product count element with the new count
+            $('.product-count[data-product-id="' + productId + '"]').text(count);
+        }
+
+        // Handle click event of "Add" button
+        $(document).on('click', '.add-product', function() {
+            var addButton = $(this);
+            var productId = addButton.data('product-id');
+            
+            // Perform AJAX request to add product to cart
+            $.ajax({
+                url: '{% url "ecommerce:add_to_cart" %}',
+                type: 'POST',
+                data: {
+                    product_id: productId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                },
+                success: function(response) {
+                    // Handle success response
+                    console.log('Add to cart response:', response); // Log the response
+                    if (response.status === 'success') {
+                        // Update cart count
+                        updateCartCount(response.cart_quantity);
+                        updateProductCount(productId, response.product_quantity);
+                        // Update remove button state
+                        updateRemoveButtonState(productId, response.product_quantity);
+                         // Update subtotal and checkout button
+                        updateCartUI(response.subtotal);
+                        console.log('Subtotal after update:', response.subtotal);
+                        // Inform the user that the product was added to the cart
+                        alert('Product added to cart.');
+                    } else {
+                        // Handle error response
+                        alert('Error adding product to cart.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.log('Error adding product to cart:', error); // Log the error
+                    alert('Error adding product to cart: ' + error);
+                }
+            });
+        });
+    });
+</script>
+
+
+</body>
+{% endblock %}
