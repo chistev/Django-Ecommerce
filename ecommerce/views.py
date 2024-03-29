@@ -1,11 +1,12 @@
 from django.contrib.humanize.templatetags.humanize import intcomma
 
-from django.db.models import Min, Max, F, Sum
+from django.db.models import Min, Max, F, Sum, Q
 from django.shortcuts import render, get_object_or_404
 from django.template.defaultfilters import floatformat
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
+from ecommerce.forms import ProductSearchForm
 from ecommerce.models import Product, Cart, CartItem, UserActivity
 
 from django.http import JsonResponse
@@ -420,3 +421,40 @@ def ps5():
 
 def xbox():
     return None
+
+
+def product_search(request):
+    query = request.GET.get('query', '')
+    products = []
+
+    if query:
+        # Perform search query on Product model
+        products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+        # Calculate min and max prices for the searched products
+        min_price = products.aggregate(Min('new_price'))['new_price__min']
+        max_price = products.aggregate(Max('new_price'))['new_price__max']
+
+        for product in products:
+            # Calculate discount percentage
+            if product.old_price is not None and product.old_price != 0:
+                discount = ((product.old_price - product.new_price) / product.old_price) * 100
+                product.discount_percentage = round(discount, 2) * -1  # Make it negative
+            else:
+                product.discount_percentage = 0
+
+            # Format the prices with commas
+            product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
+            product.formatted_price = intcomma(int(product.new_price))
+
+            # Retrieve the quantity of the product in the user's cart
+            product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    return render(request, 'ecommerce/search_results.html', {'products': products, 'query': query, 'min_price': min_price, 'max_price': max_price})
+
+
+def autocomplete(request):
+    query = request.GET.get('query', '')
+    matching_products = Product.objects.filter(name__icontains=query)[:5]  # Limit to 5 suggestions
+    suggestions = [{'name': product.name} for product in matching_products]
+    return JsonResponse(suggestions, safe=False)

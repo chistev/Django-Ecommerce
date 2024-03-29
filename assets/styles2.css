@@ -208,3 +208,23 @@
     border-radius: 5px; /* Optional: Add rounded corners */
     object-fit: cover;
 }
+
+   /* Positioning the autocomplete suggestions container */
+#autocomplete-suggestions {
+    width: 88%; /* Adjust as needed */
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Styling for individual suggestion elements */
+#autocomplete-suggestions .suggestion {
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Hover effect for suggestion elements */
+#autocomplete-suggestions .suggestion:hover {
+    background-color: #f0f0f0;
+}

@@ -40,12 +40,14 @@
             <div class="collapse navbar-collapse" id="navbarNav">
     
                 <!-- Search Box -->
-                <form class="d-flex mx-auto my-2 my-lg-0">
+                <form class="d-flex mx-auto my-2 my-lg-0" method="GET" action="{% url 'ecommerce:product_search' %}">
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input class="form-control" type="search" style="width: 70%;" placeholder="Search Products, brands and categories" aria-label="Search">
+                        <input id="search-input" class="form-control" type="search" name="query"  style="width: 70%;" placeholder="Search Products, brands and categories" aria-label="Search" value="{{ query }}">
                         <button class="btn btn-outline-light btn-search" type="submit">SEARCH</button>
+                        <div id="autocomplete-suggestions" class="position-absolute top-100"></div> <!-- Container for autocomplete suggestions -->
                     </div>
+                    
                 </form>
     
                 <!-- Navbar Buttons -->
@@ -166,5 +168,41 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'javascript/cart.js' %}" defer></script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // JavaScript for autocomplete suggestions
+        const searchInput = document.getElementById('search-input');
+        const autocompleteContainer = document.getElementById('autocomplete-suggestions');
+    
+        searchInput.addEventListener('input', function() {
+            const inputValue = searchInput.value.trim();
+    
+            // Clear previous suggestions
+            autocompleteContainer.innerHTML = '';
+    
+            // Fetch autocomplete suggestions from the server
+            if (inputValue) {
+                fetch(`/autocomplete/?query=${encodeURIComponent(inputValue)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(suggestion => {
+                            const suggestionElement = document.createElement('div');
+                            suggestionElement.textContent = suggestion.name;
+                            suggestionElement.classList.add('suggestion');
+                            suggestionElement.addEventListener('click', function() {searchInput.value = suggestion.name;
+                            // Trigger form submission when suggestion is clicked
+                            searchInput.closest('form').submit();
+                        });
+                            autocompleteContainer.appendChild(suggestionElement);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching autocomplete suggestions:', error));
+            } else {
+                console.log('Input value is empty');
+            }
+        });
+    });
+</script>
+    
 </body>
 </html>

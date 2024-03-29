@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from .views import autocomplete
 
 app_name = 'ecommerce'
 
@@ -41,5 +41,6 @@ urlpatterns = [
     path('api/cart/count/', views.cart_count, name='cart_count'),
     path('return_policy', views.return_policy, name='return_policy'),
     path('save_product', views.save_product, name='save_product'),
-
+    path('search/', views.product_search, name='product_search'),
+    path('autocomplete/', autocomplete, name='autocomplete'),
 ]
