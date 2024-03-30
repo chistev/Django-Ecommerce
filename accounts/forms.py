@@ -3,6 +3,16 @@ from django import forms
 from accounts.models import Address, State
 
 
+class EmailForm(forms.Form):
+    email = forms.EmailField(
+        label='',
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'Email',
+            'style': 'width: 100%; height: 45px; padding: 10px; outline: none; border: 2px solid #ccc; ',
+            'class': 'email-input'
+        })
+    )
+
 class RegistrationForm(forms.Form):
     email = forms.EmailField(label='Email address', widget=forms.EmailInput(attrs={'class': 'form-control',
                                                                                    'required': True}))

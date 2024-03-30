@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.urls import resolve
 
 from ecommerce.models import UserActivity
-from .forms import RegistrationForm, LoginForm, AddressForm
+from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -27,18 +27,19 @@ def login_excluded(redirect_to):
 @login_excluded('ecommerce:index')
 def login_or_register(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-
-        # Check if the email exists in the database
-        user = CustomUser.objects.filter(email=email).first()
-
-        if user is not None:
-            # If the email exists, redirect to the login page
-            return redirect('accounts:login', email=email)
-        else:
-            return redirect('accounts:register', email=email)
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            # Check if the email exists in the database
+            user = CustomUser.objects.filter(email=email).first()
+            if user is not None:
+                # If the email exists, redirect to the login page
+                return redirect('accounts:login', email=email)
+            else:
+                return redirect('accounts:register', email=email)
     else:
-        return render(request, 'accounts/login_or_register.html')
+        form = EmailForm()
+    return render(request, 'accounts/login_or_register.html', {'form': form})
 
 
 @login_excluded('ecommerce:index')
