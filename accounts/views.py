@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
-from django.contrib.humanize.templatetags.humanize import intcomma
 from django.http import JsonResponse
 from django.urls import resolve
 
@@ -10,7 +9,6 @@ from ecommerce.models import UserActivity
 from .forms import RegistrationForm, LoginForm, AddressForm
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
-from ecommerce.models import Product
 
 
 def login_excluded(redirect_to):

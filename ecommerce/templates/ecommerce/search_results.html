@@ -14,7 +14,7 @@
         {% endfor %}
         
     </div>
-
+    {% if products %}
     {% include 'ecommerce/ad.html' %}
 
     <div class="row mt-4">
@@ -93,6 +93,7 @@
         </div>
 
        <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
+        
         <div class="d-flex" style="justify-content: space-between;">
             <h5>Shop Online in Chistev</h5>
             <div>
@@ -101,6 +102,7 @@
             </div>
         </div>
         <hr>
+        
         <div>{{ products|length }} product{{ products|pluralize:"s" }} found</div>           
            <hr>
 
@@ -112,13 +114,30 @@
                 {% for product in products %}
                     {% include 'ecommerce/product_list_stacked.html' %}
                 {% endfor %} 
+
         
-                <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>
+        
+        
+                
             </div>
         </div>
            
     </div>
-   
+
+    {% else %}
+    <div class="col-md-12 mt-5 mb-5 text-white">
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <h1><strong><i class="bi bi-binoculars"></i></strong></h1>
+                <div class="fw-bold fs-5">There are no results for "{{query}}"</div>
+                <div style="width: 70%;" class="mx-auto">- Check your spelling for typing errors</div>
+                <div style="width: 70%;" class="mx-auto">- Try searching with short and simple keywords</div>
+                <div style="width: 70%;" class="mx-auto">- - Try searching more general terms - you can then filter the search results</div>
+                <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-3">GO TO HOMEPAGE</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="black-card-beneath">
         <!-- Add your content for the black card here -->
             <h5 class="top-selling-title">Recently Viewed</h5>
@@ -126,6 +145,6 @@
         {% render_recently_viewed_products request.user %}
     
     </div>
-
+    <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>
 </body>
 {% endblock %}
