@@ -43,6 +43,7 @@ def login_or_register(request):
 
 
 @login_excluded('ecommerce:index')
+# if no email is provided when calling the function, it is set to None.
 def register(request, email=None):
     if not email:
         # Handle the case where email is not present
@@ -57,7 +58,7 @@ def register(request, email=None):
             if password1 == password2:
                 # Passwords match, store relevant details in the session until the registration process is complete
                 request.session['registration_data'] = {
-                    'email': email,
+                    'email': email,  # refers to the value passed to the register function as a parameter
                     'password': form.cleaned_data['password1'],
                 }
                 return redirect('accounts:personal_details')
@@ -72,6 +73,7 @@ def register(request, email=None):
     else:
         # GET request, render an empty form
         form = RegistrationForm(initial={'email': email})
+
     return render(request, 'accounts/register.html', {'form': form})
 
 

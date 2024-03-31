@@ -13,6 +13,7 @@ class EmailForm(forms.Form):
         })
     )
 
+
 class RegistrationForm(forms.Form):
     email = forms.EmailField(label='Email address', widget=forms.EmailInput(attrs={'class': 'form-control',
                                                                                    'required': True}))

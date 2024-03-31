@@ -2,13 +2,13 @@
 
 {% block content %}
         <h4>Create Your Account</h4>
-        <p style="width: 50%;" class="mx-auto">Let's get started by creating your account.
-            To keep your account safe, we need a strong password
-        </p>
-
-        
+        <div class="d-flex flex-column">
+            <div class="mx-auto">Let's get started by creating your account.</div>
+            <div class="mx-auto">To keep your account safe, we need a strong password</div>
+        </div>
+           
         <!-- Form for email -->
-        <form action="{% url 'accounts:register' email=form.email.value %}" method="post" style="width: 55%;" class="mx-auto" onsubmit="return validateForm()">
+        <form action="{% url 'accounts:register' email=form.email.value %}" method="post" style="width: 65%;" class="mx-auto mt-5" onsubmit="return validateForm()">
             {% csrf_token %}
             <div class="input-group">
                 <input type="email" class="form-control bg-secondary text-white" id="email" name="email" required value="{{ form.email.value }}" readonly>
@@ -17,11 +17,13 @@
             {% if form.email.errors %}
              <p class="text-danger mt-3">{{ form.email.errors.0 }}</p>
             {% endif %}
-    
-            <input type="password" class="form-control mt-3" placeholder="password" id="Password1" name="password1" required oninput="validatePassword()"> 
+            <input type="password" class="form-control mt-3 register-password" placeholder="password" id="Password1" name="password1" required oninput="validatePassword()"> 
+            <div class="progress mt-2" id="progress">
+                <div id="passwordProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
             <span id="passwordStrength"></span>
 
-            <input type="password" class="form-control mt-3" placeholder="Confirm Password" id="Password2" name="password2" required oninput="validatePassword()"> 
+            <input type="password" class="form-control mt-3 register-password" placeholder="Confirm Password" id="Password2" name="password2" required oninput="validatePassword()"> 
              {% if form.password2.errors %}
             <p class="text-danger mt-3">{{ form.password2.errors.0 }}</p>
             {% elif form.cleaned_data.password1 != form.cleaned_data.password2 %}

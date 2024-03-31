@@ -1,3 +1,11 @@
+/* Login or Register Page styles */
+
+.email-input:focus {
+    border-color: #007bff !important;
+    caret-color: #007bff;
+}
+
+
 *{
     margin: 0;
     padding: 0;
@@ -340,43 +348,15 @@ body{
     color: #3385ff;
 }
 
-/* Add custom style for input focus */
-#email:focus {
-    border-color: khaki; /* Green border color when in focus */
-    box-shadow: none;
+/* Register Page styles */
 
+.input-group input {
+    flex: 1 !important;
 }
 
-body{
-    padding: 20px;
+.form-control.register-password {
+    width: 100% !important;
 }
-
-/* Add style for inactive (disabled) button */
-#continueButton:disabled {
-    background-color: #6c757d; /* Bootstrap's secondary color */
-}
-
-h2 {
-    color: #007bff;
-}
-
-p {
-    line-height: 1.6;
-}
-
-ol {
-    padding-left: 20px;
-}
-
-/* Login or Register styles */
-
-.email-input:focus {
-    border-color: #007bff !important;
-    caret-color: #007bff;
-}
-
-
-
 
 
 /* Media query for smaller screens (adjust the breakpoint as needed) */
