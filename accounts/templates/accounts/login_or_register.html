@@ -5,6 +5,15 @@
 <h4>Welcome to Chistev</h4>
         <p>Type your e-mail to log in or create a Chistev account.</p>
 
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <!-- Form for email -->
         <form action="{% url 'accounts:login_or_register' %}" method="post">
             {% csrf_token %}

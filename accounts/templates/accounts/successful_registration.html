@@ -3,13 +3,13 @@
 {% block content %}
 
 
-<h4>Hi, {{ user.personal_details.first_name }}, Your account has been successfully created</h4>
+<h4>Hi, {{ first_name }}, Your account has been successfully created</h4>
         <p>Please log in from the home page</p>
 
 
     <script>
         // Redirect to the home page after 2000 milliseconds (2 seconds)
-        setTimeout(function() {
+         setTimeout(function() {
             window.location.href = "/";
         }, 2000);
     </script>

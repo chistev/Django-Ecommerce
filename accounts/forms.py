@@ -1,6 +1,6 @@
 from django import forms
 
-from accounts.models import Address, State
+from accounts.models import Address, State, PersonalDetails
 
 
 class EmailForm(forms.Form):
@@ -21,6 +21,22 @@ class RegistrationForm(forms.Form):
                                                                                     'required': True}))
     password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput(attrs={'class': 'form-control',
                                                                                             'required': True}))
+
+
+class PersonalDetailsForm(forms.ModelForm):
+    class Meta:
+        model = PersonalDetails
+        fields = ['first_name', 'last_name']
+        labels = {
+            'first_name': '',
+            'last_name': '',
+        }
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control mx-auto', 'placeholder': 'First Name*',
+                                                 'style': 'width: 80% !important', 'required': True}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control mx-auto', 'placeholder': 'Last Name*',
+                                                'style': 'width: 80% !important', 'required': True}),
+        }
 
 
 class LoginForm(forms.Form):

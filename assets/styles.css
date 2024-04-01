@@ -5,6 +5,16 @@
     caret-color: #007bff;
 }
 
+/* Register Page styles */
+
+.input-group input {
+    flex: 1 !important;
+}
+
+.form-control.register-password {
+    width: 100% !important;
+}
+
 
 *{
     margin: 0;
@@ -348,15 +358,6 @@ body{
     color: #3385ff;
 }
 
-/* Register Page styles */
-
-.input-group input {
-    flex: 1 !important;
-}
-
-.form-control.register-password {
-    width: 100% !important;
-}
 
 
 /* Media query for smaller screens (adjust the breakpoint as needed) */

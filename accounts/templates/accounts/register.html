@@ -6,6 +6,7 @@
             <div class="mx-auto">Let's get started by creating your account.</div>
             <div class="mx-auto">To keep your account safe, we need a strong password</div>
         </div>
+
            
         <!-- Form for email -->
         <form action="{% url 'accounts:register' email=form.email.value %}" method="post" style="width: 65%;" class="mx-auto mt-5" onsubmit="return validateForm()">
@@ -17,6 +18,7 @@
             {% if form.email.errors %}
              <p class="text-danger mt-3">{{ form.email.errors.0 }}</p>
             {% endif %}
+            
             <input type="password" class="form-control mt-3 register-password" placeholder="password" id="Password1" name="password1" required oninput="validatePassword()"> 
             <div class="progress mt-2" id="progress">
                 <div id="passwordProgressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>

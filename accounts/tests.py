@@ -1,8 +1,12 @@
+from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
-from accounts.models import CustomUser
 
+from accounts.forms import PersonalDetailsForm
+from accounts.models import CustomUser
+from accounts.views import personal_details
 
 class LoginOrRegisterViewTest(TestCase):
     def test_get_request(self):
@@ -50,3 +54,4 @@ class RegisterViewTest(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)  # Check if one error message is displayed
         self.assertIn('Email', str(messages[0]))  # Check if the error message contains 'Email'
+
