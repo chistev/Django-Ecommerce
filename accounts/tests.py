@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import TestCase, RequestFactory
-from django.urls import reverse
+from django.test import TestCase, RequestFactory, Client
+from django.urls import reverse, resolve
 
 from accounts.forms import PersonalDetailsForm, LoginForm
-from accounts.models import CustomUser
-from accounts.views import personal_details
+from accounts.models import CustomUser, Address, PersonalDetails, State, City
+from accounts.views import personal_details, my_account
 from django.contrib.auth.models import User
 from .views import login
 
@@ -58,3 +58,27 @@ class RegisterViewTest(TestCase):
         self.assertEqual(len(messages), 1)  # Check if one error message is displayed
         self.assertIn('Email', str(messages[0]))  # Check if the error message contains 'Email'
 
+
+class MyAccountViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = CustomUser.objects.create_user(email='test@example.com', password='testpassword')
+        self.personal_details = PersonalDetails.objects.create(user=self.user, first_name='John', last_name='Doe')
+        state = State.objects.create(name='Test State')
+        city = City.objects.create(name='Test City', state=state)
+        self.address = Address.objects.create(user=self.user, first_name='First', last_name='Last',
+                                              address='123 Street', city=city, state=state)
+        self.url = reverse('accounts:my_account')
+
+    def test_my_account_view(self):
+        # Login the user
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/my_account.html')
+        self.assertEqual(response.context['current_path'], resolve(response.request['PATH_INFO']).url_name)
+        self.assertEqual(response.context['user'], self.user)
+        self.assertEqual(response.context['personal_details'], self.personal_details)
+        self.assertQuerysetEqual(response.context['user_addresses'], Address.objects.filter(user=self.user))

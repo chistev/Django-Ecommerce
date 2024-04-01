@@ -155,12 +155,7 @@ def login(request, email=None):
 
 
 class CustomLogoutView(LogoutView):
-    next_page = '/'  # Redirect to home page after logout, change it according to your needs
-
-    def get_next_page(self):
-        next_page = super().get_next_page()
-        # Additional logic if needed before redirecting
-        return next_page
+    next_page = '/'  # Redirect to home page after logout
 
 
 @login_required

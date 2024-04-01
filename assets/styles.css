@@ -15,6 +15,14 @@
     width: 100% !important;
 }
 
+/* Custom CSS for centering account navigation on smaller screens */
+@media (max-width: 767px) {
+    .center-account-nav {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 5%;
+    }
+}
 
 *{
     margin: 0;
@@ -359,8 +367,8 @@ body{
 }
 
 
-
 /* Media query for smaller screens (adjust the breakpoint as needed) */
+/* this affects the width of the search forn */
 @media (min-width: 992px) {
     .form-control {
       width: 600px !important; /* Adjust the width as needed */
