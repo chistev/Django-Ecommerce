@@ -44,7 +44,7 @@ class LoginForm(forms.Form):
         label='Email address',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'required': True})
     )
-    password1 = forms.CharField(
+    password = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True})
     )

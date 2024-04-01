@@ -4,9 +4,12 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
-from accounts.forms import PersonalDetailsForm
+from accounts.forms import PersonalDetailsForm, LoginForm
 from accounts.models import CustomUser
 from accounts.views import personal_details
+from django.contrib.auth.models import User
+from .views import login
+
 
 class LoginOrRegisterViewTest(TestCase):
     def test_get_request(self):

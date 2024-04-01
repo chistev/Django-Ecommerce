@@ -129,23 +129,26 @@ def successful_registration(request, first_name):
     return render(request, 'accounts/successful_registration.html', {'first_name': first_name})
 
 
+@login_excluded('ecommerce:index')
 def login(request, email=None):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password1')
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
 
-        # Authenticate user
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            # Log in the user
-            auth_login(request, user)
-            return redirect('ecommerce:index')
+            # Authenticate user
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                # Log in the user
+                auth_login(request, user)
+                return redirect('ecommerce:index')
         else:
             messages.error(request, 'Invalid email or password')
-            print("Authentication failed.")
 
-    # If the authentication fails or it's a GET request, render the login form
-    form = LoginForm(initial={'email': email})
+    else:
+        # If it's a GET request, render the login form
+        form = LoginForm(initial={'email': email})
     return render(request, 'accounts/login.html', {'form': form})
 
 
