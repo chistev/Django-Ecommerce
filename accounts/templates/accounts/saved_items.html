@@ -3,38 +3,40 @@
 {% load humanize %}
 
 {% block body %}
+{% include 'accounts/account_navigation.html' %}
              <!-- First Card -->
-             {% include 'accounts/account_navigation.html' %}
+             
                 {% if saved_products %}
-                <h5>Saved Items ({{ saved_products_count }})</h5>  <!-- Display the count dynamically -->
-                <hr>
+                <h5 class="saved-items-count-header">Saved Items ({{ saved_products_count }})</h5>  <!-- Display the count dynamically -->
+                <hr class="saved-items-count-header">
                 {% for user_activity in saved_products %}
                 <div class="border p-3 mb-2">     
                     <div class="row">
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-4 mb-2 mb-md-0">
                             <a href="{% url 'ecommerce:product_detail' product_id=user_activity.product.pk %}">
                                 <img src="{{ user_activity.product.image.url }}" alt="{{ user_activity.product.name }}" class="saved-item-image img-fluid">
                             </a>
-                            
                         </div>
     
                         <!-- Column for product details -->
-                        <div class="col-md-7 d-flex flex-column justify-content-between">
+                        <div class="col-md-7 col-8 d-flex flex-column justify-content-between">
                             <a href="{% url 'ecommerce:product_detail' product_id=user_activity.product.pk %}" class="text-decoration-none text-white">
                                 <div class="product-name"> {{ user_activity.product.name }} </div>
                             </a>
                             
                             <div class="">
                                 <div class="text-white">N&nbsp; {{ user_activity.product.new_price|floatformat:0|intcomma }} </div>
+                                {% if user_activity.product.old_price > 0 and user_activity.product.old_price > user_activity.product.new_price %}
                                 <div class="d-flex">
                                     <div class="slashed-price text-white fs-6" style="text-decoration: line-through; font-size: 13px;">N {{ user_activity.product.old_price|floatformat:0|intcomma }} </div>
-                                <span class="badge bg-danger ms-2" style="font-size: 11px;">{{ user_activity.product.discount_percentage }} %</span>
+                                <span class="badge bg-danger ms-2 " style="font-size: 11px;">{{ user_activity.product.discount_percentage }} %</span>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
     
                         <!-- Column for BUY AND REMOVE -->
-                        <div class="col-md-2 d-flex flex-column justify-content-between ms-auto">
+                        <div class="col-md-2 col-12 d-flex flex-column justify-content-between align-items-center ms-auto align-items-md-start">
                             <a href="" class="btn btn-primary mt-2 mb-2" style="width: 105%;">BUY NOW</a>
                             <div><a href="" class="remove-button text-decoration-none text-primary" data-product-id="{{ user_activity.product.pk }}">
                                 <i class="bi bi-trash me-2"></i>REMOVE</a>
@@ -47,6 +49,7 @@
                 {% else %}
                 <!-- Add the bag icon in the middle -->
                 <h5>Saved Items</h5> 
+                <hr>
                 <div class="row mt-4">
                     <div class="col-md-12 text-center">
                         <h1><strong><i class="bi bi-bookmark"></i></strong></h1>
@@ -65,42 +68,64 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Event listener for clicking on the remove button
-            $('.remove-button').click(function (e) {
-                e.preventDefault();  // Prevent default link behavior
-        
-                var productId = $(this).data('product-id');
-        
-                // Send AJAX request to remove the product
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "accounts:remove_saved_product" %}',
-                    data: {
-                        'product_id': productId,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.status === 'success') {
-                            console.log('Product removed successfully:', productId);  // Add this console log statement
-        
-                            // Remove the product from the DOM
-                            $(e.target).closest('.border').remove();
-        
-                            // Update the count of saved items
-                            var savedItemsCount = $('.border').length;
-                            $('h5').text('Saved Items (' + savedItemsCount + ')');
-                        } else {
-                            alert('Failed to remove product.');
-                        }
-                    },
-                    error: function (xhr, errmsg, err) {
-                        console.log(xhr.status + ": " + xhr.responseText);
-                        alert('Failed to remove product.');
+    $('.remove-button').click(function (e) {
+        e.preventDefault();
+
+        var productId = $(this).data('product-id');
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "accounts:remove_saved_product" %}',
+            data: {
+                'product_id': productId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.status === 'success') {
+                    // Remove the closest ancestor element with the class 'border' from the DOM
+                    $(e.target).closest('.border').remove();
+
+                    // Update the count of saved items
+                    var savedItemsCount = $('.border').length;
+                    $('h5').text('Saved Items (' + savedItemsCount + ')');
+
+                    // Check if there are no saved items left
+                    if (data.saved_products_count < 1) {
+                        console.log("saved count: " + data.saved_products_count);
+                        // Append the HTML section dynamically
+                        var html = `
+                            <!-- Add the bag icon in the middle -->
+                            <h5>Saved Items</h5> 
+                            <hr>
+                            <div class="row mt-4">
+                                <div class="col-md-12 text-center">
+                                    <h1><strong><i class="bi bi-bookmark"></i></strong></h1>
+                                    <p>You haven’t saved an item yet!</p>
+                                    <p style="width: 70%;" class="mx-auto">Found something you like? Tap on the heart shaped icon next to the item to add it to your wishlist! All your saved items will appear here.</p>
+                                    <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Continue Shopping</a>
+                                </div>
+                            </div>
+                        `;
+                        $('.col-md-8.col-11.me-auto.black-card.small-screen').append(html);
+                        // Hide the saved items count dynamically
+                         $('.saved-items-count-header').hide();
                     }
-                });
-            });
+                } else {
+                    alert('Failed to remove product.');
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+                alert('Failed to remove product.');
+            }
         });
+    });
+});
+
     </script>        
+
+
+
 </body>
 {% endblock %}

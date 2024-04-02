@@ -201,6 +201,12 @@ def saved_items(request):
     saved_products_count = UserActivity.objects.filter(user=request.user, saved=True).count()
 
     saved_products = UserActivity.objects.filter(user=request.user, saved=True).select_related('product')
+    for saved_product in saved_products:
+        if saved_product.product.old_price is not None and saved_product.product.old_price != 0:
+            discount = ((saved_product.product.old_price - saved_product.product.new_price) / saved_product.product.old_price) * 100
+            saved_product.product.discount_percentage = round(discount, 2) * -1  # Make it negative
+        else:
+            saved_product.product.discount_percentage = 0
 
     return account_page(request, 'accounts/saved_items.html',
                         {'saved_products': saved_products,
@@ -212,12 +218,13 @@ def remove_saved_product(request):
         product_id = request.POST.get('product_id')
         user = request.user
 
-        # Check if the user is authenticated
         if user.is_authenticated:
             # Delete the UserActivity instance for the user and product
             UserActivity.objects.filter(user=user, product_id=product_id).delete()
-            print("Product removed successfully:", product_id)  # Add this print statement
-            return JsonResponse({'status': 'success'})
+            # Retrieve the count of saved products after removal
+            saved_products_count = UserActivity.objects.filter(user=user, saved=True).count()
+
+            return JsonResponse({'status': 'success', 'saved_products_count': saved_products_count})
         else:
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
     else:

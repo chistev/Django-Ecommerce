@@ -15,15 +15,23 @@
     width: 100% !important;
 }
 
-/* Custom CSS for centering account navigation on smaller screens */
-@media (max-width: 767px) {
-    .center-account-nav {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 5%;
+/* Saved items page styles */
+
+.my-account-card{
+    width: 300px;
+    align-self: flex-start;
+}
+
+@media (max-width: 1200px) {
+    .accounts-container{
+        margin-top: 5%;
     }
+}
 
-
+@media (max-width: 1100px) {
+    .accounts-container{
+        margin-top: 7% !important;
+    }
 }
 
 *{
@@ -131,9 +139,7 @@ body{
     height: 100% !important;
 }
 
-.my-account-card{
-    width: 300px;
-}
+
 
 .second-card{
     background-color: black;
