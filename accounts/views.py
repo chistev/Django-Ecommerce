@@ -159,51 +159,53 @@ class CustomLogoutView(LogoutView):
 
 
 @login_required
-def my_account(request):
+def account_page(request, template_name, additional_context=None):
     current_path = resolve(request.path_info).url_name
+    context = {'current_path': current_path}
+    if additional_context:
+        context.update(additional_context)
+    return render(request, template_name, context)
+
+
+@login_required
+def my_account(request):
     user = request.user  # Get the logged-in user
     personal_details = user.personal_details  # Access the PersonalDetails related object
 
     # Retrieve user's addresses
     user_addresses = Address.objects.filter(user=user)
 
-    return render(request, 'accounts/my_account.html',
-                  {'current_path': current_path, 'user': user, 'personal_details': personal_details,
-                   'user_addresses': user_addresses})
+    return account_page(request, 'accounts/my_account.html',
+                        {'user': user, 'personal_details': personal_details,
+                            'user_addresses': user_addresses})
 
 
 @login_required
 def orders(request):
-    current_path = resolve(request.path_info).url_name
-    return render(request, 'accounts/orders.html', {'current_path': current_path})
+    return account_page(request, 'accounts/orders.html')
 
 
 @login_required
 def closed_orders(request):
-    current_path = resolve(request.path_info).url_name
-    return render(request, 'accounts/closed_orders.html', {'current_path': current_path})
+    return account_page(request, 'accounts/closed_orders.html')
 
 
 @login_required
 def inbox(request):
-    current_path = resolve(request.path_info).url_name
-    return render(request, 'accounts/inbox.html', {'current_path': current_path})
+    return account_page(request, 'accounts/inbox.html')
 
 
 @login_required
 def saved_items(request):
-    current_path = resolve(request.path_info).url_name
-
     # Retrieve the count of saved products
     saved_products_count = UserActivity.objects.filter(user=request.user, saved=True).count()
 
     saved_products = UserActivity.objects.filter(user=request.user, saved=True).select_related('product')
 
-    return render(request, 'accounts/saved_items.html',
-                  {'current_path': current_path,
-                   'saved_products': saved_products,
-                   'saved_products_count': saved_products_count,  # Pass the count to the template
-                   })
+    return account_page(request, 'accounts/saved_items.html',
+                        {'saved_products': saved_products,
+                            'saved_products_count': saved_products_count})
+
 
 def remove_saved_product(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':

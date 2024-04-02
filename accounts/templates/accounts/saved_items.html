@@ -3,15 +3,8 @@
 {% load humanize %}
 
 {% block body %}
-
-<body class="bg-dark">
-
-    <div class="container mt-4">
-        <div class="row">
              <!-- First Card -->
              {% include 'accounts/account_navigation.html' %}
-    
-            <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
                 {% if saved_products %}
                 <h5>Saved Items ({{ saved_products_count }})</h5>  <!-- Display the count dynamically -->
                 <hr>
