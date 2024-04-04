@@ -50,6 +50,15 @@ class LoginForm(forms.Form):
     )
 
 
+class EditBasicDetailsForm(forms.ModelForm):
+    class Meta:
+        model = PersonalDetails
+        fields = ['first_name', 'middle_name', 'last_name']
+
+    def __init__(self, *args, **kwargs):
+        super(EditBasicDetailsForm, self).__init__(*args, **kwargs)
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs['class'] = 'form-control'
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address

@@ -1,13 +1,12 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-<body class="bg-dark" style="margin-top: -140px;">
     <div class="container">
         <div class="row">
              <!-- First Card -->
              {% include 'accounts/basic_and_security_details.html' %}
     
-            <div class="col-md-8 ms-auto black-card" style="height: auto;">
+             <div class="col-md-6 col-11 mx-auto col-lg-8 black-card" style="height: auto; width: auto;">
                 <div class="d-flex mb-3">
                     <h5>Profile Details</h5>
                 </div>
@@ -16,19 +15,19 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="first-name" class="form-label d-flex">First Name:</label>
-                        <input type="text" class="form-control" id="first-name" name="first-name" value="{{ personal_details.first_name }}">
+                        {{ form.first_name }}
                     </div>
                     <div class="mb-3">
                         <label for="middle-name" class="form-label d-flex">Middle Name:</label>
-                        <input type="text" class="form-control" id="middle-name" name="middle-name" value="{{ personal_details.middle_name }}" >
+                        {{ form.middle_name }}
                     </div>
                     <div class="mb-3">
                         <label for="last-name" class="form-label d-flex">Last Name:</label>
-                        <input type="text" class="form-control" id="last-name" name="last-name" value="{{ personal_details.last_name }}" >
+                        {{ form.last_name }}
                     </div>
 
-                    <div style="display: flex; justify-content:right; margin-right: 70px;">
-                        <button type="submit" class="btn btn-primary" style="width: 30%;">Save</button>
+                    <div style="display: flex; justify-content:right;">
+                        <button type="submit" class="btn btn-primary ms-auto" style="width: 30%;">Save</button>
                     </div>
 
                     
@@ -41,5 +40,5 @@
     </div>
         
     </div>
-</body>
+
 {% endblock %}

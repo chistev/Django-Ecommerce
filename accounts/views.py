@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import resolve, reverse
 
 from ecommerce.models import UserActivity
-from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, PersonalDetailsForm
+from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, PersonalDetailsForm, EditBasicDetailsForm
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -245,28 +245,21 @@ def basic_details(request):
 
 @login_required
 def edit_basic_details(request):
-    user = request.user  # Get the logged-in user
+    user = request.user
     personal_details = user.personal_details
 
     if request.method == 'POST':
-        # Extract form data
-        first_name = request.POST.get('first-name')
-        middle_name = request.POST.get('middle-name')
-        last_name = request.POST.get('last-name')
+        # request.POST is a dictionary-like object containing all the submitted data from the form.
+        # instance = personal_details  is used to specify the instance of the model that the form is working with
+        form = EditBasicDetailsForm(request.POST, instance=personal_details)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:basic_details')
+    else:
+        form = EditBasicDetailsForm(instance=personal_details)
 
-        # Get the PersonalDetails instance associated with the current user
-        personal_details = request.user.personal_details
-
-        # Update the PersonalDetails model
-        personal_details.first_name = first_name
-        personal_details.middle_name = middle_name
-        personal_details.last_name = last_name
-        personal_details.save()
-
-        # Redirect to a success page
-        return redirect('accounts:basic_details')
     return render(request, 'accounts/edit_basic_details.html',
-                  {'user': user, 'personal_details': personal_details})
+                  {'user': user, 'personal_details': personal_details, 'form': form})
 
 
 @login_required

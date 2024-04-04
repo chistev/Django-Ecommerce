@@ -1,14 +1,11 @@
-from django.contrib.auth import get_user_model
+
 from django.contrib.messages import get_messages
-from django.contrib.sessions.middleware import SessionMiddleware
+
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
 
-from accounts.forms import PersonalDetailsForm, LoginForm
+
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
-from accounts.views import personal_details, my_account
-from django.contrib.auth.models import User
-from .views import login
 
 
 class LoginOrRegisterViewTest(TestCase):
