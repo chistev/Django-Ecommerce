@@ -6,42 +6,26 @@
 
 <div class="container mt-5">
     <div class="row">
-        <div class="col-lg-6 col-8 col-md-6 mx-auto mb-4">
-            <div class="black-card my-account-card">
+        <div class="col-lg-6 col-md-6 mb-4 col-7 mx-auto">
+            <div class="black-card my-account-card ms-auto">
                 <div class="card-body">
-                    <!-- Content of your card -->
-                    <div class="row">
-                        <div class="col-12">
-                            <h5 class="card-title d-flex"><i class="bi bi-person me-3"></i>Profile Details</h5>
-                            
-                            <hr>
-                            
-                            <ul class="custom-list">
-                                <li><a href="{% url 'accounts:basic_details' %}" class="nav-link">Basic Details</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
+                    <h5 class="card-title d-flex"><i class="bi bi-person me-3"></i>Profile Details</h5>
+                    <hr>
+                    <ul class="custom-list">
+                        <li><a href="{% url 'accounts:basic_details' %}" class="nav-link">Basic Details</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-    
-        <div class="col-lg-6 col-8 col-md-6 mx-auto mb-4">
-            <div class="black-card my-account-card">
+        <div class="col-lg-6 col-md-6 col-7 mb-4 mx-auto">
+            <div class="black-card my-account-card me-auto">
                 <div class="card-body">
-                    <!-- Content of your card -->
-                    <div class="row">
-                        <div class="col-12">
-                            <h5 class="card-title d-flex"><i class="bi bi-lock me-3"></i>Security Settings</h5>
-                            <hr>
-                            
-                            <ul class="custom-list">
-                                <li><a href="{% url 'accounts:change_password' %}" class="nav-link">Change Password</a></li>
-                                <li class="delete-account"><a href="{% url 'accounts:delete_account' %}" class="nav-link text-danger delete-account">Delete Account</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
+                    <h5 class="card-title d-flex"><i class="bi bi-lock me-3"></i>Security Settings</h5>
+                    <hr>
+                    <ul class="custom-list">
+                        <li><a href="{% url 'accounts:change_password' %}" class="nav-link">Change Password</a></li>
+                        <li class="delete-account"><a href="{% url 'accounts:delete_account' %}" class="nav-link text-danger delete-account">Delete Account</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
