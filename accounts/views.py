@@ -276,10 +276,8 @@ def change_password(request):
             # Display an error message if the current password doesn't match
             messages.error(request, 'Your current password is incorrect.')
         elif new_password == current_password:
-            # Display an error message if the new password is the same as the current password
             messages.error(request, 'Your new password cannot be the same as your current password.')
         elif new_password != confirm_password:
-            # Display an error message if the new password and confirmation don't match
             messages.error(request, 'New password and confirmation do not match.')
         else:
             # Set the new password

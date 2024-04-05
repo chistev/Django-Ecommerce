@@ -1,11 +1,15 @@
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.messages import get_messages
+from django.contrib.messages.storage.fallback import FallbackStorage
+from django.contrib.sessions.middleware import SessionMiddleware
 
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
 
 
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
+from accounts.views import change_password
 
 
 class LoginOrRegisterViewTest(TestCase):
@@ -79,3 +83,4 @@ class MyAccountViewTest(TestCase):
         self.assertEqual(response.context['user'], self.user)
         self.assertEqual(response.context['personal_details'], self.personal_details)
         self.assertQuerysetEqual(response.context['user_addresses'], Address.objects.filter(user=self.user))
+
