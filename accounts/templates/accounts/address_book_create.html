@@ -1,15 +1,9 @@
 {% extends 'ecommerce/base.html' %}
 
 {% block body %}
-
-<body class="bg-dark">
-
-    <div class="container mt-4">
-        <div class="row">
              <!-- First Card -->
              {% include 'accounts/account_navigation.html' %}
     
-            <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
                 <div class="d-flex align-items-center mb-4">
                     <!-- Back Icon Button -->
                     <a href="{% url 'accounts:address_book' %}" class="text-decoration-none me-3">
