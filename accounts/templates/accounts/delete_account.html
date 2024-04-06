@@ -3,14 +3,12 @@
 {% load static %}
 
 {% block content %}
-<body class="bg-dark" style="margin-top: -140px;">
     <div class="container">
         <div class="row" >
              <!-- First Card -->
              {% include 'accounts/basic_and_security_details.html' %}
     
-            <div class="col-md-8 ms-auto black-card" 
-            style="height: auto;">
+             <div class="col-md-6 col-11 mx-auto col-lg-7 black-card" style="height: auto; width: flex-start;">
                 <div class="mb-3">
                     <h5>We hate to see you go</h5>
                     <p style="width: 83%;" class="ms-5">Before you delete your account, we would want you to know that this action will delete your data. 
@@ -28,15 +26,15 @@
                 {% endif %} 
                 <form method="post" id="delete-account-form">
                     {% csrf_token %}
-                    <div class="mb-4 ms-5">
-                        <input type="email" class="form-control bg-secondary text-white" name="email" required value="{{ user.email }}" readonly>
+                    <div class="mb-4 ">
+                        <input type="email" class="form-control bg-secondary text-white" style="width: 100% !important;" name="email" required value="{{ user.email }}" readonly>
                     </div>
-                    <div class="mb-4 ms-5" >
-                        <input type="password" placeholder="Password" class="form-control" id="Password" name="Password" >
+                    <div class="mb-4" >
+                        <input type="password" placeholder="Password" class="form-control" style="width: 100% !important;" id="Password" name="Password" >
                     </div>
 
                     <div style="display: flex; justify-content:left; ">
-                        <button type="submit" class="btn btn-primary ms-5" style="width: 82%;">Close my account</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%">Close my account</button>
                     </div>
 
                     <!-- Hidden input field to capture confirmation -->
@@ -55,11 +53,9 @@
     </div>
         
     </div>
-</body>
 <script>
     // Function to display a confirmation box when the form is submitted
     document.getElementById("delete-account-form").addEventListener("submit", function(event) {
-        // Check if the password entered by the user matches their existing password in the database
         var enteredPassword = document.getElementById('Password').value;
         
         // Display a confirmation box if the password matches

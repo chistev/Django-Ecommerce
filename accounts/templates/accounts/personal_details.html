@@ -1,6 +1,8 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
+<div class="bg-dark d-flex align-items-center justify-content-center">
+    <div class="text-white text-center">
         <h4>Personal Details</h4>
         <p>We just need you to fill in some details.</p>
 
@@ -23,4 +25,6 @@
             document.getElementById('continueButton').disabled = !this.checked;
         });
     </script>
+    </div>
+</div>
 {% endblock %}
