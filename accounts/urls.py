@@ -27,5 +27,7 @@ urlpatterns = [
     path('address_book_edit/<int:address_id>/', views.address_book_edit, name='address_book_edit'),
     path('get_cities/', views.get_cities, name='get_cities'),
     path('remove_saved_product/', views.remove_saved_product, name='remove_saved_product'),
+    path('forgot_password/<str:email>/', views.forgot_password, name='forgot_password'),
+    path('security_code_reset', views.security_code_reset, name='security_code_reset'),
 
 ]

@@ -6,7 +6,8 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import resolve, reverse
 
 from ecommerce.models import UserActivity
-from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, PersonalDetailsForm, EditBasicDetailsForm
+from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, PersonalDetailsForm, EditBasicDetailsForm, \
+    ForgotPasswordForm
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -395,46 +396,46 @@ def get_cities(request):
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
+# User = get_user_model()'''
+# '''def send_security_code(request):
+#     if request.method == 'POST':
+#         email = request.POST.get('email')
+#         user = User.objects.filter(email=email).first()
+#         if user:
+#             # Generate a random 4-digit security code
+#             security_code = str(random.randint(1000, 9999))
+#             # Save the security code in the user's PersonalDetails model
+#             user.personal_details.security_code = security_code
+#             user.personal_details.save()
+#             # Send email with security code
+#             subject = 'Password Reset Security Code'
+#             message = f'Your security code is: {security_code}'
+#             from_email = 'stephenowabie@gmail.com'  # Update with your email
+#             recipient_list = [email]
+#             send_mail(subject, message, from_email, recipient_list)
+#             # Redirect to the security_code_reset view
+#             return redirect('accounts:security_code_reset')
+#
+#     # Handle the case where the form submission fails
+#     return render(request, 'accounts/forgot_password.html')
+#
+# def security_code_reset(request):
+#     return render(request, 'accounts/security_code_reset.html')
+# '''
 
-'''class ForgotPasswordForm(forms.Form):
-    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control bg-secondary text-white', 'readonly': 'readonly'}))
+
+@login_excluded('ecommerce:index')
 def forgot_password(request, email=None):
-    # If the email is provided, initialize the form with the email
-    initial_data = {'email': email} if email else {}
-    form = ForgotPasswordForm(initial=initial_data)
-
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
-            # Redirect the user to a confirmation page or login page
             return redirect('accounts:security_code_reset')
-    return render(request, 'accounts/forgot_password.html', {'form': form})
+        else:
+            messages.error(request, 'Please provide a valid email address.')
+    else:
+        form = ForgotPasswordForm(initial={'email': email})
+    return render(request, 'accounts/forgot_password.html', {'email': email, 'form': form})
 
-
-User = get_user_model()'''
-'''def send_security_code(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        user = User.objects.filter(email=email).first()
-        if user:
-            # Generate a random 4-digit security code
-            security_code = str(random.randint(1000, 9999))
-            # Save the security code in the user's PersonalDetails model
-            user.personal_details.security_code = security_code
-            user.personal_details.save()
-            # Send email with security code
-            subject = 'Password Reset Security Code'
-            message = f'Your security code is: {security_code}'
-            from_email = 'stephenowabie@gmail.com'  # Update with your email
-            recipient_list = [email]
-            send_mail(subject, message, from_email, recipient_list)
-            # Redirect to the security_code_reset view
-            return redirect('accounts:security_code_reset')
-
-    # Handle the case where the form submission fails
-    return render(request, 'accounts/forgot_password.html')
 
 def security_code_reset(request):
     return render(request, 'accounts/security_code_reset.html')
-'''
-

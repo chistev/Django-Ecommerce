@@ -122,3 +122,10 @@ class AddressForm(forms.ModelForm):
             'style': 'width: 100% !important',
             'name': 'state'
         })
+
+
+class ForgotPasswordForm(forms.Form):
+    email = forms.EmailField(
+        label='',
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'required': True})
+    )
