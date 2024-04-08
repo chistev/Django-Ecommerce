@@ -1,5 +1,6 @@
-from django.contrib.auth import get_user_model
+
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -9,7 +10,7 @@ from django.urls import reverse, resolve
 
 
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
-from accounts.views import change_password, delete_account
+from accounts.views import delete_account, address_book_create
 
 
 class LoginOrRegisterViewTest(TestCase):
@@ -144,3 +145,16 @@ class DeleteAccountViewTest(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'Incorrect password. Please try again.')
 
+class AddressBookCreateViewTest(TestCase):
+        def setUp(self):
+            self.factory = RequestFactory()
+            self.user = CustomUser.objects.create_user(email='test@example.com', password='testpassword')
+            PersonalDetails.objects.create(user=self.user, first_name='John',
+                                           last_name='Doe')  # Create PersonalDetails for the user
+            self.url = reverse('accounts:address_book_create')
+
+        def test_get_request_authenticated_user(self):
+            self.client.force_login(self.user)
+            response = self.client.get(self.url)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'accounts/address_book_create.html')

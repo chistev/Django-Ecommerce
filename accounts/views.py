@@ -152,8 +152,6 @@ def login(request, email=None):
     return render(request, 'accounts/login.html', {'form': form})
 
 
-
-
 class CustomLogoutView(LogoutView):
     next_page = '/'  # Redirect to home page after logout
 
@@ -229,6 +227,8 @@ def remove_saved_product(request):
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
+
+
 @login_required
 def account_management(request):
     user = request.user  # Get the logged-in user
@@ -329,13 +329,13 @@ def address_book(request):
 @login_required
 def address_book_create(request):
     current_path = resolve(request.path_info).url_name
+    user = request.user
+    personal_details = user.personal_details
+
     if request.method == 'POST':
-        # Bind form with POST data and user object
         form = AddressForm(request.POST, user=request.user)
 
         if form.is_valid():
-            # Get the logged-in user
-            user = request.user
             # Save or update personal details for the user
             personal_details, created = PersonalDetails.objects.get_or_create(user=user)
             personal_details.first_name = form.cleaned_data['first_name']
@@ -349,38 +349,19 @@ def address_book_create(request):
 
             # Redirect the user to a success page
             return redirect('accounts:address_book')
-        else:
-            # Render the form again with validation errors
-            user = request.user
-            personal_details = user.personal_details
-            states = State.objects.all()
-            context = {
-                'user': user,
-                'personal_details': personal_details,
-                'states': states,
-                'form': form,
-                'current_path': current_path
-            }
-            return render(request, 'accounts/address_book_create.html', context)
-
     else:
-        # Handle GET request, render the address book creation form
-        user = request.user  # Get the logged-in user
-        personal_details = user.personal_details
-        initial_first_name = personal_details.first_name if personal_details else ''  # Initial first name
-        initial_last_name = personal_details.last_name if personal_details else ''  # Initial last name
-        initial_data = {'first_name': initial_first_name, 'last_name': initial_last_name}
-        # Pass the initial data and user object to the form
-        form = AddressForm(initial=initial_data, user=request.user)
-        states = State.objects.all()
-        context = {
-            'user': user,
-            'personal_details': personal_details,
-            'states': states,
-            'form': form,
-            'current_path': current_path
-        }
-        return render(request, 'accounts/address_book_create.html', context)
+        initial_data = {'first_name': personal_details.first_name if personal_details else '',
+                        'last_name': personal_details.last_name if personal_details else ''}
+        form = AddressForm(initial=initial_data, user=user)
+    states = State.objects.all()
+    context = {
+        'user': user,
+        'personal_details': personal_details,
+        'states': states,
+        'form': form,
+        'current_path': current_path
+    }
+    return render(request, 'accounts/address_book_create.html', context)
 
 
 def address_book_edit(request, address_id):

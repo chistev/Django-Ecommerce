@@ -59,6 +59,8 @@ class EditBasicDetailsForm(forms.ModelForm):
         super(EditBasicDetailsForm, self).__init__(*args, **kwargs)
         for field_name in self.fields:
             self.fields[field_name].widget.attrs['class'] = 'form-control'
+
+
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
@@ -76,32 +78,31 @@ class AddressForm(forms.ModelForm):
         # Populate the state field with the user's existing state
         if user and user.is_authenticated:  # Checking if the user is authenticated
             try:
-                # Assuming there's a direct ForeignKey relationship between CustomUser and State
                 user_state = user.addresses.first().state
             except AttributeError:
                 # Handle the case where the user doesn't have any addresses or the state is not set
                 user_state = None
-            self.fields['state'].queryset = State.objects.all()  # Adjust this queryset based on your State model
+            self.fields['state'].queryset = State.objects.all()
             self.fields['state'].initial = user_state
 
         # Add custom attributes and styling to individual fields
         self.fields['first_name'].widget.attrs.update({
             'class': 'form-control',
-            'id': 'firstName',  # ID for the first name field
-            'style': 'width: 350px !important;',
+            'id': 'firstName',
+            'style': 'width: 100% !important;',
             'name': 'first_name'
         })
 
         self.fields['last_name'].widget.attrs.update({
             'class': 'form-control',
-            'id': 'lastName',  # ID for the last name field
-            'style': 'width: 350px !important;',
+            'id': 'lastName',
+            'style': 'width: 100% !important;',
             'name': 'last_name'
         })
 
         self.fields['address'].widget.attrs.update({
             'class': 'form-control',
-            'id': 'address',  # ID for the last name field
+            'id': 'address',
             'style': 'width: 100% !important;',
             'placeholder': 'Enter your Address',
             'name': 'address'
@@ -109,7 +110,7 @@ class AddressForm(forms.ModelForm):
 
         self.fields['additional_info'].widget.attrs.update({
             'class': 'form-control',
-            'id': 'additional_info',  # ID for the last name field
+            'id': 'additional_info',
             'style': 'width: 100% !important;',
             'placeholder': 'Enter Additional Information',
             'name': 'additional_info'
@@ -118,7 +119,6 @@ class AddressForm(forms.ModelForm):
         self.fields['state'].widget.attrs.update({
             'class': 'form-select',
             'id': 'state',
-            'style': 'width: 350px !important',
+            'style': 'width: 100% !important',
             'name': 'state'
         })
-
