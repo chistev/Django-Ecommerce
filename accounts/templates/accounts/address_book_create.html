@@ -16,49 +16,7 @@
                 <!-- Form start -->
                 <form method="post" action="">
                     {% csrf_token %}
-                
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <div class="form-group">
-                                <label for="{{ form.first_name.id_for_label }}" class="form-label text-white">{{ form.first_name.label }}</label>
-                                {{ form.first_name }}
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <div class="form-group">
-                                <label for="{{ form.last_name.id_for_label }}" class="form-label text-white">{{ form.last_name.label }}</label>
-                                {{ form.last_name }}
-                            </div>
-                        </div>
-                    </div>
-                
-                    <div class="form-group mb-2">
-                        <label for="{{ form.address.id_for_label }}" class="form-label text-white">{{ form.address.label }}</label>
-                        {{ form.address }}
-                    </div>
-                
-                    <div class="form-group mb-2">
-                        <label for="{{ form.additional_info.id_for_label }}" class="form-label text-white">{{ form.additional_info.label }}</label>
-                        {{ form.additional_info }}
-                    </div>
-                
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <div class="form-group">
-                                <label for="{{ form.state.id_for_label }}" class="form-label text-white ">{{ form.state.label }}</label>
-                                {{ form.state }}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group ">
-                                <label for="{{ form.city.id_for_label }}" class="form-label text-white">{{ form.city.label }}</label>
-                                <select class="form-select bg-secondary" style="width: 100% !important;" id="city" name="city">
-                                    <option value="" disabled selected>City</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                
+                    {% include 'accounts/address_form.html' %}
                     <hr>
                 
                     <div class="form-group d-flex">

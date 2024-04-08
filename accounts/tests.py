@@ -1,4 +1,3 @@
-
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages import get_messages
@@ -8,7 +7,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
 
-
+from accounts.forms import AddressForm
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
 from accounts.views import delete_account, address_book_create
 
@@ -145,16 +144,62 @@ class DeleteAccountViewTest(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'Incorrect password. Please try again.')
 
-class AddressBookCreateViewTest(TestCase):
-        def setUp(self):
-            self.factory = RequestFactory()
-            self.user = CustomUser.objects.create_user(email='test@example.com', password='testpassword')
-            PersonalDetails.objects.create(user=self.user, first_name='John',
-                                           last_name='Doe')  # Create PersonalDetails for the user
-            self.url = reverse('accounts:address_book_create')
 
-        def test_get_request_authenticated_user(self):
-            self.client.force_login(self.user)
-            response = self.client.get(self.url)
-            self.assertEqual(response.status_code, 200)
-            self.assertTemplateUsed(response, 'accounts/address_book_create.html')
+class AddressBookCreateViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = CustomUser.objects.create_user(email='test@example.com', password='testpassword')
+        PersonalDetails.objects.create(user=self.user, first_name='John',
+                                       last_name='Doe')  # Create PersonalDetails for the user
+        self.url = reverse('accounts:address_book_create')
+
+    def test_get_request_authenticated_user(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/address_book_create.html')
+
+
+class AddressBookEditViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = CustomUser.objects.create_user(email='test@example.com', password='testpassword')
+        self.state = State.objects.create(name='Test State')
+        self.city = City.objects.create(name='Test City', state=self.state)
+        self.address = Address.objects.create(user=self.user, first_name='First', last_name='Last',
+                                              address='123 Street', city=self.city, state=self.state)
+
+    def test_get_request_authenticated_user(self):
+        # Create a GET request with an authenticated user
+        self.client.force_login(self.user)
+        url = reverse('accounts:address_book_edit', kwargs={'address_id': self.address.id})
+        response = self.client.get(url)
+
+        # Assert response status code and template used
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/address_book_edit.html')
+
+        # Assert form and context
+        self.assertIsInstance(response.context['form'], AddressForm)
+        self.assertEqual(response.context['current_path'], resolve(response.request['PATH_INFO']).url_name)
+
+    def test_post_request_authenticated_user(self):
+        # Create a POST request with an authenticated user
+        self.client.force_login(self.user)
+        url = reverse('accounts:address_book_edit', kwargs={'address_id': self.address.id})
+        data = {
+            'first_name': 'Updated First',
+            'last_name': 'Updated Last',
+            'address': 'Updated Address',
+            'city': self.city.id,
+            'state': self.state.id
+        }
+        response = self.client.post(url, data)
+
+        # Check if the address was updated successfully and redirected
+        updated_address = Address.objects.get(id=self.address.id)
+        self.assertEqual(updated_address.first_name, 'Updated First')
+        self.assertEqual(updated_address.last_name, 'Updated Last')
+        self.assertEqual(updated_address.address, 'Updated Address')
+        self.assertEqual(response.status_code, 302)  # Redirect status code
+        self.assertEqual(response.url, reverse('accounts:address_book'))  # Redirected URL

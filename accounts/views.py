@@ -364,6 +364,7 @@ def address_book_create(request):
     return render(request, 'accounts/address_book_create.html', context)
 
 
+@login_required
 def address_book_edit(request, address_id):
     current_path = resolve(request.path_info).url_name
     # Fetch the address object from the database
