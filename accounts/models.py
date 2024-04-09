@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
@@ -62,10 +63,16 @@ class PersonalDetails(models.Model):
     first_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)  # Allow blank since middle name might not be present
     last_name = models.CharField(max_length=255)
-    # security_code = models.CharField(max_length=4, blank=True, null=True)
+    security_code = models.CharField(max_length=4, blank=True, null=True)
+    security_code_expiration = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def is_security_code_expired(self):
+        if self.security_code_expiration is None:
+            return True
+        return self.security_code_expiration < timezone.now()
 
 
 class State(models.Model):

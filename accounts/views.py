@@ -1,3 +1,16 @@
+import datetime
+import json
+import os
+
+from django.utils import timezone
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+import random
+
+import requests
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -396,39 +409,32 @@ def get_cities(request):
 def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
-# User = get_user_model()'''
-# '''def send_security_code(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('email')
-#         user = User.objects.filter(email=email).first()
-#         if user:
-#             # Generate a random 4-digit security code
-#             security_code = str(random.randint(1000, 9999))
-#             # Save the security code in the user's PersonalDetails model
-#             user.personal_details.security_code = security_code
-#             user.personal_details.save()
-#             # Send email with security code
-#             subject = 'Password Reset Security Code'
-#             message = f'Your security code is: {security_code}'
-#             from_email = 'stephenowabie@gmail.com'  # Update with your email
-#             recipient_list = [email]
-#             send_mail(subject, message, from_email, recipient_list)
-#             # Redirect to the security_code_reset view
-#             return redirect('accounts:security_code_reset')
-#
-#     # Handle the case where the form submission fails
-#     return render(request, 'accounts/forgot_password.html')
-#
-# def security_code_reset(request):
-#     return render(request, 'accounts/security_code_reset.html')
-# '''
-
 
 @login_excluded('ecommerce:index')
 def forgot_password(request, email=None):
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
+            email = form.cleaned_data['email']
+            user = CustomUser.objects.filter(email=email).first()
+
+            if user:
+                # Generate 4-digit security code
+                security_code = ''.join(random.choices('0123456789', k=4))
+
+                # Calculate expiration time (30 minutes from now)
+                expiration_time = timezone.now() + timezone.timedelta(minutes=30)
+
+                # Save the security code and expiration time to the database
+                user.personal_details.security_code = security_code
+                user.personal_details.security_code_expiration = expiration_time
+                user.personal_details.save()
+                print(expiration_time)
+
+                # Send the security code to the user's email
+                send_security_code_email(email, security_code)
+            # To maintain security, provide a generic message instead of revealing whether the email exists
+            messages.success(request, 'An email with instructions has been sent if the provided address is registered.')
             return redirect('accounts:security_code_reset')
         else:
             messages.error(request, 'Please provide a valid email address.')
@@ -437,5 +443,60 @@ def forgot_password(request, email=None):
     return render(request, 'accounts/forgot_password.html', {'email': email, 'form': form})
 
 
+def send_security_code_email(email, security_code):
+    # Check for the presence of the API key
+    api_key = os.environ.get('BREVO_API_KEY')
+    if not api_key:
+        raise ValueError("API key not found. Please set the 'BREVO_API_KEY' environment variable.")
+    api_url = 'https://api.brevo.com/v3/smtp/email'
+    sender_email = 'stephenowabie@gmail.com'
+    sender_name = 'Chistev'
+
+    # Fetch user details based on the provided email
+    try:
+        user = CustomUser.objects.get(email=email)
+        personal_details = user.personal_details
+        first_name = personal_details.first_name
+    except CustomUser.DoesNotExist:
+        print("User not found for the provided email.")
+        return
+
+    # Replace placeholder with actual security code and user's first name
+    with open('accounts/templates/accounts/security_code_email.html', 'r') as file:
+        custom_html_content = file.read()
+
+    # Replace placeholder with actual security code
+    custom_html_content = custom_html_content.replace('{security_code}', security_code)
+    custom_html_content = custom_html_content.replace('{first_name}', first_name)
+
+    payload = {
+        "sender": {
+            "name": sender_name,
+            "email": sender_email,
+        },
+        "to": [
+            {
+                "email": email
+            }
+        ],
+        "subject": "Password Reset Security Code",
+        "htmlContent": custom_html_content
+    }
+
+    headers = {
+        'Content-Type': 'text/html',  # Set Content-Type to text/html for HTML email
+        'Accept': 'application/json',
+        'api-key': api_key
+    }
+    # json.dumps() converts the Python dictionary payload into a JSON string that can be sent over the network.
+    response = requests.post(api_url, data=json.dumps(payload), headers=headers)
+
+    if response.status_code == 201:
+        print("Security code email sent successfully.")
+    else:
+        print("Failed to send security code email.")
+
+
 def security_code_reset(request):
+
     return render(request, 'accounts/security_code_reset.html')

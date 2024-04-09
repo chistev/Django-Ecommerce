@@ -1,15 +1,19 @@
+import unittest
+from unittest.mock import patch, MagicMock
+
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core import mail
 
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
 
 from accounts.forms import AddressForm
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
-from accounts.views import delete_account, address_book_create
+from accounts.views import delete_account, address_book_create, send_security_code_email
 
 
 class LoginOrRegisterViewTest(TestCase):

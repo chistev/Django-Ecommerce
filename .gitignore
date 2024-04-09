@@ -2,4 +2,5 @@
 
 # Ignore sensitive configuration files
 settings.ini
+.env
 

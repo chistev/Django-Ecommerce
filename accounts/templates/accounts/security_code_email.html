@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chistev</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #343a40; /* Dark background color */
+            padding: 5rem; /* Padding for spacing */
+        }
+        h2, h5, p {
+            color: #fff; /* White text color */
+            text-align: center; 
+        }
+        strong {
+            font-size: 2rem; /* Larger font size for security code */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Chistev</h2>
+    </div>
+    <h5>Security Code To Reset Password</h5>
+    <p>Dear {first_name},<br>
+        You've asked to reset your Chistev password. Below is your one-time passcode that you need to use to reset your password.<br>
+        <strong>{security_code}</strong><br>
+    </p>
+    <p>This security code will be valid for 30 minutes. Please do not share this code with anyone.</p>
+</body>
+</html>
