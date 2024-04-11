@@ -15,7 +15,7 @@
     width: 100% !important;
 }
 
-/* Saved items page styles */
+/* Saved items and Cart page styles */
 
 .my-account-card{
     width: 300px;
@@ -23,17 +23,16 @@
 }
 
 @media (max-width: 1200px) {
-    .accounts-container{
+    .accounts-container, .cart-container{
         margin-top: 5%;
     }
 }
 
 @media (max-width: 1100px) {
-    .accounts-container{
+    .accounts-container, .cart-container{
         margin-top: 7% !important;
     }
 }
-
 
 *{
     margin: 0;

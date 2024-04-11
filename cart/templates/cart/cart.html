@@ -6,22 +6,21 @@
 
     {% block body %}
 
-    <body class="bg-dark">
-    <div class="container mt-4">
-        <div class="row">
+    <div class="cart-container mt-4">
+        <div class="row mx-auto">
             {% if is_cart_empty %}
-                <div class="col-md-12 black-card cart-card ms-5 ">
-                    <div class="row mt-4">
-                        <div class="col-md-12 text-center">
-                            <h1><strong><i class="bi bi-cart"></i></strong></h1>
-                            <p>Your cart is empty!</p>
-                            <p style="width: 70%;" class="mx-auto">Browse our categories and discover our best deals!</p>
-                            <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Start Shopping</a>
-                        </div>
+            <div class="col-md-10 col-11 black-card cart-card mx-auto justify-content-center">
+                <div class="row mt-4">
+                    <div class="col-md-12 col-sm-12 text-center">
+                        <h1><strong><i class="bi bi-cart"></i></strong></h1>
+                        <p>Your cart is empty!</p>
+                        <p class="mx-auto" style="max-width: 70%;">Browse our categories and discover our best deals!</p>
+                        <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Start Shopping</a>
                     </div>
                 </div>
+            </div>
             {% else %}
-            <div class="col-md-8 black-card cart-card ms-5 ">
+            <div class="col-md-8 col-10 black-card cart-card ms-md-5 ms-sm-auto mx-auto">
                 <h5>Cart ({{ cart_count }})</h5>
                 <hr>
                 <div class="d-flex flex-column">
@@ -41,38 +40,43 @@
                                 <div class="product-name ms-2"> {{ cart_item.product.name }} </div>
                             </a>
                         </div>
-
-                        <div class="col-md-3 black-card ms-auto d-flex flex-column justify-content-between">
-                            <div class="ms-auto">
-                                <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
-                                    <div class="text-white fs-6 ms-5 mb-2">&nbsp;&nbsp;N&nbsp; {{ cart_item.product.formatted_price }}</div>
-                                </a>
-                                {% if cart_item.product.old_price > 0 and cart_item.product.old_price > cart_item.product.new_price %}
-                                    <div class="d-flex ms-auto">
-                                        <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
-                                            <div class="slashed-price text-white fs-6" style="text-decoration: line-through; font-size: 13px;">N&nbsp; {{ cart_item.product.formatted_old_price }}</div>
-                                        </a>
-                                        <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
-                                            <span class="badge bg-danger ms-2 small">{{ cart_item.product.discount_percentage }}%</span>
-                                        </a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="d-flex ms-auto align-items-center">
-
-
-                                <button class="remove-product btn-primary me-3 {% if cart_item.product.is_single_quantity %}disabled{% endif %}" data-product-id="{{ cart_item.product.pk }}" data-product-quantity="{{ cart_item.product.quantity }}">
-                                    <i class="bi bi-dash-lg"></i>
-                                </button>
+                        <div class="row ms-auto">
+                            <div class="col-md-12 black-card d-flex flex-column justify-content-between ">
+                                <div class="">
+                                    <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
+                                        <div class="text-white fs-6 ms-5 mb-2">&nbsp;&nbsp;N&nbsp; {{ cart_item.product.formatted_price }}</div>
+                                    </a>
+                                    {% if cart_item.product.old_price > 0 and cart_item.product.old_price > cart_item.product.new_price %}
+                                        <div class="d-flex ms-auto">
+                                            <div class="col-7">
+                                                <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
+                                                    <span class="slashed-price text-white fs-6" style="text-decoration: line-through; font-size: 13px;">N&nbsp; {{ cart_item.product.formatted_old_price }}</span>
+                                                </a>
+                                            </div>
+                                            <div>
+                                                <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}" class="text-decoration-none text-white">
+                                                    <span class="badge bg-danger ms-2 small">{{ cart_item.product.discount_percentage }}%</span>
+                                                </a>
+                                            </div>
+                                            
+                                        </div>
+                                    {% endif %}
+                                </div>
                                 
-                                <span class="product-count" data-product-id="{{ cart_item.product.pk }}">{{ cart_item.quantity }}</span>
-                                
-                                <button class=" add-product btn btn-primary ms-3" data-product-id="{{ cart_item.product.pk }}">
-                                    <i class="bi bi-plus-lg"></i>
-                                </button>
+                                <div class="d-flex ms-auto align-items-center">
+                                    <button class="remove-product btn-primary me-3 {% if cart_item.product.is_single_quantity %}disabled{% endif %}" data-product-id="{{ cart_item.product.pk }}" data-product-quantity="{{ cart_item.product.quantity }}">
+                                        <i class="bi bi-dash-lg"></i>
+                                    </button>
+                                    
+                                    <span class="product-count" data-product-id="{{ cart_item.product.pk }}">{{ cart_item.quantity }}</span>
+                                    
+                                    <button class="add-product btn btn-primary ms-3" data-product-id="{{ cart_item.product.pk }}">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                        
         
                     </div>
                     <hr>
@@ -80,7 +84,7 @@
                 </div>
             </div>
 
-            <div class="col-md-3 black-card cart-card mx-auto">
+            <div class="col-md-3 col-10 mt-2 black-card cart-card mx-auto">
                 <div class="fw-bold fs-6">CART SUMMARY</div>
                 <hr>
                 <div class="d-flex justify-content-between">
@@ -352,5 +356,4 @@
     </script>
     
     
-    </body>
     {% endblock %}
