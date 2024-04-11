@@ -1,10 +1,8 @@
-
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import HttpResponse
 
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
@@ -12,8 +10,7 @@ from django.utils import timezone
 
 from accounts.forms import AddressForm
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
-from accounts.views import delete_account, send_security_code, forgot_password, security_code_reset, \
-    resend_security_code
+from accounts.views import delete_account, send_security_code, forgot_password, password_reset
 
 
 class LoginOrRegisterViewTest(TestCase):

@@ -1,4 +1,3 @@
-import datetime
 import json
 import os
 
@@ -18,7 +17,7 @@ from django.urls import resolve, reverse
 
 from ecommerce.models import UserActivity
 from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, PersonalDetailsForm, EditBasicDetailsForm, \
-    ForgotPasswordForm
+    ForgotPasswordForm, PasswordResetForm
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -548,6 +547,33 @@ def resend_security_code(request):
 
 
 def password_reset(request):
-    return render(request, 'accounts/password_reset.html')
+    # Retrieve the email from the session
+    reset_email = request.session.get('reset_email')
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            # Get the cleaned data from the form
+            password = form.cleaned_data['password']
+
+            # Update the user's password using reset_email
+            user = CustomUser.objects.get(email=reset_email)
+            user.set_password(password)
+            user.save()
+
+            # clear/reset the reset_email session variable
+            del request.session['reset_email']
+
+            # Log the user in Since "user" is obtained directly from the database, any changes made to the session
+            # after this point won't affect the authentication process.
+            user = authenticate(request, email=user.email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('ecommerce:index')
+        else:
+            messages.error(request, "passwords do not match")
+    else:
+        form = PasswordResetForm(initial={'email': reset_email})
+    context = {'reset_email': reset_email, 'form': form}
+    return render(request, 'accounts/password_reset.html', context)
 
 
