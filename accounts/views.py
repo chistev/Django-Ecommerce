@@ -10,7 +10,6 @@ import random
 import requests
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, update_session_auth_hash
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import resolve, reverse
@@ -38,6 +37,14 @@ def login_excluded(redirect_to):
         return _arguments_wrapper
 
     return _method_wrapper
+
+
+def redirect_to_login_or_register(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('accounts:login_or_register')
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
 
 @login_excluded('ecommerce:index')
@@ -172,7 +179,7 @@ class CustomLogoutView(LogoutView):
     next_page = '/'  # Redirect to home page after logout
 
 
-@login_required
+@redirect_to_login_or_register
 def account_page(request, template_name, additional_context=None):
     current_path = resolve(request.path_info).url_name
     context = {'current_path': current_path}
@@ -181,7 +188,7 @@ def account_page(request, template_name, additional_context=None):
     return render(request, template_name, context)
 
 
-@login_required
+@redirect_to_login_or_register
 def my_account(request):
     user = request.user  # Get the logged-in user
     personal_details = user.personal_details  # Access the PersonalDetails related object
@@ -194,22 +201,22 @@ def my_account(request):
                          'user_addresses': user_addresses})
 
 
-@login_required
+@redirect_to_login_or_register
 def orders(request):
     return account_page(request, 'accounts/orders.html')
 
 
-@login_required
+@redirect_to_login_or_register
 def closed_orders(request):
     return account_page(request, 'accounts/closed_orders.html')
 
 
-@login_required
+@redirect_to_login_or_register
 def inbox(request):
     return account_page(request, 'accounts/inbox.html')
 
 
-@login_required
+@redirect_to_login_or_register
 def saved_items(request):
     # Retrieve the count of saved products
     saved_products_count = UserActivity.objects.filter(user=request.user, saved=True).count()
@@ -228,6 +235,7 @@ def saved_items(request):
                          'saved_products_count': saved_products_count})
 
 
+@redirect_to_login_or_register
 def remove_saved_product(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         product_id = request.POST.get('product_id')
@@ -246,21 +254,21 @@ def remove_saved_product(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
 
 
-@login_required
+@redirect_to_login_or_register
 def account_management(request):
     user = request.user  # Get the logged-in user
     personal_details = user.personal_details
     return render(request, 'accounts/account_management.html', {'user': user, 'personal_details': personal_details})
 
 
-@login_required
+@redirect_to_login_or_register
 def basic_details(request):
     user = request.user  # Get the logged-in user
     personal_details = user.personal_details
     return render(request, 'accounts/basic_details.html', {'user': user, 'personal_details': personal_details})
 
 
-@login_required
+@redirect_to_login_or_register
 def edit_basic_details(request):
     user = request.user
     personal_details = user.personal_details
@@ -279,7 +287,7 @@ def edit_basic_details(request):
                   {'user': user, 'personal_details': personal_details, 'form': form})
 
 
-@login_required
+@redirect_to_login_or_register
 def change_password(request):
     if request.method == 'POST':
         current_password = request.POST.get('current-password')
@@ -309,7 +317,7 @@ def change_password(request):
     return render(request, 'accounts/change_password.html')
 
 
-@login_required
+@redirect_to_login_or_register
 def delete_account(request):
     if request.method == 'POST':
         # Check if the user confirms the deletion
@@ -330,7 +338,7 @@ def delete_account(request):
     return render(request, 'accounts/delete_account.html')
 
 
-@login_required
+@redirect_to_login_or_register
 def address_book(request):
     current_path = resolve(request.path_info).url_name
     # Retrieve the user's addresses
@@ -343,7 +351,7 @@ def address_book(request):
     return render(request, 'accounts/address_book.html', context)
 
 
-@login_required
+@redirect_to_login_or_register
 def address_book_create(request):
     current_path = resolve(request.path_info).url_name
     user = request.user
@@ -381,7 +389,7 @@ def address_book_create(request):
     return render(request, 'accounts/address_book_create.html', context)
 
 
-@login_required
+@redirect_to_login_or_register
 def address_book_edit(request, address_id):
     current_path = resolve(request.path_info).url_name
     # Fetch the address object from the database
@@ -403,6 +411,7 @@ def address_book_edit(request, address_id):
     return render(request, 'accounts/address_book_edit.html', context)
 
 
+@redirect_to_login_or_register
 def get_cities(request):
     state_id = request.GET.get('state_id')
     cities = City.objects.filter(state_id=state_id).values('id', 'name')
@@ -413,6 +422,7 @@ def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
 
+@redirect_to_login_or_register
 def send_security_code(email):
     # Generate 4-digit security code
     security_code = ''.join(random.choices('0123456789', k=4))
@@ -454,6 +464,7 @@ def forgot_password(request, email=None):
     return render(request, 'accounts/forgot_password.html', {'email': email, 'form': form})
 
 
+@redirect_to_login_or_register
 def send_security_code_email(email, security_code):
     # Check for the presence of the API key
     api_key = os.environ.get('BREVO_API_KEY')
@@ -508,6 +519,7 @@ def send_security_code_email(email, security_code):
         print("Failed to send security code email.")
 
 
+@redirect_to_login_or_register
 def security_code_reset(request):
     reset_email = request.session.get('reset_email', None)
     if request.method == 'POST':
@@ -529,6 +541,7 @@ def security_code_reset(request):
     return render(request, 'accounts/security_code_reset.html', {'email': reset_email})
 
 
+@redirect_to_login_or_register
 def resend_security_code(request):
     # Retrieve the email from the session
     reset_email = request.session.get('reset_email')
@@ -546,6 +559,7 @@ def resend_security_code(request):
     return redirect('accounts:security_code_reset')
 
 
+@redirect_to_login_or_register
 def password_reset(request):
     # Retrieve the email from the session
     reset_email = request.session.get('reset_email')
@@ -575,5 +589,3 @@ def password_reset(request):
         form = PasswordResetForm(initial={'email': reset_email})
     context = {'reset_email': reset_email, 'form': form}
     return render(request, 'accounts/password_reset.html', context)
-
-
