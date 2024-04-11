@@ -29,5 +29,7 @@ urlpatterns = [
     path('remove_saved_product/', views.remove_saved_product, name='remove_saved_product'),
     path('forgot_password/<str:email>/', views.forgot_password, name='forgot_password'),
     path('security_code_reset', views.security_code_reset, name='security_code_reset'),
+    path('resend_security_code/', views.resend_security_code, name='resend_security_code'),
+    path('password_reset/', views.password_reset, name='password_reset'),
 
 ]

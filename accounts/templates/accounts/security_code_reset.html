@@ -44,9 +44,11 @@
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
-                <div class="alert alert-success" role="alert">
-                    {{ message }}
-                </div>
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
             {% endfor %}
         </div>
     {% endif %}
@@ -67,12 +69,29 @@
                             </div>
                             {% endfor %}
                         </div>
+                        {% if messages %}
+                        <div class="messages">
+                                {% for message in messages %}
+                                    {% if message.tags == 'error' %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ message }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                        </div>
+                        {% endif %}
 
                         <button style="width: 100%;" type="submit" class="btn btn-primary">Submit</button>
                     </form>
 
+                    <div id="countdown-message" class="mt-3 text-primary fw-bold" {% if not messages %}style="display: none;"{% endif %}>Didn't receive the verification code? It could take a bit of time, request a new code in <span id="countdown-timer">10</span> seconds</div>
                     <div class="mt-3">
-                        <a href="s" class="text-primary fw-bold" style="text-decoration: none;">Request a new code</a>
+                        <a id="request-new-code" href="{% url 'accounts:resend_security_code' %}" class="text-primary fw-bold text-decoration-none" 
+                        {% for message in messages %}
+                                    {% if message.tags == 'error' %}
+                                        style="display: none;"
+                                    {% endif %}
+                        {% endfor %}>Request a new code</a>
                     </div>
 
                     <h4 class="mt-3">Chistev</h4>
@@ -80,5 +99,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // JavaScript code for countdown and showing the "Request a new code" link
+        var countdown = 10;
+        var countdownTimer = document.getElementById('countdown-timer');
+        var countdownMessage = document.getElementById('countdown-message');
+        var requestNewCodeLink = document.getElementById('request-new-code');
+
+        function startCountdown() {
+            var interval = setInterval(function() {
+                countdown -= 1;
+                countdownTimer.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    countdownMessage.style.display = 'none';
+                    requestNewCodeLink.style.display = 'inline';
+                }
+            }, 1000);
+        }
+
+        // Start the countdown when the page loads
+        window.onload = function() {
+            startCountdown();
+        };
+    </script>
 </body>
 </html>

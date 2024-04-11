@@ -1,19 +1,19 @@
-import unittest
-from unittest.mock import patch, MagicMock
 
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.core import mail
+from django.http import HttpResponse
 
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
+from django.utils import timezone
 
 from accounts.forms import AddressForm
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
-from accounts.views import delete_account, address_book_create, send_security_code_email
+from accounts.views import delete_account, send_security_code, forgot_password, security_code_reset, \
+    resend_security_code
 
 
 class LoginOrRegisterViewTest(TestCase):
@@ -207,3 +207,109 @@ class AddressBookEditViewTest(TestCase):
         self.assertEqual(updated_address.address, 'Updated Address')
         self.assertEqual(response.status_code, 302)  # Redirect status code
         self.assertEqual(response.url, reverse('accounts:address_book'))  # Redirected URL
+
+
+class SendSecurityCodeViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        # Create a user for testing
+        self.user = CustomUser.objects.create(email='test@example.com')
+
+        # Create PersonalDetails for the user
+        PersonalDetails.objects.create(user=self.user, first_name='John', last_name='Doe')
+
+    def test_send_security_code(self):
+        # Create a mock email for testing
+        email = 'test@example.com'
+
+        # Call the view function
+        security_code = send_security_code(email)
+
+        # Check if the security code is returned correctly
+        self.assertEqual(len(security_code), 4)
+
+        # Check if the security code is stored in the database
+        user = CustomUser.objects.filter(email=email).first()
+        self.assertIsNotNone(user)
+        self.assertEqual(user.personal_details.security_code, security_code)
+
+        # Check if the security code expiration time is calculated correctly
+        expiration_time = user.personal_details.security_code_expiration
+        self.assertTrue(expiration_time > timezone.now())
+        self.assertTrue(expiration_time - timezone.now() <= timezone.timedelta(minutes=30))
+
+
+class ForgotPasswordViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = CustomUser.objects.create(email='test@example.com')
+        self.personal_details = PersonalDetails.objects.create(user=self.user, first_name='John', last_name='Doe')
+
+    def test_forgot_password(self):
+        email = 'test@example.com'
+        url = reverse('accounts:forgot_password', kwargs={'email': email})  # Provide the email parameter
+
+        # Create a POST request with valid data
+        data = {'email': email}
+        request = self.factory.post(url, data)
+
+        # Set the user attribute to AnonymousUser to simulate an unauthenticated user
+        request.user = AnonymousUser()
+
+        # Attach a session to the request
+        middleware = SessionMiddleware(lambda x: None)
+        middleware.process_request(request)
+        request.session.save()
+
+        # Attach message storage to request
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+
+        # Call the view function
+        response = forgot_password(request, email)
+
+        # Check if the view redirected correctly
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('accounts:security_code_reset'))
+
+        # Check if success message is displayed
+        messages = list(get_messages(request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]),
+                         'An email with instructions has been sent if the provided address is registered.')
+
+        # Check if the session variables are set
+        self.assertEqual(request.session['reset_email'], email)
+        self.assertIsNotNone(request.session['security_code'])
+
+    def test_forgot_password_invalid_email(self):
+        # Test when an invalid email is provided
+        email = 'invalid_email'
+        url = reverse('accounts:forgot_password', kwargs={'email': email})  # Provide the email parameter
+
+        # Create a POST request with invalid data
+        data = {'email': email}
+        request = self.factory.post(url, data)
+
+        # Set the user attribute to AnonymousUser to simulate an unauthenticated user
+        request.user = AnonymousUser()
+
+        # Attach a session to the request
+        middleware = SessionMiddleware(lambda x: None)
+        middleware.process_request(request)
+        request.session.save()
+
+        # Attach message storage to request
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+
+        # Call the view function
+        response = forgot_password(request, email)
+
+        # Check if the view redirected correctly
+        self.assertEqual(response.status_code, 200)
+
+        # Check if error message is displayed
+        messages = list(get_messages(request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Please provide a valid email address.')

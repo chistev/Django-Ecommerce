@@ -2,11 +2,9 @@ import datetime
 import json
 import os
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
 
 import random
 
@@ -24,6 +22,9 @@ from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, Personal
 from .models import CustomUser, PersonalDetails, State, City, Address
 from django.shortcuts import render, redirect, get_object_or_404
 
+# Load environment variables from .env file
+load_dotenv()
+
 
 def login_excluded(redirect_to):
     # This decorator kicks authenticated users out of a view
@@ -34,7 +35,9 @@ def login_excluded(redirect_to):
                 return redirect(redirect_to)
             # If the user is not authenticated, proceed with the view
             return view_method(request, *args, **kwargs)
+
         return _arguments_wrapper
+
     return _method_wrapper
 
 
@@ -189,7 +192,7 @@ def my_account(request):
 
     return account_page(request, 'accounts/my_account.html',
                         {'user': user, 'personal_details': personal_details,
-                            'user_addresses': user_addresses})
+                         'user_addresses': user_addresses})
 
 
 @login_required
@@ -215,14 +218,15 @@ def saved_items(request):
     saved_products = UserActivity.objects.filter(user=request.user, saved=True).select_related('product')
     for saved_product in saved_products:
         if saved_product.product.old_price is not None and saved_product.product.old_price != 0:
-            discount = ((saved_product.product.old_price - saved_product.product.new_price) / saved_product.product.old_price) * 100
+            discount = ((
+                                    saved_product.product.old_price - saved_product.product.new_price) / saved_product.product.old_price) * 100
             saved_product.product.discount_percentage = round(discount, 2) * -1  # Make it negative
         else:
             saved_product.product.discount_percentage = 0
 
     return account_page(request, 'accounts/saved_items.html',
                         {'saved_products': saved_products,
-                            'saved_products_count': saved_products_count})
+                         'saved_products_count': saved_products_count})
 
 
 def remove_saved_product(request):
@@ -410,29 +414,37 @@ def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
 
+def send_security_code(email):
+    # Generate 4-digit security code
+    security_code = ''.join(random.choices('0123456789', k=4))
+
+    # Calculate expiration time (30 minutes from now)
+    expiration_time = timezone.now() + timezone.timedelta(minutes=30)
+
+    # Save the security code and expiration time to the database
+    user = CustomUser.objects.filter(email=email).first()
+    if user:
+        user.personal_details.security_code = security_code
+        user.personal_details.security_code_expiration = expiration_time
+        user.personal_details.save()
+
+        # Send the security code to the user's email
+        send_security_code_email(email, security_code)
+
+    return security_code  # Return the security code for verification in the security code reset view
+
+
 @login_excluded('ecommerce:index')
 def forgot_password(request, email=None):
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            user = CustomUser.objects.filter(email=email).first()
-
-            if user:
-                # Generate 4-digit security code
-                security_code = ''.join(random.choices('0123456789', k=4))
-
-                # Calculate expiration time (30 minutes from now)
-                expiration_time = timezone.now() + timezone.timedelta(minutes=30)
-
-                # Save the security code and expiration time to the database
-                user.personal_details.security_code = security_code
-                user.personal_details.security_code_expiration = expiration_time
-                user.personal_details.save()
-                print(expiration_time)
-
-                # Send the security code to the user's email
-                send_security_code_email(email, security_code)
+            security_code = send_security_code(email)
+            if security_code:
+                # Store the email and security code in the session for validation in security_code_reset view
+                request.session['reset_email'] = email
+                request.session['security_code'] = security_code
             # To maintain security, provide a generic message instead of revealing whether the email exists
             messages.success(request, 'An email with instructions has been sent if the provided address is registered.')
             return redirect('accounts:security_code_reset')
@@ -457,7 +469,7 @@ def send_security_code_email(email, security_code):
         user = CustomUser.objects.get(email=email)
         personal_details = user.personal_details
         first_name = personal_details.first_name
-    except CustomUser.DoesNotExist:
+    except ObjectDoesNotExist:
         print("User not found for the provided email.")
         return
 
@@ -498,5 +510,44 @@ def send_security_code_email(email, security_code):
 
 
 def security_code_reset(request):
+    reset_email = request.session.get('reset_email', None)
+    if request.method == 'POST':
+        # Get the entered security code from the form
+        entered_code = ''.join(request.POST.get(f'code{i}', '') for i in range(1, 5))
 
-    return render(request, 'accounts/security_code_reset.html')
+        # Get the email associated with the security code from the session
+        reset_email = request.session.get('reset_email', None)
+        security_code = request.session.get('security_code', None)
+        if reset_email and security_code:
+            if security_code == entered_code:
+                # Redirect to the password reset page if the codes match
+                return redirect('accounts:password_reset')
+            else:
+                messages.error(request, "This verification code is not valid. Please request a new one.")
+        else:
+            messages.error(request, "Session data not found. Please request a new verification code.")
+    # If the codes don't match or if the method is GET, render the security code reset page
+    return render(request, 'accounts/security_code_reset.html', {'email': reset_email})
+
+
+def resend_security_code(request):
+    # Retrieve the email from the session
+    reset_email = request.session.get('reset_email')
+
+    # Resend the security code
+    if reset_email:
+        # Generate a new security code and update the session
+        new_security_code = send_security_code(reset_email)
+        request.session['security_code'] = new_security_code  # Update the session with the new security code
+        messages.success(request, 'A new security code has been sent to your email.')
+    else:
+        messages.error(request, 'Session data not found. Please request a new verification code.')
+
+    # Redirect back to the security code reset page
+    return redirect('accounts:security_code_reset')
+
+
+def password_reset(request):
+    return render(request, 'accounts/password_reset.html')
+
+
