@@ -44,7 +44,9 @@
                     <div class="col-md-12 col-11 mx-auto black-card cart-card ">
                         <div class="d-flex justify-content-between">
                             <div class="fw-bold">1. CUSTOMER ADDRESS</div>
-                            <div><a href="" class="text-decoration-none text-primary" id="applyFilterBtn">CHANGE ></a></div>
+                            {% if user.addresses.all %}
+                            <div><a href="{% url 'accounts:address_book_edit' address.id %}" class="text-decoration-none text-primary">CHANGE ></a></div>
+                            {% endif %}
                         </div>
                         <hr>
                         {% if not user.addresses.all %}
@@ -106,9 +108,20 @@
                             </div>
             
                                 
-                            <div class="d-flex ">
-                                <a href="" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 30%;">Confirm Delivery Details</a>
-                            </div>
+                            {% if not delivery_details_confirmed %}
+                                <form method="post" action="{% url 'checkout:checkout' %}">
+                                    {% csrf_token %}
+                                    <!-- Add a hidden input field to identify the button click -->
+                                    <input type="hidden" name="confirm_delivery" value="1">
+                                    <!-- Your button to confirm delivery details -->
+                                    <div class="d-flex ">
+                                    <button type="submit" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 30%;">Confirm Delivery Details</button>
+                                    </div>
+                                </form>
+                            {% endif %}
+                                
+                                
+                            
                                 
                                     
                         {% endif %}
@@ -116,34 +129,45 @@
 
                     
         
-                    <div class="col-md-12 black-card cart-card mt-4">
+                    <div class="col-md-12 black-card cart-card mt-4" id="payment-details-container">
                         <div class="fw-bold">3. PAYMENT METHOD</div>
-                        {% if user.addresses.all %}
+                        {% if delivery_details_confirmed %}
                         <hr>
                         <div>Payment on delivery</div>
-                        <label class="container mt-2">
-                            <input type="radio" name="" class="circle" checked>
-                            <span class="checkmark"></span> Tap & Relax, Pay with Bank Transfer on Delivery
-                            <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
-                        </label>
-                        <div class="border p-3 mb-2 small">     
-                            <div>"PLEASE DO NOT TRANSFER TO OUR DELIVERY AGENT ACCOUNT." You can pay with your card or bank transfer via    ChistevPay at the time of delivery; simply inform our delivery agent when your order is being delivered...</div>
-                            <div><a href="" class="text-decoration-none">Details</a></div>
-                        </div>
-                        <hr>
+                        <form method="post" action="{% url 'checkout:checkout' %}">
+                            {% csrf_token %}
+                            <!-- Add a hidden input field to identify the button click -->
+                            <input type="hidden" name="confirm_payment" value="1"> 
+                            <input type="hidden" name="selected_payment_method" value="{{ selected_payment_method }}">
+
+                                <label class="container mt-2">
+                                <input type="radio" name="payment_method" class="circle" onclick="showPaymentDetails(this)" value="tap_and_relax" {% if selected_payment_method == "tap_and_relax" %}checked{% endif %}>
+                                <span class="checkmark"></span> Tap & Relax, Pay with Bank Transfer on Delivery
+                                <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
+                            </label>
+                            <div class="border p-3 mb-2 small" id="additional-info" style="display: none;">     
+                                <div>"PLEASE DO NOT TRANSFER TO OUR DELIVERY AGENT ACCOUNT." You can pay with your card or bank transfer via    ChistevPay at the time of delivery; simply inform our delivery agent when your order is being delivered...</div>
+                                <div><a href="" class="text-decoration-none">Details</a></div>
+                            </div>
+                            <hr>
                         
-                        <div>Pre-pay Now</div>
-                        <label class="container mt-2">
-                            <input type="radio" name="" class="circle" checked>
-                            <span class="checkmark"></span> Pay with Bank Transfer
-                            <div class="small">You will be redirected to our secure checkout page.</b></div>
-                        </label>
+                            <label class="container mt-2">
+                                <input type="radio" name="payment_method" class="circle" onclick="hidePaymentDetails(this)" value="bank_transfer" {% if selected_payment_method == "bank_transfer" %}checked{% endif %}>
+                                <span class="checkmark"></span> Pay with Bank Transfer
+                                <div class="small">You will be redirected to our secure checkout page.</div>
+                            </label>
                         
-                        <div class="d-flex ">
-                            <a href="" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 30%;">Confirm Payment Method</a>
-                        </div>
+                            <!-- Your "Confirm Payment Method" button -->
+                            <div class="d-flex ">
+                                
+                                <button disabled type="submit" class="btn btn-primary mt-2 mb-2 ms-auto confirm-payment-btn" data-selected-payment-method="{{ selected_payment_method }}" style="width: 30%;">Confirm Payment Method</button>
+                            </div>
+                        </form>
+                        
                         {% endif %}
                     </div>
+
+                    
                     
                     <div class="col-md-12 text-white mt-1">
                         <div><a href="" class="text-decoration-none text-white" id="applyFilterBtn">< Go back & continue shopping </a></div>
@@ -172,16 +196,21 @@
                             <div class="fw-bold" id="subtotal">N {{ total_amount|floatformat:"0"|intcomma }}</div>
                         </div>
                         <hr>
-                        {% if not user.addresses.all %}
-                        <a href="{% url 'checkout:order_success' %}" class="btn btn-primary fw-bold d-flex justify-content-center disabled" style="width: 99%;" onclick="return false;">
-                            CONFIRM ORDER
-                        </a> 
+                        
+                        <div class="d-flex">
+                            {% if request.session.selected_payment_method %}
+                            <button type="submit" class="btn btn-primary mt-2 mb-2 mx-auto confirm-payment-btn" style="width: 100%;">
+                                <a href="{% url 'checkout:order_success' %}" class="text-decoration-none text-white">Confirm Order</a>
+                            </button>
+                            
                         {% else %}
-                        <!-- Display the normal button if the user has addresses -->
-                        <a href="{% url 'checkout:order_success' %}" class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;" onclick="makePayment()">
-                            CONFIRM ORDER
-                        </a> 
+                            <button disabled type="submit" class="btn btn-primary mt-2 mb-2 ms-auto confirm-payment-btn" style="width: 100%;" data-selected-payment-method="{{ selected_payment_method }}" style="width: 30%;">Confirm Order</button>
                         {% endif %}
+                        </div>
+                        
+                    
+                        
+                    
                     </div>
                     <div class="text-white small">
                         By proceeding, you are automatically accepting the 
@@ -238,6 +267,78 @@
         });
     
     </script>
+
+<script>
+    // JavaScript function to show additional payment details
+    function showPaymentDetails(radioButton) {
+        if (radioButton.checked) {
+            document.getElementById("additional-info").style.display = "block";
+        }
+    }
+
+    // JavaScript function to hide additional payment details
+    function hidePaymentDetails(radioButton) {
+        if (radioButton.checked) {
+            document.getElementById("additional-info").style.display = "none";
+        }
+    }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
+        const confirmPaymentBtns = document.querySelectorAll('.confirm-payment-btn');
+        const confirmOrderBtn = document.querySelector('.confirm-order-btn');
+
+        // Add event listener to payment method radios
+        paymentMethodRadios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                confirmPaymentBtns.forEach(function(btn) {
+                    btn.removeAttribute('disabled');
+                });
+            });
+        });
+        const selectedPaymentMethod = confirmOrderBtn.getAttribute('data-selected-payment-method');
+
+        // Check if a payment method is selected and enable the button accordingly
+        confirmPaymentBtns.forEach(function(btn) {
+            const selectedPaymentMethod = btn.getAttribute('data-selected-payment-method');
+            console.log('Selected Payment Method:', selectedPaymentMethod);
+            if (selectedPaymentMethod) {
+                btn.removeAttribute('disabled');
+                confirmOrderBtn.removeAttribute('disabled');
+            } else {
+                btn.setAttribute('disabled', 'disabled');
+                confirmOrderBtn.setAttribute('disabled', 'disabled');
+            }
+        });
+
+        if(selectedPaymentMethod){
+            confirmOrderBtn.removeAttribute('disabled');
+        }
+        else{
+            
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const confirmPaymentBtn = document.querySelector('.confirm-payment-btn');
+        const confirmOrderBtn = document.querySelector('.confirm-order-btn');
+
+        // Initially disable the "Confirm Order" button
+        confirmOrderBtn.disabled = true;
+
+        // Add event listener to the "Confirm Payment Method" button
+        confirmPaymentBtn.addEventListener('click', function () {
+            // Enable the "Confirm Order" button when the "Confirm Payment Method" button is clicked
+            confirmOrderBtn.disabled = false;
+        });
+    });
+</script>
+
+
 
 <script src="{% static 'javascript/addressForm.js' %}" defer></script>
 </body>
