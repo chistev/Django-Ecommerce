@@ -352,6 +352,22 @@ def address_book(request):
 
 
 @redirect_to_login_or_register
+def save_address(request, form):
+    if form.is_valid():
+        # Save or update personal details for the user
+        user = request.user
+        personal_details, created = PersonalDetails.objects.get_or_create(user=user)
+        personal_details.first_name = form.cleaned_data['first_name']
+        personal_details.last_name = form.cleaned_data['last_name']
+        personal_details.save()
+
+        # Save address details
+        address_instance = form.save(commit=False)
+        address_instance.user = user
+        address_instance.save()
+
+
+@redirect_to_login_or_register
 def address_book_create(request):
     current_path = resolve(request.path_info).url_name
     user = request.user
@@ -361,18 +377,7 @@ def address_book_create(request):
         form = AddressForm(request.POST, user=request.user)
 
         if form.is_valid():
-            # Save or update personal details for the user
-            personal_details, created = PersonalDetails.objects.get_or_create(user=user)
-            personal_details.first_name = form.cleaned_data['first_name']
-            personal_details.last_name = form.cleaned_data['last_name']
-            personal_details.save()
-
-            # Save address details
-            address_instance = form.save(commit=False)
-            address_instance.user = user
-            address_instance.save()
-
-            # Redirect the user to a success page
+            save_address(request, form)
             return redirect('accounts:address_book')
     else:
         initial_data = {'first_name': personal_details.first_name if personal_details else '',

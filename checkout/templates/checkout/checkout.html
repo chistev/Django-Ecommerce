@@ -30,7 +30,7 @@
             <!-- Navbar Collapse Container -->
             <div class="collapse navbar-collapse" id="navbarNav">
     
-                <!-- Search Box -->
+
                 <div class="text-white mx-auto">
                     Finalize Delivery
                 </div>
@@ -41,65 +41,23 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="row">
-                    <div class="col-md-12 black-card cart-card">
+                    <div class="col-md-12 col-11 mx-auto black-card cart-card ">
                         <div class="d-flex justify-content-between">
                             <div class="fw-bold">1. CUSTOMER ADDRESS</div>
                             <div><a href="" class="text-decoration-none text-primary" id="applyFilterBtn">CHANGE ></a></div>
                         </div>
                         <hr>
                         {% if not user.addresses.all %}
-                        <div class="small">Add a New Address</div>
-                            <form method="post" action="{% url 'accounts:address_book_create' %}">
+                        <div class="small mb-2">ADD NEW ADDRESS</div>
+                            <form method="post" action="{% url 'checkout:checkout' %}">
                                 {% csrf_token %}
-        
-                            <!-- Input field for first name -->
-                            <div style="display: flex; justify-content: space-between;">
-                                <div class="mb-3">
-                                    <label for="{{ form.first_name.id_for_label }}" class="form-label text-white">{{ form.first_name.label }}</label>
-                                    {{ form.first_name }}
-                                </div>
-                                
-                                <div class= "mb-3">
-                                    <label for="{{ form.last_name.id_for_label }}" class="form-label text-white">{{ form.last_name.label }}</label>
-                                    {{ form.last_name }}
-                                </div>
-                            </div>
-        
-                            <div class="mb-3">
-                                <label for="{{ form.address.id_for_label }}" class="form-label text-white">{{ form.address.label }}</label>
-                                {{ form.address }}
-                            </div>
-        
-                            <div class="mb-3">
-                                <label for="{{ form.additional_info.id_for_label }}" class="form-label text-white">{{ form.additional_info.label }}</label>
-                                {{ form.additional_info }}
-                            </div>
-        
-                            
-                            
-                            <div style="display: flex; justify-content: space-between;">
-                                <div class="mb-3">
-                                    <label for="{{ form.state.id_for_label }}" class="form-label text-white">{{ form.state.label }}</label>
-                                    {{ form.state }}
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <!-- Add a message for city selection -->
-                                    <div id="city-selection-message" class="text-danger" style="display: none;">
-                                        Please select a city.
-                                    </div>
-        
-                                    <label for="{{ form.city.id_for_label }}" class="form-label text-white">{{ form.city.label }}</label>
-                                    <select class="form-select bg-secondary" id="city" name="city" style="width: 350px !important" disabled>
-                                        <option value="" disabled selected>City</option>
-                                    </select>
-                                </div>
-                            </div>
+                                {% include 'accounts/address_form.html' %}
                             <hr>
                             <div style="display: flex; justify-content:right;">
                                 <button type="submit" class="btn btn-primary" style="width: 10%;">Save</button>
                             </div>
                             </form>
+                            </div>
                         {% else %}
                         <div>{{ personal_details.first_name }} {{ personal_details.last_name }}</div>
                         <div class="d-flex">
@@ -113,49 +71,54 @@
                     {% endif %}
                     <div class="col-md-12 black-card cart-card mt-4">
                         <div class="fw-bold">2. DELIVERY DETAILS</div>
-                        <hr>
-                        <div class="d-flex">
-                            <label class="container mt-2">
-                                <input type="radio" name="" class="circle" checked>
-                                <span class="checkmark"></span> Door Delivery (from N {{ delivery_fee|floatformat:0|intcomma }})
-                                <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
-                            </label>
-        
-                            <div>
-                                <i class="bi bi-truck fs-3"></i>
-                            </div>
-                        </div>
-        
-                            <div class="border p-3 mb-2">     
-                                <div class="row d-flex flex-column">
-                                    {% for cart_item in cart_items %}
-                                    <div class="col-md-5 mt-1 d-flex">
-                                            <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="img-fluid checkout-image">
-                                            <div class="ms-1">
-                                                <p class="small text-nowrap">{{ cart_item.product.name }}</p>
-                                                <p class="small" style="margin-top: -20px;">QTY:  {{ cart_item.quantity }}</p>
-                                            </div>
-                                                
-                                    </div>
-        
-                                    
-                                    
-                                    {% endfor %}
-                
+                        {% if user.addresses.all %}
+                            <hr>
+                            <div class="d-flex">
+                                <label class="container mt-2">
+                                    <input type="radio" name="" class="circle" checked>
+                                    <span class="checkmark"></span> Door Delivery (from N {{ delivery_fee|floatformat:0|intcomma }})
+                                    <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
+                                </label>
+            
+                                <div>
+                                    <i class="bi bi-truck fs-3"></i>
                                 </div>
-                            </div>
-        
                             
+                            </div>
+            
+                            <div class="border p-3 mb-2">     
+                                    <div class="row d-flex flex-column">
+                                        {% for cart_item in cart_items %}
+                                        <div class="col-md-5 mt-1 d-flex">
+                                                <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="img-fluid checkout-image">
+                                                <div class="ms-1">
+                                                    <p class="small text-nowrap">{{ cart_item.product.name }}</p>
+                                                    <p class="small" style="margin-top: -20px;">QTY:  {{ cart_item.quantity }}</p>
+                                                </div>
+                                                    
+                                        </div>
+            
+                                        
+                                        
+                                        {% endfor %}
+                    
+                                    </div>
+                            </div>
+            
+                                
                             <div class="d-flex ">
                                 <a href="" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 30%;">Confirm Delivery Details</a>
                             </div>
-                            
                                 
-                    </div>
+                                    
+                        {% endif %}
+                        </div>
+
                     
         
                     <div class="col-md-12 black-card cart-card mt-4">
                         <div class="fw-bold">3. PAYMENT METHOD</div>
+                        {% if user.addresses.all %}
                         <hr>
                         <div>Payment on delivery</div>
                         <label class="container mt-2">
@@ -179,13 +142,15 @@
                         <div class="d-flex ">
                             <a href="" class="btn btn-primary mt-2 mb-2 ms-auto" style="width: 30%;">Confirm Payment Method</a>
                         </div>
+                        {% endif %}
                     </div>
-        
+                    
                     <div class="col-md-12 text-white mt-1">
                         <div><a href="" class="text-decoration-none text-white" id="applyFilterBtn">< Go back & continue shopping </a></div>
                     </div> 
-    
+                    
                 </div>   
+                
             </div>
 
             <div class="col-md-3 mx-auto">
@@ -207,9 +172,16 @@
                             <div class="fw-bold" id="subtotal">N {{ total_amount|floatformat:"0"|intcomma }}</div>
                         </div>
                         <hr>
+                        {% if not user.addresses.all %}
+                        <a href="{% url 'checkout:order_success' %}" class="btn btn-primary fw-bold d-flex justify-content-center disabled" style="width: 99%;" onclick="return false;">
+                            CONFIRM ORDER
+                        </a> 
+                        {% else %}
+                        <!-- Display the normal button if the user has addresses -->
                         <a href="{% url 'checkout:order_success' %}" class="btn btn-primary fw-bold d-flex justify-content-center" style="width: 99%;" onclick="makePayment()">
                             CONFIRM ORDER
                         </a> 
+                        {% endif %}
                     </div>
                     <div class="text-white small">
                         By proceeding, you are automatically accepting the 
@@ -218,7 +190,6 @@
                 </div>
                 
             </div>
-        </div>
     </div>
 
     
@@ -267,12 +238,7 @@
         });
     
     </script>
-    <script>
-        function makePayment() {
-            FlutterwaveCheckout({
-                public_key: "FLWPUBK_TEST-1fbd549b751836df8df378c9919668d4-X",
-            });
-        }
-    </script>
+
+<script src="{% static 'javascript/addressForm.js' %}" defer></script>
 </body>
 </html>

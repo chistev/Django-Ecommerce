@@ -2,10 +2,12 @@ import uuid
 from datetime import timedelta, datetime
 
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
 
 from accounts.forms import AddressForm
+from accounts.views import save_address
 from ecommerce.models import CartItem
 
 
@@ -50,6 +52,18 @@ def checkout_view(request):
     personal_details = None
     if hasattr(user, 'personal_details'):
         personal_details = user.personal_details
+
+    if request.method == 'POST':
+        form = AddressForm(request.POST, user=user)
+        if form.is_valid():
+            save_address(request, form)
+            # After saving the address, redirect to the same page to continue checkout
+            return HttpResponseRedirect(request.path_info)  # Redirect to the same page to refresh data
+        else:
+            # If it's a GET request, initialize the form with existing address data or empty form
+            initial_data = {'first_name': user.personal_details.first_name if user.personal_details else '',
+                            'last_name': user.personal_details.last_name if user.personal_details else ''}
+            form = AddressForm(initial=initial_data, user=user)
 
     return render(request, 'checkout/checkout.html',
                   {'form': form, 'personal_details': personal_details, 'address': address,
