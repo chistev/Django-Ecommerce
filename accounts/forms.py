@@ -42,11 +42,11 @@ class PersonalDetailsForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.EmailField(
         label='Email address',
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'required': True})
+        widget=forms.EmailInput(attrs={'class': 'form-control bg-secondary text-white', 'required': True})
     )
     password = forms.CharField(
         label='Password',
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True})
+        widget=forms.PasswordInput(attrs={'class': 'form-control mt-3', 'placeholder': 'Password',  'style': 'width: 100% !important',  'required': True})
     )
 
 

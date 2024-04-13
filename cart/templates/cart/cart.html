@@ -138,9 +138,9 @@
         $(document).ready(function() {
             // Handle click event of "Remove" link
             $('.remove-button').click(function(e) {
-                e.preventDefault(); // Prevent default link behavior
+                e.preventDefault();
                 var productId = $(this).data('product-id');
-                $('#confirmationModal').modal('show'); // Show confirmation modal
+                $('#confirmationModal').modal('show');
                 $('#confirmRemove').data('product-id', productId); // Store product ID in the "Remove" button
                 $('#confirmSave').data('product-id', productId); // Store product ID for "Save for Later" button
             });
@@ -150,16 +150,15 @@
                 var productId = $(this).data('product-id');
                 // Perform AJAX request to remove product from cart
                 $.ajax({
-                    url: '{% url "cart:remove_all_from_cart" %}', // Your remove from cart URL
+                    url: '{% url "cart:remove_all_from_cart" %}',
                     type: 'POST',
                     data: {
                         product_id: productId,
-                        csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     success: function(response) {
                         // Handle success response
                         if (response.status === 'success') {
-                            // Reload the page or update the cart dynamically
                             window.location.reload(); // Reload the page
                         } else {
                             // Handle error response
@@ -209,32 +208,6 @@
                     }
                 });
             });
-    
-            // Function to remove product from cart and refresh the page
-            function removeProductFromCart(productId) {
-                $.ajax({
-                    url: '{% url "cart:remove_all_from_cart" %}', // Your remove from cart URL
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
-                    },
-                    success: function(response) {
-                        // Handle success response
-                        if (response.status === 'success') {
-                            // Reload the page
-                            window.location.reload(); // Reload the page
-                        } else {
-                            // Handle error response
-                            alert('Error removing item from cart.');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle AJAX error
-                        alert('Error removing item from cart: ' + error);
-                    }
-                });
-            }
         });
     </script>
     
@@ -243,7 +216,6 @@
     
             // Function to update subtotal and checkout button after successful AJAX request
             function updateCartUI(subtotal) {
-                console.log('Updating subtotal:', subtotal);
                 $('#subtotal').text(' ' + subtotal.toLocaleString());
                 $('#checkoutButton').text('Checkout ( ' + subtotal.toLocaleString() + ')');
             }

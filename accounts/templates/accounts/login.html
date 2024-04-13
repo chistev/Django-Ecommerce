@@ -11,7 +11,8 @@
             <input type="email" class="form-control bg-secondary text-white" id="email" name="email" required value="{{ form.email.value }}" readonly>
             <button class="btn btn-outline-light bg-secondary text-white" type="button" id="editEmailButton" onclick="location.href='{% url 'accounts:login_or_register' %}'">Edit</button>
         </div>
-        <input type="password" style="width: 100% !important;" class="form-control mt-3" placeholder="Password" id="Password" name="password"> 
+        {{ form.password }}
+
         {% if messages %}
         <div class="alert alert-danger mt-3" role="alert">
             {% for message in messages %}
