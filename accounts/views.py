@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -11,10 +12,10 @@ import requests
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, update_session_auth_hash
 from django.contrib.auth.views import LogoutView
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.urls import resolve, reverse
 
-from ecommerce.models import UserActivity
+from ecommerce.models import UserActivity, Order, OrderItem
 from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, PersonalDetailsForm, EditBasicDetailsForm, \
     ForgotPasswordForm, PasswordResetForm
 from .models import CustomUser, PersonalDetails, State, City, Address
@@ -594,3 +595,34 @@ def password_reset(request):
         form = PasswordResetForm(initial={'email': reset_email})
     context = {'reset_email': reset_email, 'form': form}
     return render(request, 'accounts/password_reset.html', context)
+
+
+def order_details(request, order_number):
+    order = Order.objects.get(order_number=order_number, user=request.user)
+    # Get the order items associated with the order
+    order_items = OrderItem.objects.filter(order=order)
+
+    # Calculate the total number of items in the order
+    total_items = sum(order_item.quantity for order_item in order_items)
+
+    # Calculate total cost
+    total_items_cost = sum(order_item.product.new_price * order_item.quantity for order_item in order_items)
+
+    # Calculate total cost after subtracting total items cost from the order total amount
+    delivery_fee = order.total_amount - total_items_cost
+
+    # Retrieve the user's address
+    user_address = Address.objects.filter(user=request.user).first()
+
+    # Calculate the delivery start and end dates
+    order_date = order.order_date
+    delivery_start_date = order_date + timedelta(days=5)  # Add 5 days to the order date for the start date
+    delivery_end_date = order_date + timedelta(days=10)  # Add 10 days to the order date for the end date
+
+    return account_page(request, 'accounts/order_details.html', {'order': order, 'total_items': total_items,
+                                                           'order_items': order_items,
+                                                           'total_items_cost': total_items_cost,
+                                                           'delivery_fee': delivery_fee,
+                                                           'user_address': user_address,
+                                                                 'delivery_start_date': delivery_start_date,
+                                                                 'delivery_end_date': delivery_end_date})

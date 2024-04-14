@@ -1,0 +1,106 @@
+{% extends 'ecommerce/base.html' %}
+{% load humanize %}
+{% block body %}
+             <!-- First Card -->
+             {% include 'accounts/account_navigation.html' %}
+             <div class="d-flex align-items-center mb-4">
+                <!-- Back Icon Button -->
+                <a href="{% url 'accounts:orders' %}" class="text-decoration-none me-3">
+                    <i class="bi bi-arrow-left text-white"></i>
+                </a>
+                <!-- Title -->
+                <h5>Account Overview</h5>
+            </div>
+                <hr>
+                <div class="fw-bold">
+                    Order nº {{ order.order_number }}
+                </div>
+                <div>
+                    {{ total_items }} items
+                </div>
+                <div>
+                    Placed on {{ order.order_date|date:"F j, Y H:i" }}
+                </div>
+
+                <div>
+                    Total cost: N{{ order.total_amount|floatformat:"0"|intcomma }}
+                </div>
+                <hr>
+                <div class="fw-bold">
+                    ITEMS IN YOUR ORDER
+                </div>
+                <div class="border p-3 mb-2">  
+                    <div class="d-flex justify-content-between">
+                        <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
+                        <a href="" class="btn btn-primary mt-2">Cancel Order</a>
+                    </div> 
+                    
+                {% for order_item in order_items %}
+                
+                <div class="col-md-5 mt-1 d-flex">
+                        <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="img-fluid" style="width: 30%;">
+                        <div class="ms-1 justify-content-between d-flex flex-column">
+                            <p class="small text-nowrap">{{ order_item.product.name }}</p>
+                            <p class="small">QTY:  {{ order_item.quantity }}</p>
+                            <p class="small">N{{ order_item.price|floatformat:"0"|intcomma }}</p>
+                        </div>
+                </div>
+                
+                {% endfor %}
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="border p-3 mb-2">   
+                        <div class="fw-bold">
+                            Payment Method
+                        </div>
+                        <div>
+                            Tap & Relax, Pay with Bank Transfer on Delivery
+                        </div>
+        
+                        <div class="fw-bold mt-4">
+                            Payment Details
+                        </div>
+                        <div>
+                            Items total: N{{ total_items_cost|floatformat:"0"|intcomma }}
+                        </div>
+                        <div>
+                            Delivery Fees: N{{ delivery_fee|floatformat:"0"|intcomma }}
+                        </div>
+                        <div class="fw-bold">
+                            Total: N{{ order.total_amount|floatformat:"0"|intcomma }}
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="border p-3 mb-2">   
+                        <div class="fw-bold">
+                            Delivery Method
+                        </div>
+                        <div>
+                            Door Delivery
+                        </div>
+        
+                        <div class="fw-bold mt-4">
+                            Shipping Address
+                        </div>
+                        <div>
+                            {{ user_address.first_name }} {{ user_address.last_name }}
+                        </div>
+                        <div>
+                            {{ user_address.address }}
+                        </div>
+                        <div>
+                            {{ user_address.additional_info }}, {{ user_address.city.name }}, {{ user_address.state.name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+</body>
+{% endblock %}

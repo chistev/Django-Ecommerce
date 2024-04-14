@@ -2,6 +2,7 @@ import uuid
 from datetime import timedelta, datetime
 
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -101,6 +102,7 @@ def calculate_delivery_fee(cart_items):
     return delivery_fee
 
 
+@transaction.atomic
 def order_success_view(request):
     # Calculate the delivery start and end dates
     order_date = timezone.now()
@@ -113,9 +115,14 @@ def order_success_view(request):
     # Retrieve the user's cart items
     cart_items = CartItem.objects.filter(cart__user=request.user)
 
-    # Calculate total amount
-    total_amount = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
+    # Calculate total cost
+    total_cost = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
 
+    # Calculate delivery fee
+    delivery_fee = calculate_delivery_fee(cart_items)
+
+    # Calculate total amount (delivery fee + total cost)
+    total_amount = delivery_fee + total_cost
     # Create the order
     order = Order.objects.create(order_number=order_number, user=request.user, total_amount=total_amount)
 
@@ -127,4 +134,4 @@ def order_success_view(request):
     CartItem.objects.filter(cart__user=request.user).delete()
 
     return render(request, 'checkout/order_success.html', {'order_number': order_number, 'delivery_start_date':
-                       delivery_start_date, 'delivery_end_date': delivery_end_date})
+                       delivery_start_date, 'delivery_end_date': delivery_end_date, 'total_amount': total_amount})
