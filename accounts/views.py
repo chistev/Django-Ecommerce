@@ -209,7 +209,10 @@ def orders(request):
 
 @redirect_to_login_or_register
 def closed_orders(request):
-    return account_page(request, 'accounts/closed_orders.html')
+    cancelled_orders = Order.objects.filter(user=request.user, is_cancelled=True)
+    cancelled_orders_count = Order.objects.filter(user=request.user, is_cancelled=True).count()
+    context = {'cancelled_orders': cancelled_orders, 'cancelled_orders_count': cancelled_orders_count}
+    return account_page(request, 'accounts/closed_orders.html', context)
 
 
 @redirect_to_login_or_register
@@ -599,6 +602,9 @@ def password_reset(request):
 
 def order_details(request, order_number):
     order = Order.objects.get(order_number=order_number, user=request.user)
+    if order.is_cancelled:
+        # Redirect the user to a relevant page since the order has been cancelled
+        return redirect('accounts:closed_orders')
     # Get the order items associated with the order
     order_items = OrderItem.objects.filter(order=order)
 
@@ -626,3 +632,13 @@ def order_details(request, order_number):
                                                            'user_address': user_address,
                                                                  'delivery_start_date': delivery_start_date,
                                                                  'delivery_end_date': delivery_end_date})
+
+
+def cancel_order(request, order_number):
+    order = Order.objects.get(order_number=order_number, user=request.user)
+    order.is_cancelled = True  # Set the cancellation flag
+    order.cancellation_date = timezone.now()  # Set the cancellation date
+    order.save()  # Save the order with the updated flag
+
+    # Redirect to a relevant page after cancellation, such as the user's orders page
+    return redirect('accounts:closed_orders')

@@ -32,7 +32,7 @@
                 <div class="border p-3 mb-2">  
                     <div class="d-flex justify-content-between">
                         <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
-                        <a href="" class="btn btn-primary mt-2">Cancel Order</a>
+                        <a href="{% url 'accounts:cancel_order' order.order_number %}" class="btn btn-primary mt-2">Cancel Order</a>
                     </div> 
                     
                 {% for order_item in order_items %}

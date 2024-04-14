@@ -54,6 +54,8 @@ class Order(models.Model):
     items = models.ManyToManyField('Product', through='OrderItem')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
+    is_cancelled = models.BooleanField(default=False)
+    cancellation_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Order {self.order_number}"

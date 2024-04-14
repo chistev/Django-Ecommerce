@@ -15,6 +15,7 @@ urlpatterns = [
     path('my_account/', views.my_account, name='my_account'),
     path('orders/', views.orders, name='orders'),
     path('order_details/<str:order_number>/', views.order_details, name='order_details'),
+    path('order/<str:order_number>/cancel/', views.cancel_order, name='cancel_order'),
     path('closed_orders/', views.closed_orders, name='closed_orders'),
     path('inbox/', views.inbox, name='inbox'),
     path('saved_items/', views.saved_items, name='saved_items'),

@@ -1,32 +1,57 @@
 {% extends 'ecommerce/base.html' %}
-
+{% load humanize %}
 {% block body %}
-             <!-- First Card -->
-             {% include 'accounts/account_navigation.html' %}
-             
-                <h5>Account Overview</h5>
-                <hr>
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <a href="{% url 'accounts:orders' %}" class="text-decoration-none open-orders">OPEN ORDERS (0)</a>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="{% url 'accounts:closed_orders' %}" class="text-decoration-none">CLOSED ORDERS (0)</a>
-                    </div>
-                </div>
-                <hr>
-                <!-- Add the bag icon in the middle -->
-                <div class="row mt-4">
-                    <div class="col-md-12 text-center">
-                        <h1><strong><i class="bi bi-bag"></i></strong></h1>
-                        <p>No Closed Orders to Display</p>
-                        <p>All your Closed Orders will be saved here.</p>
-                        <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Start Shopping</a>
-                    </div>
+<!-- First Card -->
+{% include 'accounts/account_navigation.html' %}
+
+<h5>Account Overview</h5>
+<hr>
+<div class="row mt-4">
+    <div class="col-md-3">
+        <a href="{% url 'accounts:orders' %}" class="text-decoration-none open-orders">OPEN ORDERS (0)</a>
+    </div>
+    <div class="col-md-3">
+        {% if cancelled_orders_count > 0 %}
+            <a href="{% url 'accounts:closed_orders' %}" class="text-decoration-none">CLOSED ORDERS ({{ cancelled_orders_count }})</a>
+        {% else %}
+            <!-- Placeholder content when there are no cancelled orders -->
+            <a href="{% url 'accounts:closed_orders' %}" class="text-decoration-none">CLOSED ORDERS (0)</a>
+        {% endif %}
+    </div>
+</div>
+<hr>
+
+<!-- Render cancelled orders if there are any -->
+{% if cancelled_orders_count > 0 %}
+    {% for order in cancelled_orders %}
+        {% for order_item in order.orderitem_set.all %}
+        <div class="border p-3 mb-2">
+            <div class="col-md-5 mt-1 d-flex">
+                <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="img-fluid" style="width: 30%;">
+                <div class="ms-1">
+                    <p class="small text-nowrap">{{ order_item.product.name }}</p>
+                    <p class="small text-secondary">Order {{ order.order_number }}</p>
+                    <span class="badge bg-secondary">Cancelled</span>
+                    <p class="small text-secondary">On: {{ order.cancellation_date }}</p>
                 </div>
             </div>
-        
+        </div>
+            
+        {% endfor %}
+    {% endfor %}
+{% else %}
+    <!-- Placeholder content when there are no cancelled orders -->
+    <div class="row mt-4">
+        <div class="col-md-12 text-center">
+            <h1><strong><i class="bi bi-bag"></i></strong></h1>
+            <p>No Closed Orders to Display</p>
+            <p>All your Closed Orders will be saved here.</p>
+            <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Start Shopping</a>
         </div>
     </div>
+{% endif %}
+</div>
+</div>
+</div>
 </body>
 {% endblock %}
