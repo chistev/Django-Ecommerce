@@ -1,4 +1,5 @@
 {% extends 'ecommerce/base.html' %}
+{% load humanize %}
 {% block body %}
              <!-- First Card -->
              {% include 'accounts/account_navigation.html' %}
@@ -6,13 +7,35 @@
                 <hr>
                 <div class="row mt-4">
                     <div class="col-md-3">
-                        <a href="#" class="text-decoration-none">OPEN ORDERS (0)</a>
+                        <a href="#" class="text-decoration-none">OPEN ORDERS</a>
                     </div>
                     <div class="col-md-3">
-                        <a href="{% url 'accounts:closed_orders' %}" class="text-decoration-none closed-orders">CLOSED ORDERS (0)</a>
+                        <a href="{% url 'accounts:closed_orders' %}" class="text-decoration-none closed-orders">CLOSED ORDERS ({{ total_cancelled_orders }})</a>
                     </div>
                 </div>
                 <hr>
+                {% if active_orders %}
+                {% for order_info in active_orders %}
+                {% with order=order_info.order %}
+                    {% for order_item in order.orderitem_set.all %}
+                        <div class="border p-3 mb-2">
+                            <a href="{% url 'accounts:order_details' order_number=order.order_number %}" class="text-decoration-none text-white">
+                                <div class="col-md-5 mt-1 d-flex">
+                                    <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="img-fluid" style="width: 30%;">
+                                    <div class="ms-1">
+                                        <p class="small text-nowrap">{{ order_item.product.name }}</p>
+                                        <p class="small text-secondary">Order {{ order.order_number }}</p>
+                                            <span class="badge bg-secondary">Shipped</span>
+                                            <div class="small text-secondary">Delivery between <b>{{ order_info.delivery_start_date|date:"d F" }}</b> and <b>{{ order_info.delivery_end_date|date:"d F" }}</b></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            {% endfor %}
+            {% else %}
+
                 <!-- Add the bag icon in the middle -->
                 <div class="row mt-4">
                     <div class="col-md-12 text-center">
@@ -22,6 +45,7 @@
                         <a href="{% url 'ecommerce:index' %}" class="btn btn-primary btn-lg mt-2">Continue Shopping</a>
                     </div>
                 </div>
+            {% endif %}
             </div>
         
         </div>

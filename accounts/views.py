@@ -3,6 +3,7 @@ import os
 from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 from django.utils import timezone
 from dotenv import load_dotenv
 
@@ -201,10 +202,30 @@ def my_account(request):
                         {'user': user, 'personal_details': personal_details,
                          'user_addresses': user_addresses})
 
-
+# Function to calculate delivery dates
+def calculate_delivery_dates(order_date):
+    delivery_start_date = order_date + timedelta(days=5)
+    delivery_end_date = order_date + timedelta(days=10)
+    return delivery_start_date, delivery_end_date
 @redirect_to_login_or_register
 def orders(request):
-    return account_page(request, 'accounts/orders.html')
+    # Query orders that have not been cancelled
+    active_orders = Order.objects.filter(user=request.user, is_cancelled=False)
+    orders_with_dates = []
+    for order in active_orders:
+        delivery_start_date, delivery_end_date = calculate_delivery_dates(order.order_date)
+        orders_with_dates.append({
+            'order': order,
+            'delivery_start_date': delivery_start_date,
+            'delivery_end_date': delivery_end_date
+        })
+
+    # Count the total number of cancelled orders
+    total_cancelled_orders = Order.objects.filter(user=request.user, is_cancelled=True).count()
+
+    context = {'active_orders': orders_with_dates,
+        'total_cancelled_orders': total_cancelled_orders}
+    return account_page(request, 'accounts/orders.html', context)
 
 
 @redirect_to_login_or_register
@@ -602,9 +623,6 @@ def password_reset(request):
 
 def order_details(request, order_number):
     order = Order.objects.get(order_number=order_number, user=request.user)
-    if order.is_cancelled:
-        # Redirect the user to a relevant page since the order has been cancelled
-        return redirect('accounts:closed_orders')
     # Get the order items associated with the order
     order_items = OrderItem.objects.filter(order=order)
 

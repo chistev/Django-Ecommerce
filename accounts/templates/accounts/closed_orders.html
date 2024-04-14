@@ -8,7 +8,7 @@
 <hr>
 <div class="row mt-4">
     <div class="col-md-3">
-        <a href="{% url 'accounts:orders' %}" class="text-decoration-none open-orders">OPEN ORDERS (0)</a>
+        <a href="{% url 'accounts:orders' %}" class="text-decoration-none open-orders">OPEN ORDERS</a>
     </div>
     <div class="col-md-3">
         {% if cancelled_orders_count > 0 %}
@@ -26,6 +26,7 @@
     {% for order in cancelled_orders %}
         {% for order_item in order.orderitem_set.all %}
         <div class="border p-3 mb-2">
+            <a href="{% url 'accounts:order_details' order_number=order.order_number %}" class="text-decoration-none text-white">
             <div class="col-md-5 mt-1 d-flex">
                 <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="img-fluid" style="width: 30%;">
                 <div class="ms-1">
@@ -35,6 +36,7 @@
                     <p class="small text-secondary">On: {{ order.cancellation_date }}</p>
                 </div>
             </div>
+            </a>
         </div>
             
         {% endfor %}

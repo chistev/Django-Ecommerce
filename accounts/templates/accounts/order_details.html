@@ -29,11 +29,27 @@
                 <div class="fw-bold">
                     ITEMS IN YOUR ORDER
                 </div>
-                <div class="border p-3 mb-2">  
+                <div class="border p-3 mb-2"> 
                     <div class="d-flex justify-content-between">
-                        <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
-                        <a href="{% url 'accounts:cancel_order' order.order_number %}" class="btn btn-primary mt-2">Cancel Order</a>
-                    </div> 
+                        {% if order.is_cancelled %}
+                            <div>
+                                <span class="badge bg-secondary">Cancelled</span>
+                                <p class="small text-secondary">On: {{ order.cancellation_date }}</p> 
+                            </div>
+                        {% else %}
+                            <div class="small">Delivery between <b>{{ delivery_start_date|date:"d F" }}</b> and <b>{{ delivery_end_date|date:"d F" }}</b></div>
+                        {% endif %}
+
+                        {% if order.is_cancelled %}
+                            <a href="{% url 'cart:cart' %}" class="btn btn-primary mt-2">Buy Again</a>
+                        {% else %}    
+                            <a href="{% url 'accounts:cancel_order' order.order_number %}" class="btn btn-primary mt-2">Cancel Order</a>
+                        {% endif %}
+                    </div>
+                    
+                            
+                    
+                    
                     
                 {% for order_item in order_items %}
                 
