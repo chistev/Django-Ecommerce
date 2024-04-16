@@ -210,15 +210,19 @@ def calculate_delivery_dates(order_date):
 @redirect_to_login_or_register
 def orders(request):
     # Query orders that have not been cancelled
-    active_orders = Order.objects.filter(user=request.user, is_cancelled=False)
+    active_orders = Order.objects.filter(user=request.user, is_cancelled=False).order_by('-order_date')
     orders_with_dates = []
     for order in active_orders:
-        delivery_start_date, delivery_end_date = calculate_delivery_dates(order.order_date)
-        orders_with_dates.append({
-            'order': order,
-            'delivery_start_date': delivery_start_date,
-            'delivery_end_date': delivery_end_date
-        })
+        # Get the first product associated with the order
+        order_item = order.orderitem_set.first()
+        if order_item:
+            delivery_start_date, delivery_end_date = calculate_delivery_dates(order.order_date)
+            orders_with_dates.append({
+                'order': order,
+                'order_item': order_item,  # Pass the first order item
+                'delivery_start_date': delivery_start_date,
+                'delivery_end_date': delivery_end_date
+            })
 
     # Count the total number of cancelled orders
     total_cancelled_orders = Order.objects.filter(user=request.user, is_cancelled=True).count()

@@ -16,25 +16,23 @@
                 <hr>
                 {% if active_orders %}
                 {% for order_info in active_orders %}
-                {% with order=order_info.order %}
-                    {% for order_item in order.orderitem_set.all %}
+                    {% with order=order_info.order %}
                         <div class="border p-3 mb-2">
                             <a href="{% url 'accounts:order_details' order_number=order.order_number %}" class="text-decoration-none text-white">
                                 <div class="col-md-5 mt-1 d-flex">
-                                    <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="img-fluid" style="width: 30%;">
+                                    <img src="{{ order_info.order_item.product.image.url }}" alt="{{ order_info.order_item.product.name }}" class="img-fluid" style="width: 30%;">
                                     <div class="ms-1">
-                                        <p class="small text-nowrap">{{ order_item.product.name }}</p>
+                                        <p class="small text-nowrap">{{ order_info.order_item.product.name }}</p>
                                         <p class="small text-secondary">Order {{ order.order_number }}</p>
-                                            <span class="badge bg-secondary">Shipped</span>
-                                            <div class="small text-secondary">Delivery between <b>{{ order_info.delivery_start_date|date:"d F" }}</b> and <b>{{ order_info.delivery_end_date|date:"d F" }}</b></div>
+                                        <span class="badge bg-secondary">Shipped</span>
+                                        <div class="small text-secondary">Delivery between <b>{{ order_info.delivery_start_date|date:"d F" }}</b> and <b>{{ order_info.delivery_end_date|date:"d F" }}</b></div>
                                     </div>
                                 </div>
                             </a>
                         </div>
-                    {% endfor %}
-                {% endwith %}
-            {% endfor %}
-            {% else %}
+                    {% endwith %}
+                {% endfor %}
+                {% else %}
 
                 <!-- Add the bag icon in the middle -->
                 <div class="row mt-4">

@@ -20,6 +20,7 @@ from accounts.views import save_address
 from ecommerce.models import CartItem, Order, OrderItem, PaymentEvent
 from accounts.models import CustomUser
 
+
 @login_required
 def checkout_view(request):
     # Ensure user is authenticated before accessing the view
@@ -66,7 +67,6 @@ def checkout_view(request):
         selected_payment_method = request.POST.get('payment_method')
         request.session['selected_payment_method'] = selected_payment_method
 
-
     if request.method == 'POST' and 'confirm_delivery' in request.POST:
         # Set a session variable to indicate that the delivery details have been confirmed
         request.session['delivery_details_confirmed'] = True
@@ -109,15 +109,14 @@ def calculate_delivery_fee(cart_items):
     return delivery_fee
 
 
-@transaction.atomic
-def order_success_view(request):
+def pay_on_delivery(request):
+    # Generate a unique order number using UUID
+    order_number = uuid.uuid4().hex.upper()[:10]  # Take the first 10 characters of the UUID
+
     # Calculate the delivery start and end dates
     order_date = timezone.now()
     delivery_start_date = order_date + timedelta(days=5)  # Add 5 days to the order date for the start date
     delivery_end_date = order_date + timedelta(days=10)  # Add 10 days to the order date for the end date
-
-    # Generate a unique order number using UUID
-    order_number = uuid.uuid4().hex.upper()[:10]  # Take the first 10 characters of the UUID
 
     # Retrieve the user's cart items
     cart_items = CartItem.objects.filter(cart__user=request.user)
@@ -135,13 +134,16 @@ def order_success_view(request):
 
     # Add order items to the order
     for cart_item in cart_items:
-        OrderItem.objects.create(order=order, product=cart_item.product, quantity=cart_item.quantity, price=cart_item.product.new_price)
+        OrderItem.objects.create(order=order, product=cart_item.product, quantity=cart_item.quantity,
+                                 price=cart_item.product.new_price)
 
     # Clear the user's cart
     CartItem.objects.filter(cart__user=request.user).delete()
 
-    return render(request, 'checkout/order_success.html', {'order_number': order_number, 'delivery_start_date':
-                       delivery_start_date, 'delivery_end_date': delivery_end_date, 'total_amount': total_amount})
+    # Send order details to the order success view
+    return render(request, 'checkout/order_success.html', {'order_number': order_number,
+                                                           'delivery_start_date': delivery_start_date,
+                                                           'delivery_end_date': delivery_end_date})
 
 
 def payment_method_view(request):
@@ -150,7 +152,7 @@ def payment_method_view(request):
         print(selected_payment_method)
         if selected_payment_method == 'tap_and_relax':
             # Redirect to the view for Tap & Relax payment
-            return redirect('checkout:order_success')
+            return redirect('checkout:pay_on_delivery')
         elif selected_payment_method == 'bank_transfer':
             # Redirect to the view for Bank Transfer payment with selected_payment_method as query parameter
             return HttpResponseRedirect(
@@ -185,7 +187,7 @@ def flutterwave_payment_view(request):
         tx_ref = order_number  # Assign the order number to tx_ref
         amount = float(total_amount)
         currency = "NGN"
-        redirect_url = "https://5e6d-129-205-124-170.ngrok-free.app/checkout/transfer_success/"
+        redirect_url = "https://5e6d-129-205-124-170.ngrok-free.app/accounts/orders/"
 
         customer_email = user_email
         customer_name = user_first_name + ' ' + user_last_name
@@ -226,10 +228,6 @@ def flutterwave_payment_view(request):
     else:
         # Handle other HTTP methods (POST, etc.)
         return redirect("checkout:checkout")
-
-
-def transfer_success_view(request):
-    return render(request, 'checkout/transfer_success.html')
 
 
 @csrf_exempt
@@ -329,8 +327,13 @@ def flutterwave_webhook_view(request):
                     # Mark the payment event as successful
                     PaymentEvent.objects.create(transaction_id=transaction_id, status="success")
 
-                    return JsonResponse(
-                        {"message": "Payment verification successful. Order created and cart cleared."}, status=200)
+                    # Calculate delivery start and end dates
+                    order_date = timezone.now()
+                    delivery_start_date = order_date + timedelta(days=5)
+                    delivery_end_date = order_date + timedelta(days=10)
+
+                    return JsonResponse({"message": "Payment verification successful. Order created and cart cleared."},
+                                        status=200)
                 else:
                     return JsonResponse({"error": "Payment verification failed"}, status=400)
             else:
