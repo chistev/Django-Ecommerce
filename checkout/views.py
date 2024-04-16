@@ -1,17 +1,24 @@
+import json
 import uuid
 from datetime import timedelta, datetime
 
+import requests
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 from accounts.forms import AddressForm
+from accounts.models import Address
 from accounts.views import save_address
-from ecommerce.models import CartItem, Order, OrderItem
-
+from ecommerce.models import CartItem, Order, OrderItem, PaymentEvent
+from accounts.models import CustomUser
 
 @login_required
 def checkout_view(request):
@@ -135,3 +142,198 @@ def order_success_view(request):
 
     return render(request, 'checkout/order_success.html', {'order_number': order_number, 'delivery_start_date':
                        delivery_start_date, 'delivery_end_date': delivery_end_date, 'total_amount': total_amount})
+
+
+def payment_method_view(request):
+    if request.method == 'POST' and 'selected_payment_method' in request.POST:
+        selected_payment_method = request.POST.get('selected_payment_method')
+        print(selected_payment_method)
+        if selected_payment_method == 'tap_and_relax':
+            # Redirect to the view for Tap & Relax payment
+            return redirect('checkout:order_success')
+        elif selected_payment_method == 'bank_transfer':
+            # Redirect to the view for Bank Transfer payment with selected_payment_method as query parameter
+            return HttpResponseRedirect(
+                reverse('checkout:flutterwave_payment') + f'?selected_payment_method={selected_payment_method}')
+    messages.error(request, "Invalid payment method or request")
+    return redirect('checkout:checkout')
+
+
+def flutterwave_payment_view(request):
+    if request.method == 'GET' and 'selected_payment_method' in request.GET:
+
+        user_email = request.user.email
+        user_address = Address.objects.get(user=request.user)
+        user_first_name = user_address.first_name
+        user_last_name = user_address.last_name
+
+        # Generate a unique order number using UUID
+        order_number = uuid.uuid4().hex.upper()[:10]  # Take the first 10 characters of the UUID
+
+        # Retrieve the user's cart items
+        cart_items = CartItem.objects.filter(cart__user=request.user)
+
+        # Calculate total cost
+        total_cost = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
+
+        # Calculate delivery fee
+        delivery_fee = calculate_delivery_fee(cart_items)
+
+        # Calculate total amount (delivery fee + total cost)
+        total_amount = delivery_fee + total_cost
+
+        tx_ref = order_number  # Assign the order number to tx_ref
+        amount = float(total_amount)
+        currency = "NGN"
+        redirect_url = "https://5e6d-129-205-124-170.ngrok-free.app/checkout/transfer_success/"
+
+        customer_email = user_email
+        customer_name = user_first_name + ' ' + user_last_name
+
+        # Assemble payment details
+        payment_data = {
+            "tx_ref": tx_ref,
+            "amount": amount,
+            "currency": currency,
+            "redirect_url": redirect_url,
+            "customer": {
+                "email": customer_email,
+                "name": customer_name
+            }
+            # Add any other optional parameters as needed
+        }
+        # Make POST request to Flutterwave API
+        response = requests.post(
+            "https://api.flutterwave.com/v3/payments",
+            headers={"Authorization": "Bearer FLWSECK_TEST-1b4df4da064369af2379f0d213b5f169-X"},
+            json=payment_data
+        )
+
+        print("Response status code:", response.status_code)
+        print("Response content:", response.content)
+
+        # Handle response from Flutterwave
+        if response.status_code == 200:
+            payment_link = response.json().get("data", {}).get("link")
+            if payment_link:
+                # Redirect user to payment link
+                return redirect(payment_link)
+        else:
+            # show an error message
+            messages.error(request, "We're sorry, but we couldn't process your payment at this time. Please try again "
+                                    "later or contact support for assistance.")
+            return redirect("checkout:checkout")
+    else:
+        # Handle other HTTP methods (POST, etc.)
+        return redirect("checkout:checkout")
+
+
+def transfer_success_view(request):
+    return render(request, 'checkout/transfer_success.html')
+
+
+@csrf_exempt
+def flutterwave_webhook_view(request):
+    if request.method == 'POST':
+        print("Webhook received")
+        # Verify webhook signature
+        webhook_secret_hash = "TestSecretHash123"  # Retrieve your secret hash from environment variables
+        signature = request.headers.get("verif-hash")
+        print("Received signature:", signature)
+
+        if not signature or signature != webhook_secret_hash:
+            print("Unauthorized request")
+            return JsonResponse({"error": "Unauthorized"}, status=401)
+
+        # Parse webhook payload
+        try:
+            payload = json.loads(request.body)
+            print("Webhook payload:", payload)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid payload"}, status=400)
+
+        # Extract information about the successful payment
+        event = payload.get("event")
+        data = payload.get("data")
+
+        if event == "charge.completed":
+            # Verify the payment details
+            transaction_id = data.get("id")
+            amount = data.get("amount")
+            currency = data.get("currency")
+
+            # Extract user email from the webhook payload
+            user_email = data.get("customer", {}).get("email")
+            # Authenticate the user based on the email
+            if user_email:
+                user = CustomUser.objects.filter(email=user_email).first()
+            else:
+                # If email is not provided in the payload, return error
+                return JsonResponse({"error": "User email not provided in the payload"}, status=400)
+
+            if not user:
+                # If user does not exist, return error
+                return JsonResponse({"error": "User not found"}, status=400)
+
+            # Check if the event has already been processed
+            existing_event = PaymentEvent.objects.filter(transaction_id=transaction_id).first()
+            if existing_event and existing_event.status == "success":
+                print("Event already processed")
+                # The event has already been processed, return success response
+                return JsonResponse({"message": "Webhook event already processed"}, status=200)
+
+            # Make a request to Flutterwave's transaction verification endpoint
+            verification_url = f"https://api.flutterwave.com/v3/transactions/{transaction_id}/verify"
+            headers = {"Authorization": "Bearer FLWSECK_TEST-1b4df4da064369af2379f0d213b5f169-X"}
+            response = requests.get(verification_url, headers=headers)
+
+            if response.status_code == 200:
+                verification_data = response.json()
+                print("Verification data:", verification_data)
+                # Check if the payment is successful and matches the expected amount and currency
+                if (
+                        verification_data.get("status") == "success"
+                        and verification_data.get("data", {}).get("amount") == amount
+                        and verification_data.get("data", {}).get("currency") == currency
+                ):
+                    # Success! Create a new order for the user
+                    order_number = data.get("tx_ref")
+                    total_amount = amount
+
+                    print("Creating order for user:", user)  # Print statement to indicate order creation process
+                    print("Order number:", order_number)  # Print the order number
+                    print("Total amount:", total_amount)
+
+                    # Save the order to the database
+                    order = Order.objects.create(
+                        order_number=order_number,
+                        user=user,
+                        total_amount=total_amount
+                    )
+
+                    # Retrieve cart items
+                    cart_items = CartItem.objects.filter(cart__user=user)
+
+                    # Add items to the order
+                    for cart_item in cart_items:
+                        OrderItem.objects.create(
+                            order=order,
+                            product=cart_item.product,
+                            quantity=cart_item.quantity,
+                            price=cart_item.product.new_price
+                        )
+
+                    # Clear the user's cart
+                    CartItem.objects.filter(cart__user=user).delete()
+
+                    # Mark the payment event as successful
+                    PaymentEvent.objects.create(transaction_id=transaction_id, status="success")
+
+                    return JsonResponse(
+                        {"message": "Payment verification successful. Order created and cart cleared."}, status=200)
+                else:
+                    return JsonResponse({"error": "Payment verification failed"}, status=400)
+            else:
+                return JsonResponse({"error": "Failed to verify payment with Flutterwave"}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)

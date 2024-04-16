@@ -69,3 +69,11 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} of {self.product.name} in Order {self.order.order_number}"
+
+
+class PaymentEvent(models.Model):
+    transaction_id = models.CharField(max_length=100, unique=True)
+    status = models.CharField(max_length=20)  # Status of the payment event (e.g., success, failed)
+
+    def __str__(self):
+        return f"PaymentEvent: {self.transaction_id}"

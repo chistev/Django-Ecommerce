@@ -198,10 +198,21 @@
                         <hr>
                         
                         <div class="d-flex">
+                            {% if messages %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                                {% for message in messages %}
+                                    {{ message }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                             {% if request.session.selected_payment_method %}
-                            <button type="submit" class="btn btn-primary mt-2 mb-2 mx-auto confirm-payment-btn" style="width: 100%;">
-                                <a href="{% url 'checkout:order_success' %}" class="text-decoration-none text-white">Confirm Order</a>
-                            </button>
+                            <form method="post" action="{% url 'checkout:payment_method' %}" style="width: 100%;">
+                                {% csrf_token %}
+                                <input type="hidden" name="selected_payment_method" value="{{ request.session.selected_payment_method }}">
+                                <button type="submit" class="btn btn-primary mt-2 mb-2 mx-auto confirm-payment-btn" style="width: 100%;">
+                                    Confirm Order
+                                </button>
+                            </form>
                             
                         {% else %}
                             <button disabled type="submit" class="btn btn-primary mt-2 mb-2 ms-auto confirm-payment-btn" style="width: 100%;" data-selected-payment-method="{{ selected_payment_method }}" style="width: 30%;">Confirm Order</button>
