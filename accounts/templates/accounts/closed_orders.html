@@ -23,24 +23,21 @@
 
 <!-- Render cancelled orders if there are any -->
 {% if cancelled_orders_count > 0 %}
-    {% for order in cancelled_orders %}
-        {% for order_item in order.orderitem_set.all %}
-        <div class="border p-3 mb-2">
-            <a href="{% url 'accounts:order_details' order_number=order.order_number %}" class="text-decoration-none text-white">
+{% for order_info in cancelled_orders %}
+    <div class="border p-3 mb-2">
+        <a href="{% url 'accounts:order_details' order_number=order_info.order.order_number %}" class="text-decoration-none text-white">
             <div class="col-md-5 mt-1 d-flex">
-                <img src="{{ order_item.product.image.url }}" alt="{{ order_item.product.name }}" class="img-fluid" style="width: 30%;">
+                <img src="{{ order_info.order_item.product.image.url }}" alt="{{ order_info.order_item.product.name }}" class="img-fluid" style="width: 30%;">
                 <div class="ms-1">
-                    <p class="small text-nowrap">{{ order_item.product.name }}</p>
-                    <p class="small text-secondary">Order {{ order.order_number }}</p>
+                    <p class="small text-nowrap">{{ order_info.order_item.product.name }}</p>
+                    <p class="small text-secondary">Order {{ order_info.order.order_number }}</p>
                     <span class="badge bg-secondary">Cancelled</span>
-                    <p class="small text-secondary">On: {{ order.cancellation_date }}</p>
+                    <p class="small text-secondary">On: {{ order_info.order.cancellation_date }}</p>
                 </div>
             </div>
-            </a>
-        </div>
-            
-        {% endfor %}
-    {% endfor %}
+        </a>
+    </div>
+{% endfor %}
 {% else %}
     <!-- Placeholder content when there are no cancelled orders -->
     <div class="row mt-4">

@@ -34,11 +34,16 @@ def checkout_view(request):
     # Retrieve the user's cart items and calculate the total number of items in the cart
     cart_items = None
     total_items_in_cart = 0
+
     total_cost = 0
     try:
         cart_items = CartItem.objects.filter(cart__user=user)
         total_items_in_cart = sum(cart_item.quantity for cart_item in cart_items)
         total_cost = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
+        # If cart is empty, redirect to some other page or display a message
+        if total_items_in_cart == 0:
+            return redirect('cart:cart')
+
     except CartItem.DoesNotExist:
         pass
 
@@ -109,9 +114,10 @@ def calculate_delivery_fee(cart_items):
     return delivery_fee
 
 
+@login_required
 def pay_on_delivery(request):
     # Generate a unique order number using UUID
-    order_number = uuid.uuid4().hex.upper()[:10]  # Take the first 10 characters of the UUID
+    order_number = uuid.uuid4().hex.upper()[:10]
 
     # Calculate the delivery start and end dates
     order_date = timezone.now()
@@ -129,8 +135,13 @@ def pay_on_delivery(request):
 
     # Calculate total amount (delivery fee + total cost)
     total_amount = delivery_fee + total_cost
+
+    # Set payment method
+    payment_method = 'pay_on_delivery'
+
     # Create the order
-    order = Order.objects.create(order_number=order_number, user=request.user, total_amount=total_amount)
+    order = Order.objects.create(order_number=order_number, user=request.user, total_amount=total_amount,
+                                 payment_method=payment_method)
 
     # Add order items to the order
     for cart_item in cart_items:
@@ -140,7 +151,6 @@ def pay_on_delivery(request):
     # Clear the user's cart
     CartItem.objects.filter(cart__user=request.user).delete()
 
-    # Send order details to the order success view
     return render(request, 'checkout/order_success.html', {'order_number': order_number,
                                                            'delivery_start_date': delivery_start_date,
                                                            'delivery_end_date': delivery_end_date})
@@ -187,7 +197,7 @@ def flutterwave_payment_view(request):
         tx_ref = order_number  # Assign the order number to tx_ref
         amount = float(total_amount)
         currency = "NGN"
-        redirect_url = "https://5e6d-129-205-124-170.ngrok-free.app/accounts/orders/"
+        redirect_url = "https://a1ed-197-211-61-141.ngrok-free.app/accounts/orders/"
 
         customer_email = user_email
         customer_name = user_first_name + ' ' + user_last_name
@@ -298,15 +308,15 @@ def flutterwave_webhook_view(request):
                     order_number = data.get("tx_ref")
                     total_amount = amount
 
-                    print("Creating order for user:", user)  # Print statement to indicate order creation process
-                    print("Order number:", order_number)  # Print the order number
-                    print("Total amount:", total_amount)
+                    # Set payment method
+                    payment_method = 'pay_on_delivery'
 
                     # Save the order to the database
                     order = Order.objects.create(
                         order_number=order_number,
                         user=user,
-                        total_amount=total_amount
+                        total_amount=total_amount,
+                        payment_method=payment_method
                     )
 
                     # Retrieve cart items

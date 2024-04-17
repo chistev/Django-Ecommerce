@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.conf import settings
 
 
-
 class Product(models.Model):
     CATEGORY_CHOICES = [
         ('grains_rice', 'Grains & Rice'),
@@ -49,11 +48,17 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    PAYMENT_METHOD_CHOICES = (
+        ('pay_on_delivery', 'Tap & Relax, Pay with Bank Transfer on Delivery'),
+        ('bank_transfer', 'Bank Transfer'),
+    )
+    DEFAULT_PAYMENT_METHOD = 'pay_on_delivery'
     order_number = models.CharField(max_length=10, unique=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     items = models.ManyToManyField('Product', through='OrderItem')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default=DEFAULT_PAYMENT_METHOD)
     is_cancelled = models.BooleanField(default=False)
     cancellation_date = models.DateTimeField(null=True, blank=True)
 

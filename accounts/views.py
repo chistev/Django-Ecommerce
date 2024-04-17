@@ -3,7 +3,7 @@ import os
 from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Count
+
 from django.utils import timezone
 from dotenv import load_dotenv
 
@@ -168,8 +168,8 @@ def login(request, email=None):
                 # Log in the user
                 auth_login(request, user)
                 return redirect('ecommerce:index')
-        else:
-            messages.error(request, 'Invalid email or password')
+            else:
+                messages.error(request, 'Invalid email or password')
 
     else:
         # If it's a GET request, render the login form
@@ -202,11 +202,13 @@ def my_account(request):
                         {'user': user, 'personal_details': personal_details,
                          'user_addresses': user_addresses})
 
-# Function to calculate delivery dates
+
 def calculate_delivery_dates(order_date):
     delivery_start_date = order_date + timedelta(days=5)
     delivery_end_date = order_date + timedelta(days=10)
     return delivery_start_date, delivery_end_date
+
+
 @redirect_to_login_or_register
 def orders(request):
     # Query orders that have not been cancelled
@@ -227,17 +229,70 @@ def orders(request):
     # Count the total number of cancelled orders
     total_cancelled_orders = Order.objects.filter(user=request.user, is_cancelled=True).count()
 
-    context = {'active_orders': orders_with_dates,
-        'total_cancelled_orders': total_cancelled_orders}
+    context = {'active_orders': orders_with_dates, 'total_cancelled_orders': total_cancelled_orders}
     return account_page(request, 'accounts/orders.html', context)
 
 
 @redirect_to_login_or_register
 def closed_orders(request):
-    cancelled_orders = Order.objects.filter(user=request.user, is_cancelled=True)
-    cancelled_orders_count = Order.objects.filter(user=request.user, is_cancelled=True).count()
-    context = {'cancelled_orders': cancelled_orders, 'cancelled_orders_count': cancelled_orders_count}
+    # Query cancelled orders and order them by cancellation_date in descending order
+    cancelled_orders = Order.objects.filter(user=request.user, is_cancelled=True).order_by('-cancellation_date')
+    cancelled_orders_with_items = []
+    for order in cancelled_orders:
+        # Get the first order item associated with the order
+        order_item = order.orderitem_set.first()
+        if order_item:
+            cancelled_orders_with_items.append({
+                'order': order,
+                'order_item': order_item,
+            })
+
+    cancelled_orders_count = len(cancelled_orders_with_items)
+    context = {'cancelled_orders': cancelled_orders_with_items, 'cancelled_orders_count': cancelled_orders_count}
     return account_page(request, 'accounts/closed_orders.html', context)
+
+
+@redirect_to_login_or_register
+def order_details(request, order_number):
+    order = Order.objects.get(order_number=order_number, user=request.user)
+    # Get the order items associated with the order
+    order_items = OrderItem.objects.filter(order=order)
+
+    # Calculate the total number of items in the order
+    total_items = sum(order_item.quantity for order_item in order_items)
+
+    # Calculate total cost
+    total_items_cost = sum(order_item.product.new_price * order_item.quantity for order_item in order_items)
+
+    # Calculate total cost after subtracting total items cost from the order total amount
+    delivery_fee = order.total_amount - total_items_cost
+
+    # Retrieve the user's address
+    user_address = Address.objects.filter(user=request.user).first()
+
+    # Calculate the delivery dates using the calculate_delivery_dates function
+    delivery_start_date, delivery_end_date = calculate_delivery_dates(order.order_date)
+
+    # Determine payment method
+    payment_method = order.get_payment_method_display()
+
+    return account_page(request, 'accounts/order_details.html', {'order': order, 'total_items': total_items,
+                                                                 'order_items': order_items,
+                                                                 'total_items_cost': total_items_cost,
+                                                                 'delivery_fee': delivery_fee,
+                                                                 'user_address': user_address,
+                                                                 'delivery_start_date': delivery_start_date,
+                                                                 'delivery_end_date': delivery_end_date,
+                                                                 'payment_method': payment_method})
+
+
+@redirect_to_login_or_register
+def cancel_order(request, order_number):
+    order = Order.objects.get(order_number=order_number, user=request.user)
+    order.is_cancelled = True
+    order.cancellation_date = timezone.now()
+    order.save()
+    return redirect('accounts:closed_orders')
 
 
 @redirect_to_login_or_register
@@ -623,44 +678,3 @@ def password_reset(request):
         form = PasswordResetForm(initial={'email': reset_email})
     context = {'reset_email': reset_email, 'form': form}
     return render(request, 'accounts/password_reset.html', context)
-
-
-def order_details(request, order_number):
-    order = Order.objects.get(order_number=order_number, user=request.user)
-    # Get the order items associated with the order
-    order_items = OrderItem.objects.filter(order=order)
-
-    # Calculate the total number of items in the order
-    total_items = sum(order_item.quantity for order_item in order_items)
-
-    # Calculate total cost
-    total_items_cost = sum(order_item.product.new_price * order_item.quantity for order_item in order_items)
-
-    # Calculate total cost after subtracting total items cost from the order total amount
-    delivery_fee = order.total_amount - total_items_cost
-
-    # Retrieve the user's address
-    user_address = Address.objects.filter(user=request.user).first()
-
-    # Calculate the delivery start and end dates
-    order_date = order.order_date
-    delivery_start_date = order_date + timedelta(days=5)  # Add 5 days to the order date for the start date
-    delivery_end_date = order_date + timedelta(days=10)  # Add 10 days to the order date for the end date
-
-    return account_page(request, 'accounts/order_details.html', {'order': order, 'total_items': total_items,
-                                                           'order_items': order_items,
-                                                           'total_items_cost': total_items_cost,
-                                                           'delivery_fee': delivery_fee,
-                                                           'user_address': user_address,
-                                                                 'delivery_start_date': delivery_start_date,
-                                                                 'delivery_end_date': delivery_end_date})
-
-
-def cancel_order(request, order_number):
-    order = Order.objects.get(order_number=order_number, user=request.user)
-    order.is_cancelled = True  # Set the cancellation flag
-    order.cancellation_date = timezone.now()  # Set the cancellation date
-    order.save()  # Save the order with the updated flag
-
-    # Redirect to a relevant page after cancellation, such as the user's orders page
-    return redirect('accounts:closed_orders')
