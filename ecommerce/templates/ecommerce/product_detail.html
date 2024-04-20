@@ -145,7 +145,7 @@
                     <h5>Recently Viewed</h5>
                 <hr>
                 <!-- Render the recently viewed products section -->
-                {% render_recently_viewed_products request.user %}
+                
             </div>
         </div>
     </div>
@@ -156,7 +156,6 @@
             $('#state').change(function () {
                 var stateId = $(this).val();
     
-                // Send AJAX request to get cities for the selected state
                 $.ajax({
                     url: "{% url 'accounts:get_cities' %}",
                     data: {

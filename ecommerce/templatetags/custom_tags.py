@@ -26,7 +26,7 @@ def render_recently_viewed_products(user):
 
         # Format the price with commas for each viewed_product
         for viewed_product in recently_viewed:
-            viewed_product.formatted_old_price = humanize.intcomma(int(viewed_product.old_price))
+            viewed_product.formatted_old_price = humanize.intcomma(int(viewed_product.old_price)) if viewed_product.old_price is not None else None
             viewed_product.formatted_price = humanize.intcomma(int(viewed_product.new_price))
 
     return {'recently_viewed': recently_viewed}

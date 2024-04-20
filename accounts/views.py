@@ -193,7 +193,10 @@ def account_page(request, template_name, additional_context=None):
 @redirect_to_login_or_register
 def my_account(request):
     user = request.user  # Get the logged-in user
-    personal_details = user.personal_details  # Access the PersonalDetails related object
+    try:
+        personal_details = user.personal_details  # Access the PersonalDetails related object
+    except ObjectDoesNotExist:
+        personal_details = None  # If PersonalDetails doesn't exist, set it to None
 
     # Retrieve user's addresses
     user_addresses = Address.objects.filter(user=user)
@@ -341,21 +344,31 @@ def remove_saved_product(request):
 @redirect_to_login_or_register
 def account_management(request):
     user = request.user  # Get the logged-in user
-    personal_details = user.personal_details
+    try:
+        personal_details = user.personal_details
+    except ObjectDoesNotExist:
+        personal_details = None
+
     return render(request, 'accounts/account_management.html', {'user': user, 'personal_details': personal_details})
 
 
 @redirect_to_login_or_register
 def basic_details(request):
     user = request.user  # Get the logged-in user
-    personal_details = user.personal_details
+    try:
+        personal_details = user.personal_details
+    except ObjectDoesNotExist:
+        personal_details = None
     return render(request, 'accounts/basic_details.html', {'user': user, 'personal_details': personal_details})
 
 
 @redirect_to_login_or_register
 def edit_basic_details(request):
     user = request.user
-    personal_details = user.personal_details
+    try:
+        personal_details = user.personal_details
+    except ObjectDoesNotExist:
+        personal_details = None
 
     if request.method == 'POST':
         # request.POST is a dictionary-like object containing all the submitted data from the form.
