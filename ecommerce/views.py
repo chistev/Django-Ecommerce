@@ -1,16 +1,17 @@
+from urllib.parse import unquote
 
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 from django.db.models import Min, Max, Sum, Q
 from django.shortcuts import render, get_object_or_404
-from django.utils.text import slugify
+
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
 
 from ecommerce.models import Product, Cart, CartItem, UserActivity, SuperCategory, Category
 
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 
 
 def index(request):
@@ -18,16 +19,37 @@ def index(request):
     return render(request, 'ecommerce/index.html', {'breadcrumb': breadcrumb})
 
 
-def supermarket(request):
-    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/')]
-    supermarket_category = SuperCategory.objects.get(name='Supermarket')
-    categories = Category.objects.filter(super_category=supermarket_category)
+def get_category_data(super_category_name, title):
+    breadcrumb = [('Home', '/'), (title, f'/{super_category_name}/')]
+    super_category = SuperCategory.objects.get(name=super_category_name)
+    categories = Category.objects.filter(super_category=super_category)
+    return {'breadcrumb': breadcrumb, 'categories': categories}
 
-    return render(request, 'ecommerce/supermarket.html', {'breadcrumb': breadcrumb, 'categories': categories})
+
+def supermarket(request):
+    return render(request, 'ecommerce/supermarket.html', get_category_data('Supermarket', 'Supermarket'))
+
+
+def home_and_office(request):
+    return render(request, 'ecommerce/home_and_office.html', get_category_data('Home & Office', 'Home and Office'))
+
+
+def phones_and_accessories(request):
+    return render(request, 'ecommerce/phones_and_accessories.html', get_category_data('Phones & Accessories',
+                                                                                      'Phones and Accessories'))
+
+
+def computing(request):
+    return render(request, 'ecommerce/computing.html', get_category_data('Computing', 'Computing'))
+
+
+def gaming(request):
+    return render(request, 'ecommerce/gaming.html', get_category_data('Gaming', 'Gaming'))
 
 
 def category_products(request, category_name):
-    category = get_object_or_404(Category, name=category_name)
+    decoded_category_name = unquote(category_name)
+    category = get_object_or_404(Category, name=decoded_category_name)
     # Retrieve product data using the get_products_data function
     products_data = get_products_data(request, category)
 
@@ -41,7 +63,7 @@ def get_products_data(request, category):
     products = Product.objects.filter(category=category)
 
     for product in products:
-        if product.old_price is not None:  # Check if old_price is not None
+        if product.old_price is not None:
             if product.old_price != 0:
                 discount = (product.old_price - product.new_price) / product.old_price * 100
                 product.discount_percentage = round(discount, 2) * -1  # Make it negative
@@ -56,106 +78,10 @@ def get_products_data(request, category):
         product.cart_quantity = CartItem.objects.filter(
             cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
 
-    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.name.title(), f'/supermarket/{category}/')]
+    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.name.title(), f'/supermarket/{category.name.replace(" ", "-")}/')]
 
     return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
 
-
-def home_and_office(request):
-    breadcrumb = [('Home', '/'), ('Home and Office', '/home_and_office/')]
-    return render(request, 'ecommerce/home_and_office.html', {'breadcrumb': breadcrumb})
-
-
-def phones_and_accessories(request):
-    breadcrumb = [('Home', '/'), ('Phones and Accessories', '/phones_and_accessories/')]
-    return render(request, 'ecommerce/phones_and_accessories.html', {'breadcrumb': breadcrumb})
-
-
-def computing(request):
-    breadcrumb = [('Home', '/'), ('Computing', '/computing/')]
-    return render(request, 'ecommerce/computing.html', {'breadcrumb': breadcrumb})
-
-
-def gaming(request):
-    breadcrumb = [('Home', '/'), ('Gaming', '/gaming/')]
-    return render(request, 'ecommerce/gaming.html', {'breadcrumb': breadcrumb})
-
-
-
-
-
-
-
-def filter_products(request):
-    # Get the minimum and maximum price values from the request
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-
-    # Filter products based on the price range and category
-    filtered_products = Product.objects.filter(category='grains_rice', new_price__gte=min_price,
-                                               new_price__lte=max_price)
-
-    # Prepare product data to send to the frontend
-    products_data = []
-    for product in filtered_products:
-        # Calculate discount percentage
-        if product.old_price > 0 and product.old_price > product.new_price:
-            discount_percentage = round(((product.old_price - product.new_price) / product.old_price) * 100) * -1
-        else:
-            discount_percentage = 0
-
-        # Format the price with commas
-        product.formatted_old_price = intcomma(int(product.old_price))  # Cast to int to remove decimals
-        product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
-
-        # Prepare product data to send to the frontend
-        product_data = {
-            'id': product.id,
-            'name': product.name,
-            'price': product.new_price,
-            'old_price': product.old_price,
-            'discount_percentage': discount_percentage,
-            'formatted_price': product.formatted_price,
-            'formatted_old_price': product.formatted_old_price,
-            'image_url': product.image.url,
-        }
-        products_data.append(product_data)
-
-    # Return JSON response with product data
-    return JsonResponse(products_data, safe=False)
-
-
-
-
-def get_home_and_office_data(request, category):
-    min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
-    max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
-
-    products = Product.objects.filter(category=category)
-
-    for product in products:
-        if product.old_price is not None:  # Check if old_price is not None
-            if product.old_price != 0:
-                discount = (product.old_price - product.new_price) / product.old_price * 100
-                product.discount_percentage = round(discount, 2) * -1  # Make it negative
-            else:
-                product.discount_percentage = 0
-        else:
-            product.discount_percentage = 0
-
-        product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
-        product.formatted_price = intcomma(int(product.new_price))
-
-        product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
-
-    breadcrumb = [('Home', '/'), ('Home and Office', '/home_and_office/'), (category.replace('_', ' ').title(), f'/{category}/')]
-
-    return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
-
-
-def air_conditioner(request):
-    context = get_home_and_office_data(request, 'air_conditioner')
-    return render(request, 'ecommerce/air_conditioner.html', context)
 
 def product_detail(request, product_id):
     # Retrieve the product

@@ -246,7 +246,8 @@ productCards.forEach(function(card) {
 
             // Send an AJAX request to fetch filtered products
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/api/products/?min_price=' + minPrice + '&max_price=' + maxPrice, true);
+            xhr.open('GET', '/filter-products/' + category_name + '/?min_price=' + minPrice + '&max_price=' + maxPrice, true);
+
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var products = JSON.parse(xhr.responseText);
