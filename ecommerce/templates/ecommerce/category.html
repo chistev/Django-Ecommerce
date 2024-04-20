@@ -94,10 +94,9 @@
 
        <div class="col-md-8 ms-auto black-card" style="margin-right: 50px; height: auto;">
         <div class="d-flex" style="justify-content: space-between;">
-            <h5 class="text-white">Food Cupboard</h5>
-            {% block specific_content %}
-            <!-- Specific content for child templates goes here -->
-            {% endblock %}
+            {% if products %}
+                <h5 class="text-white">{{ products.0.category }}</h5>
+            {% endif %}
 
             <div>
                 <i id="stackIcon" class="bi bi-view-stacked" onclick="toggleView('stacked')"></i>

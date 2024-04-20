@@ -1,15 +1,16 @@
+
 from django.contrib.humanize.templatetags.humanize import intcomma
 
-from django.db.models import Min, Max, F, Sum, Q
+from django.db.models import Min, Max, Sum, Q
 from django.shortcuts import render, get_object_or_404
-from django.template.defaultfilters import floatformat
+from django.utils.text import slugify
 
 from accounts.forms import AddressForm
 from accounts.models import Address, State
-from ecommerce.forms import ProductSearchForm
-from ecommerce.models import Product, Cart, CartItem, UserActivity
 
-from django.http import JsonResponse
+from ecommerce.models import Product, Cart, CartItem, UserActivity, SuperCategory, Category
+
+from django.http import JsonResponse, Http404
 
 
 def index(request):
@@ -19,7 +20,45 @@ def index(request):
 
 def supermarket(request):
     breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/')]
-    return render(request, 'ecommerce/supermarket.html', {'breadcrumb': breadcrumb})
+    supermarket_category = SuperCategory.objects.get(name='Supermarket')
+    categories = Category.objects.filter(super_category=supermarket_category)
+
+    return render(request, 'ecommerce/supermarket.html', {'breadcrumb': breadcrumb, 'categories': categories})
+
+
+def category_products(request, category_name):
+    category = get_object_or_404(Category, name=category_name)
+    # Retrieve product data using the get_products_data function
+    products_data = get_products_data(request, category)
+
+    return render(request, 'ecommerce/category.html', products_data)
+
+
+def get_products_data(request, category):
+    min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
+    max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
+
+    products = Product.objects.filter(category=category)
+
+    for product in products:
+        if product.old_price is not None:  # Check if old_price is not None
+            if product.old_price != 0:
+                discount = (product.old_price - product.new_price) / product.old_price * 100
+                product.discount_percentage = round(discount, 2) * -1  # Make it negative
+            else:
+                product.discount_percentage = 0
+        else:
+            product.discount_percentage = 0
+
+        product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
+        product.formatted_price = intcomma(int(product.new_price))
+
+        product.cart_quantity = CartItem.objects.filter(
+            cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.name.title(), f'/supermarket/{category}/')]
+
+    return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
 
 
 def home_and_office(request):
@@ -41,35 +80,10 @@ def gaming(request):
     breadcrumb = [('Home', '/'), ('Gaming', '/gaming/')]
     return render(request, 'ecommerce/gaming.html', {'breadcrumb': breadcrumb})
 
-def get_products_data(request, category):
-    min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
-    max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
-
-    products = Product.objects.filter(category=category)
-
-    for product in products:
-        if product.old_price is not None:  # Check if old_price is not None
-            if product.old_price != 0:
-                discount = (product.old_price - product.new_price) / product.old_price * 100
-                product.discount_percentage = round(discount, 2) * -1  # Make it negative
-            else:
-                product.discount_percentage = 0
-        else:
-            product.discount_percentage = 0
-
-        product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
-        product.formatted_price = intcomma(int(product.new_price))
-
-        product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
-
-    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.replace('_', ' ').title(), f'/{category}/')]
-
-    return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
 
 
-def grains_and_rice(request):
-    context = get_products_data(request, 'grains_rice')
-    return render(request, 'ecommerce/grains_and_rice.html', context)
+
+
 
 
 def filter_products(request):
@@ -96,7 +110,7 @@ def filter_products(request):
 
         # Prepare product data to send to the frontend
         product_data = {
-            'id': product.id,  # Include product ID
+            'id': product.id,
             'name': product.name,
             'price': product.new_price,
             'old_price': product.old_price,
@@ -111,24 +125,6 @@ def filter_products(request):
     return JsonResponse(products_data, safe=False)
 
 
-def food_cupboard(request):
-    context = get_products_data(request, 'food_cupboard')
-    return render(request, 'ecommerce/food_cupboard.html', context)
-
-
-def household_care(request):
-    context = get_products_data(request, 'household_care')
-    return render(request, 'ecommerce/household_care.html', context)
-
-
-def laundry(request):
-    context = get_products_data(request, 'laundry')
-    return render(request, 'ecommerce/laundry.html', context)
-
-
-def fragrances(request):
-    context = get_products_data(request, 'fragrances')
-    return render(request, 'ecommerce/fragrances.html', context)
 
 
 def get_home_and_office_data(request, category):

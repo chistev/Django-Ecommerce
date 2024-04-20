@@ -1,8 +1,12 @@
 from datetime import timedelta
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.contrib.auth.models import User
+from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse
-from accounts.models import CustomUser
-from ecommerce.models import Cart, Product, CartItem, Order
+from accounts.models import CustomUser, State, City, Address
+from checkout.views import flutterwave_payment_view
+from ecommerce.models import Cart, Product, CartItem, Order, PaymentEvent
 from django.utils import timezone
 
 
@@ -52,3 +56,4 @@ class PayOnDeliveryViewTest(TestCase):
 
         self.assertAlmostEqual(delivery_start_date_actual, delivery_start_date_expected, delta=time_threshold)
         self.assertAlmostEqual(delivery_end_date_actual, delivery_end_date_expected, delta=time_threshold)
+

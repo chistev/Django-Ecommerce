@@ -16,9 +16,18 @@ from django.views.decorators.csrf import csrf_exempt
 
 from accounts.forms import AddressForm
 from accounts.models import Address
-from accounts.views import save_address
+from accounts.views import save_address, redirect_to_login_or_register
 from ecommerce.models import CartItem, Order, OrderItem, PaymentEvent
 from accounts.models import CustomUser
+
+import os
+from dotenv import load_dotenv
+
+# Load environmental variables from .env file
+load_dotenv()
+
+FLUTTERWAVE_API_KEY = os.getenv('FLUTTERWAVE_API_KEY')
+webhook_secret_hash = os.environ.get('WEBHOOK_SECRET_HASH')
 
 
 @login_required
@@ -156,6 +165,7 @@ def pay_on_delivery(request):
                                                            'delivery_end_date': delivery_end_date})
 
 
+@redirect_to_login_or_register
 def payment_method_view(request):
     if request.method == 'POST' and 'selected_payment_method' in request.POST:
         selected_payment_method = request.POST.get('selected_payment_method')
@@ -197,7 +207,7 @@ def flutterwave_payment_view(request):
         tx_ref = order_number  # Assign the order number to tx_ref
         amount = float(total_amount)
         currency = "NGN"
-        redirect_url = "https://a1ed-197-211-61-141.ngrok-free.app/accounts/orders/"
+        redirect_url = "https://a030-197-211-59-151.ngrok-free.app/accounts/orders/"
 
         customer_email = user_email
         customer_name = user_first_name + ' ' + user_last_name
@@ -215,9 +225,10 @@ def flutterwave_payment_view(request):
             # Add any other optional parameters as needed
         }
         # Make POST request to Flutterwave API
+        print("Sending payment data to Flutterwave API:", payment_data)
         response = requests.post(
             "https://api.flutterwave.com/v3/payments",
-            headers={"Authorization": "Bearer FLWSECK_TEST-1b4df4da064369af2379f0d213b5f169-X"},
+            headers={"Authorization": "Bearer " + FLUTTERWAVE_API_KEY},
             json=payment_data
         )
 
@@ -243,20 +254,16 @@ def flutterwave_payment_view(request):
 @csrf_exempt
 def flutterwave_webhook_view(request):
     if request.method == 'POST':
-        print("Webhook received")
         # Verify webhook signature
-        webhook_secret_hash = "TestSecretHash123"  # Retrieve your secret hash from environment variables
+        webhook_secret_hash = os.getenv("WEBHOOK_SECRET_HASH")
         signature = request.headers.get("verif-hash")
-        print("Received signature:", signature)
 
         if not signature or signature != webhook_secret_hash:
-            print("Unauthorized request")
             return JsonResponse({"error": "Unauthorized"}, status=401)
 
         # Parse webhook payload
         try:
             payload = json.loads(request.body)
-            print("Webhook payload:", payload)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid payload"}, status=400)
 
@@ -286,18 +293,16 @@ def flutterwave_webhook_view(request):
             # Check if the event has already been processed
             existing_event = PaymentEvent.objects.filter(transaction_id=transaction_id).first()
             if existing_event and existing_event.status == "success":
-                print("Event already processed")
                 # The event has already been processed, return success response
                 return JsonResponse({"message": "Webhook event already processed"}, status=200)
 
             # Make a request to Flutterwave's transaction verification endpoint
             verification_url = f"https://api.flutterwave.com/v3/transactions/{transaction_id}/verify"
-            headers = {"Authorization": "Bearer FLWSECK_TEST-1b4df4da064369af2379f0d213b5f169-X"}
+            headers = {"Authorization": "Bearer " + FLUTTERWAVE_API_KEY},
             response = requests.get(verification_url, headers=headers)
 
             if response.status_code == 200:
                 verification_data = response.json()
-                print("Verification data:", verification_data)
                 # Check if the payment is successful and matches the expected amount and currency
                 if (
                         verification_data.get("status") == "success"
@@ -342,8 +347,11 @@ def flutterwave_webhook_view(request):
                     delivery_start_date = order_date + timedelta(days=5)
                     delivery_end_date = order_date + timedelta(days=10)
 
-                    return JsonResponse({"message": "Payment verification successful. Order created and cart cleared."},
-                                        status=200)
+                    return JsonResponse({
+                        "message": "Payment verification successful. Order created and cart cleared.",
+                        "delivery_start_date": delivery_start_date.isoformat(),
+                        "delivery_end_date": delivery_end_date.isoformat()
+                    }, status=200)
                 else:
                     return JsonResponse({"error": "Payment verification failed"}, status=400)
             else:

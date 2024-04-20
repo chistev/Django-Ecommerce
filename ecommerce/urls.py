@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 from .views import autocomplete
 
@@ -7,15 +7,11 @@ app_name = 'ecommerce'
 urlpatterns = [
     path('', views.index, name='index'),
     path('supermarket/', views.supermarket, name='supermarket'),
+    re_path(r'^category/(?P<category_name>[\w\s&-]+)/$', views.category_products, name='category'),
     path('home_and_office/', views.home_and_office, name='home_and_office'),
     path('phones_and_accessories/', views.phones_and_accessories, name='phones_and_accessories'),
     path('computing/', views.computing, name='computing'),
     path('gaming/', views.gaming, name='gaming'),
-    path('grains_and_rice/', views.grains_and_rice, name='grains_and_rice'),
-    path('food_cupboard/', views.food_cupboard, name='food_cupboard'),
-    path('household_care/', views.household_care, name='household_care'),
-    path('laundry/', views.laundry, name='laundry'),
-    path('fragrances/', views.fragrances, name='fragrances'),
     path('air_conditioner/', views.air_conditioner, name='air_conditioner'),
     path('fan/', views.fan, name='fan'),
     path('freezer/', views.freezer, name='freezer'),
