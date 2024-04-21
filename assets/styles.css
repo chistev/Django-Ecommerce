@@ -298,7 +298,7 @@ body{
 
 /* Add styles for the top-selling-image class */
 .top-selling-image {
-    width: 200px; /* Adjust the width as needed */
+    width: 100%; /* Adjust the width as needed */
     height: 200px; /* Adjust the height as needed */
     border-radius: 5px; /* Optional: Add rounded corners */
     object-fit: cover;

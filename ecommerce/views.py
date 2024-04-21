@@ -2,7 +2,7 @@ from urllib.parse import unquote
 
 from django.contrib.humanize.templatetags.humanize import intcomma
 
-from django.db.models import Min, Max, Sum, Q
+from django.db.models import Min, Max, Sum, Q, OuterRef, Subquery
 from django.shortcuts import render, get_object_or_404
 
 
@@ -57,6 +57,12 @@ def category_products(request, category_name):
 
 
 def get_products_data(request, category):
+    # Define the cart quantity subquery
+    cart_quantity_subquery = CartItem.objects.filter(
+        cart__user=OuterRef('cart__user'),  # Use OuterRef to reference the user in the outer query
+        product_id=OuterRef('pk')  # Use OuterRef to reference the product ID in the outer query
+    ).values('quantity')[:1]
+
     min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
     max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
 
@@ -75,8 +81,14 @@ def get_products_data(request, category):
         product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
         product.formatted_price = intcomma(int(product.new_price))
 
-        product.cart_quantity = CartItem.objects.filter(
-            cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
+        # Fetch cart quantity for the product if the user is authenticated
+        if request.user.is_authenticated:
+            # Use the cart quantity subquery as an annotation
+            product_with_quantity = products.annotate(cart_quantity=Subquery(cart_quantity_subquery))
+            cart_quantity = product_with_quantity.get(pk=product.pk).cart_quantity
+            product.cart_quantity = cart_quantity if cart_quantity is not None else 0
+        else:
+            product.cart_quantity = 0
 
     breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.name.title(), f'/supermarket/{category.name.replace(" ", "-")}/')]
 
