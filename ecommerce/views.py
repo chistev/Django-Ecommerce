@@ -64,9 +64,6 @@ def get_products_data(request, category):
         product_id=OuterRef('pk')  # Use OuterRef to reference the product ID in the outer query
     ).values('quantity')[:1]
 
-    min_price = Product.objects.filter(category=category).aggregate(Min('new_price'))['new_price__min']
-    max_price = Product.objects.filter(category=category).aggregate(Max('new_price'))['new_price__max']
-
     products = Product.objects.filter(category=category)
 
     for product in products:
@@ -91,11 +88,19 @@ def get_products_data(request, category):
         else:
             product.cart_quantity = 0
 
-    return {'products': products, 'min_price': min_price, 'max_price': max_price}
+    return {'products': products}
 
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
+
+    # Record the user's activity for viewing this product
+    if request.user.is_authenticated:
+        # Check if the user has already viewed this product
+        viewed_product = UserActivity.objects.filter(user=request.user, product=product).exists()
+        if not viewed_product:
+            # If not, create a new UserActivity instance
+            UserActivity.objects.create(user=request.user, product=product, saved=False)
 
     if product.old_price is not None and product.old_price != 0:
         discount = (product.old_price - product.new_price) / product.old_price * 100
@@ -147,6 +152,7 @@ def process_cart_action(request, action):
         return JsonResponse(response_data)
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
 
 def add_to_cart(request):
     def add_to_cart_action(request, product, cart):

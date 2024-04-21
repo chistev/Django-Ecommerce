@@ -9,8 +9,8 @@
                 <span class="badge bg-danger price-reduction-badge">{{ viewed_product.discount_percentage }}</span>
                 {% endif %}
                 <div class="item-name">&nbsp;&nbsp;{{ viewed_product.name }}</div>
+                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;{{ viewed_product.formatted_price }}</div>
                 {% if viewed_product.old_price > 0 and viewed_product.old_price > viewed_product.new_price %}
-                <div class="item-price text-white">&nbsp;&nbsp;N&nbsp;{{ viewed_product.formatted_price }}</div> <!-- Add the price here -->
                 <div class="slashed-price text-white" style="text-decoration: line-through; font-size: 13px;">N&nbsp;{{ viewed_product.formatted_old_price }}</div>
                 {% endif %}
             </a>
