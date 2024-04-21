@@ -1,5 +1,6 @@
 from urllib.parse import unquote
 
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 from django.db.models import Min, Max, Sum, Q, OuterRef, Subquery
@@ -122,8 +123,8 @@ def product_detail(request, product_id):
     product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
 
     # Retrieve the user's addresses
-    user_addresses = Address.objects.filter(user=request.user)
-    form = AddressForm(user=request.user)  # Pass the user object to the form
+    user_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
+    form = AddressForm(user=request.user) if request.user.is_authenticated else None
     states = State.objects.all()  # Retrieve all states from the database
 
     # Render the product detail page
@@ -141,10 +142,13 @@ def process_cart_action(request, action):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         product_id = request.POST.get('product_id')
         product = get_object_or_404(Product, pk=product_id)
-        user = request.user
+        user = request.user if request.user.is_authenticated else AnonymousUser()
 
         # Ensure user has a cart
-        cart, created = Cart.objects.get_or_create(user=user)
+        if user:
+            cart, created = Cart.objects.get_or_create(user=user)
+        else:
+            cart, created = Cart.objects.get_or_create(user=None)
 
         # Perform action on cart
         response_data = action(request, product, cart)
@@ -219,7 +223,6 @@ def remove_from_cart(request):
 
 
 def cart_count(request):
-    if request.user.is_authenticated:
         # Sum the quantities of all cart items for the authenticated user
         cart_count = CartItem.objects.filter(cart__user=request.user).aggregate(total_quantity=
                                                                                 Sum('quantity'))['total_quantity']
@@ -227,10 +230,6 @@ def cart_count(request):
             cart_count = 0  # Set the count to 0 if no items are found
         # Return the cart count as JSON response
         return JsonResponse({'count': cart_count})
-    else:
-        # Return an error response if the user is not authenticated
-        return JsonResponse({'error': 'User is not authenticated'}, status=401)
-
 
 def return_policy(request):
     return render(request, 'ecommerce/return_policy.html')

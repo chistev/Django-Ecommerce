@@ -45,7 +45,7 @@ class UserActivity(models.Model):
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     items = models.ManyToManyField(Product, through='CartItem')
 
 
