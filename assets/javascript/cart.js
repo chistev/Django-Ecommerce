@@ -5,6 +5,9 @@ $('.add-to-cart-btn').click(function (e) {
     e.preventDefault();
     var productId = $(this).data('product-id');
     var addToCartUrl = $(this).data('add-to-cart-url');
+
+    console.log("Product ID:", productId);
+    console.log("Add to Cart URL:", addToCartUrl);
     
      addToCart(productId, addToCartUrl);     
     
@@ -14,7 +17,7 @@ $('.add-to-cart-btn').click(function (e) {
 });
 
 // Function to add a product to the cart
-function addToCart(productId, addToCartUrl) {
+ function addToCart(productId, addToCartUrl) {
     $.ajax({
         type: 'POST',
         url: addToCartUrl,
@@ -57,7 +60,7 @@ $('.product-count[data-product-id="' + productId + '"]').text(count);
 
 
 // Function to update cart count
-function updateCartCount(cartCountUrl) {
+ function updateCartCount(cartCountUrl) {
     $.ajax({
         type: 'GET',
         url: cartCountUrl,
@@ -74,12 +77,12 @@ function updateCartCount(cartCountUrl) {
 }
 
  // Retrieve cart count URL from the data attribute
- var cartCountUrl = $('#cartCountUrl').data('url');
+  var cartCountUrl = $('#cartCountUrl').data('url');
 // Call updateCartCount initially to load the initial cart count
-updateCartCount(cartCountUrl);
+ updateCartCount(cartCountUrl);
 
 // Decrement product quantity on click
-$('.remove-product-btn').click(function (e) {
+ $('.remove-product-btn').click(function (e) {
 e.preventDefault(); // Prevent default button behavior
 var productId = $(this).data('product-id');
 var removeCartUrl = $(this).data('remove-from-cart-url');
@@ -88,7 +91,7 @@ removeFromCart(productId, removeCartUrl);
 
 
 // Function to remove a product from the cart
-function removeFromCart(productId, removeCartUrl) {
+ function removeFromCart(productId, removeCartUrl) {
 $.ajax({
     type: 'POST',
     url: removeCartUrl,
@@ -120,23 +123,22 @@ $.ajax({
 });
 console.log(removeCartUrl)
 }
-
-
+ 
 
 
 // Increment product quantity on click
-$('.add-product').click(function (e) {
+ $('.add-product').click(function (e) {
 e.preventDefault(); // Prevent default button behavior
 var productId = $(this).data('product-id');
  var addToCartUrl = $(this).closest('.product-card').find('.add-to-cart-btn').data('add-to-cart-url');
-/* var addToCartUrl = $(this).data('add-to-cart-url'); */
+ var addToCartUrl = $(this).data('add-to-cart-url');
 console.log(productId, addToCartUrl)
 addToCart(productId, addToCartUrl);
 });
 
 
 // Function to get CSRF token from cookies
-function getCookie(name) {
+ function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         var cookies = document.cookie.split(';');
@@ -151,7 +153,5 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
-
 });
 
