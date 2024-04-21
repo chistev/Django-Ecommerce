@@ -36,7 +36,7 @@ class Product(models.Model):
 
 class UserActivity(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='user_activities')
     timestamp = models.DateTimeField(default=timezone.now)
     saved = models.BooleanField(default=False)  # a boolean field to track whether the product is saved by the user
 

@@ -31,10 +31,10 @@ def cart_view(request):
     # Format the price for each product in the cart
     for item in cart_items:
         item.product.formatted_price = intcomma(int(item.product.new_price))
-        item.product.formatted_old_price = intcomma(int(item.product.old_price))
+        item.product.formatted_old_price = intcomma(int(item.product.old_price)) if item.product.old_price is not None else None
 
         # Calculate discount percentage
-        if item.product.old_price != 0:
+        if item.product.old_price is not None and item.product.old_price != 0:
             discount = (item.product.old_price - item.product.new_price) / item.product.old_price * 100
             item.product.discount_percentage = round(discount, 2) * -1  # Make it negative
         else:

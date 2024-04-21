@@ -1,13 +1,9 @@
 import json
 import uuid
-from datetime import timedelta, datetime
+from datetime import timedelta
 
 import requests
 from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -30,80 +26,65 @@ FLUTTERWAVE_API_KEY = os.getenv('FLUTTERWAVE_API_KEY')
 webhook_secret_hash = os.environ.get('WEBHOOK_SECRET_HASH')
 
 
-@login_required
+def calculate_delivery_dates():
+    order_date = timezone.now()
+    delivery_start_date = order_date + timedelta(days=5)
+    delivery_end_date = order_date + timedelta(days=10)
+    return delivery_start_date, delivery_end_date
+
+
+def calculate_delivery_fee(cart_items):
+    total_price = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
+    # Add N10 for every N1000 spent on items
+    delivery_fee = (total_price // 1000) * 10
+    return delivery_fee
+
+
+@redirect_to_login_or_register
 def checkout_view(request):
-    # Ensure user is authenticated before accessing the view
     user = request.user
-
     # Retrieve the user's address if available
-    address = None
-    if hasattr(user, 'addresses'):
-        address = user.addresses.first()  # Assuming the user has only one address, adjust as needed
+    address = user.addresses.first() if hasattr(user, 'addresses') else None
 
-    # Retrieve the user's cart items and calculate the total number of items in the cart
-    cart_items = None
-    total_items_in_cart = 0
+    cart_items = CartItem.objects.filter(cart__user=user)
+    total_items_in_cart = sum(cart_item.quantity for cart_item in cart_items)
+    total_cost = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
 
-    total_cost = 0
-    try:
-        cart_items = CartItem.objects.filter(cart__user=user)
-        total_items_in_cart = sum(cart_item.quantity for cart_item in cart_items)
-        total_cost = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
-        # If cart is empty, redirect to some other page or display a message
-        if total_items_in_cart == 0:
-            return redirect('cart:cart')
+    if total_items_in_cart == 0:
+        return redirect('cart:cart')
 
-    except CartItem.DoesNotExist:
-        pass
-
-    delivery_fee = calculate_delivery_fee(cart_items)  # Calculate delivery fee based on cart items
-
-    # Calculate the total amount (delivery fee + total cost)
+    delivery_fee = calculate_delivery_fee(cart_items)
     total_amount = delivery_fee + total_cost
 
-    # Calculate the delivery start and end dates
-    order_date = timezone.now()
-    delivery_start_date = order_date + timedelta(days=5)  # Add 5 days to the order date for the start date
-    delivery_end_date = order_date + timedelta(days=10)  # Add 10 days to the order date for the end date
+    delivery_start_date, delivery_end_date = calculate_delivery_dates()
 
-    # Create an instance of the AddressForm if there's no address available
-    if address is None:
-        form = AddressForm(user=user)
-    else:
-        form = AddressForm(instance=address)
-
-    # Retrieve the user's personal details if available
-    personal_details = None
-    if hasattr(user, 'personal_details'):
-        personal_details = user.personal_details
+    form = AddressForm(user=user, instance=address)
+    personal_details = user.personal_details if hasattr(user, 'personal_details') else None
 
     if request.method == 'POST':
         selected_payment_method = request.POST.get('payment_method')
         request.session['selected_payment_method'] = selected_payment_method
 
-    if request.method == 'POST' and 'confirm_delivery' in request.POST:
-        # Set a session variable to indicate that the delivery details have been confirmed
-        request.session['delivery_details_confirmed'] = True
-        return HttpResponseRedirect(reverse('checkout:checkout'))  # Redirect to the same page after POST
+        if 'confirm_delivery' in request.POST:
+            # Set a session variable to indicate that the delivery details have been confirmed
+            request.session['delivery_details_confirmed'] = True
+            return HttpResponseRedirect(reverse('checkout:checkout')) # Redirect to the same page after POST
 
-    if request.method == 'POST':
         form = AddressForm(request.POST, user=user)
         if form.is_valid():
             save_address(request, form)
             # After saving the address, redirect to the same page to continue checkout
             return HttpResponseRedirect(request.path_info)  # Redirect to the same page to refresh data
-        else:
-            if 'edit_address' in request.GET:
-                # If it's a GET request, initialize the form with existing address data or empty form
-                initial_data = {
-                    'first_name': user.personal_details.first_name if user.personal_details else '',
-                    'last_name': user.personal_details.last_name if user.personal_details else '',
-                    'address': address.address if address else '',
-                    'additional_info': address.additional_info if address else '',
-                    'state': address.state if address else '',
-                    'city': address.city if address else '',
-                }
-                form = AddressForm(initial=initial_data, user=user)
+        elif 'edit_address' in request.GET:
+            initial_data = {
+                'first_name': user.personal_details.first_name if user.personal_details else '',
+                'last_name': user.personal_details.last_name if user.personal_details else '',
+                'address': address.address if address else '',
+                'additional_info': address.additional_info if address else '',
+                'state': address.state if address else '',
+                'city': address.city if address else '',
+            }
+            form = AddressForm(initial=initial_data, user=user)
 
     return render(request, 'checkout/checkout.html',
                   {'form': form, 'personal_details': personal_details, 'address': address,
@@ -115,23 +96,13 @@ def checkout_view(request):
                    })
 
 
-def calculate_delivery_fee(cart_items):
-    # logic to calculate the delivery fee based on the total price of the items
-    total_price = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
-    # Add N10 for every N1000 spent on items
-    delivery_fee = (total_price // 1000) * 10
-    return delivery_fee
-
-
-@login_required
+@redirect_to_login_or_register
 def pay_on_delivery(request):
     # Generate a unique order number using UUID
     order_number = uuid.uuid4().hex.upper()[:10]
 
     # Calculate the delivery start and end dates
-    order_date = timezone.now()
-    delivery_start_date = order_date + timedelta(days=5)  # Add 5 days to the order date for the start date
-    delivery_end_date = order_date + timedelta(days=10)  # Add 10 days to the order date for the end date
+    delivery_start_date, delivery_end_date = calculate_delivery_dates()
 
     # Retrieve the user's cart items
     cart_items = CartItem.objects.filter(cart__user=request.user)
@@ -169,7 +140,6 @@ def pay_on_delivery(request):
 def payment_method_view(request):
     if request.method == 'POST' and 'selected_payment_method' in request.POST:
         selected_payment_method = request.POST.get('selected_payment_method')
-        print(selected_payment_method)
         if selected_payment_method == 'tap_and_relax':
             # Redirect to the view for Tap & Relax payment
             return redirect('checkout:pay_on_delivery')

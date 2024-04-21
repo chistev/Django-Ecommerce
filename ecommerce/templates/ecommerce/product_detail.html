@@ -45,7 +45,7 @@
                                 <div class="ms-auto fs-4 ">
                                     <div class="me-3 text-white">
                                         {% if request.user.is_authenticated %}
-                                            {% if user_activity_exists %}
+                                        {% if saved_product %}
                                                 <i class="bi bi-balloon-heart-fill" data-product-id="{{ product.id }}"></i>
                                             {% else %}
                                                 <i class="bi bi-balloon-heart" data-product-id="{{ product.id }}"></i>
@@ -180,7 +180,6 @@
 <script>
     $(document).ready(function () {
 
-        // Function to update cart count
         function updateCartCount() {
             $.ajax({
                 type: 'GET',

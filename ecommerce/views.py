@@ -92,12 +92,12 @@ def product_detail(request, product_id):
     else:
         product.discount_percentage = 0
 
-    user_activity_exists = False  # Initialize saved status as False
+    saved_product = None
     if request.user.is_authenticated:
         user_cart_items = CartItem.objects.filter(cart__user=request.user, product=product)
 
         # Check if the product is saved by the user
-        user_activity_exists = UserActivity.objects.filter(user=request.user, product=product).exists()
+        saved_product = UserActivity.objects.filter(user=request.user, product=product, saved=True).exists()
     else:
          user_cart_items = []
 
@@ -117,7 +117,7 @@ def product_detail(request, product_id):
         'form': form,
         'states': states,
         'user_cart_items': user_cart_items,
-        'user_activity_exists': user_activity_exists,
+        'saved_product': saved_product
     })
 
 
@@ -247,8 +247,9 @@ def save_product(request):
                 # Create a new UserActivity instance if none exists
                 UserActivity.objects.create(user=request.user, product=product, saved=True)
                 status = 'save'
-
-            return JsonResponse({'status': status})
+            # Pass the updated save status of the product to the template
+            product_saved = product.is_saved(request.user)
+            return JsonResponse({'status': status, 'product_saved': product_saved})
         else:
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
     else:
