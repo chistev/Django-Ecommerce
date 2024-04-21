@@ -92,12 +92,20 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
 
     # Record the user's activity for viewing this product
-    if request.user.is_authenticated:
-        # Check if the user has already viewed this product
-        viewed_product = UserActivity.objects.filter(user=request.user, product=product).exists()
-        if not viewed_product:
-            # If not, create a new UserActivity instance
-            UserActivity.objects.create(user=request.user, product=product, saved=False)
+    if not request.user.is_authenticated:
+        # For non-authenticated users, update recently viewed products in session
+        viewed_product_ids = request.session.get('recently_viewed', [])
+        if product.id not in viewed_product_ids:
+            viewed_product_ids.append(product.id)
+            request.session['recently_viewed'] = viewed_product_ids
+    else:
+        # Record the user's activity for viewing this product
+        if request.user.is_authenticated:
+            # Check if the user has already viewed this product
+            viewed_product = UserActivity.objects.filter(user=request.user, product=product).exists()
+            if not viewed_product:
+                # If not, create a new UserActivity instance
+                UserActivity.objects.create(user=request.user, product=product, saved=False)
 
     if product.old_price is not None and product.old_price != 0:
         discount = (product.old_price - product.new_price) / product.old_price * 100
