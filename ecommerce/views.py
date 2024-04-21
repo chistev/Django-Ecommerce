@@ -20,7 +20,8 @@ def index(request):
 
 
 def get_category_data(super_category_name, title):
-    breadcrumb = [('Home', '/'), (title, f'/{super_category_name}/')]
+    breadcrumb_title_link = title.lower().replace("&", "and").replace(" ", "_")
+    breadcrumb = [('Home', '/'), (title, f'/{breadcrumb_title_link}/')]
     super_category = SuperCategory.objects.get(name=super_category_name)
     categories = Category.objects.filter(super_category=super_category)
     return {'breadcrumb': breadcrumb, 'categories': categories}
@@ -90,9 +91,7 @@ def get_products_data(request, category):
         else:
             product.cart_quantity = 0
 
-    breadcrumb = [('Home', '/'), ('Supermarket', '/supermarket/'), (category.name.title(), f'/supermarket/{category.name.replace(" ", "-")}/')]
-
-    return {'breadcrumb': breadcrumb, 'products': products, 'min_price': min_price, 'max_price': max_price}
+    return {'products': products, 'min_price': min_price, 'max_price': max_price}
 
 
 def product_detail(request, product_id):
