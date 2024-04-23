@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class SuperCategory(models.Model):
@@ -26,7 +27,7 @@ class Product(models.Model):
     new_price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_percentage = models.IntegerField(default=0)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
-    description = models.TextField()
+    description = CKEditor5Field('Text', config_name='extends')
     super_category = models.ForeignKey(SuperCategory, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
