@@ -120,8 +120,15 @@ def product_detail(request, product_id):
         # Check if the product is saved by the user
         saved_product = UserActivity.objects.filter(user=request.user, product=product, saved=True).exists()
     else:
-         user_cart_items = []
-
+        # Retrieve cart items from session for non-authenticated users
+        cart_data = request.session.get('cart', {})
+        print(cart_data)
+        product_id_str = str(product.id)
+        if product_id_str in cart_data:
+            user_cart_items = [{'product': product, 'quantity': cart_data[product_id_str]}]
+        else:
+            user_cart_items = []
+        print("user cart items: " + str(user_cart_items))
     # Format the price with commas
     product.formatted_old_price = intcomma(int(product.old_price)) if product.old_price is not None else None
     product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
@@ -178,15 +185,11 @@ def add_to_cart(request):
                 cart_item.save()
             product_quantity = cart_item.quantity
         else:
-            # For non-authenticated users, use session-based cart
-            session_key = request.session.session_key
             cart_data = request.session.get('cart', {})
-            if str(product.id) in cart_data:
-                cart_data[str(product.id)] += 1
-            else:
-                cart_data[str(product.id)] = 1
+            cart_data[str(product.id)] = cart_data.get(str(product.id), 0) + 1
             request.session['cart'] = cart_data
             product_quantity = cart_data[str(product.id)]
+
 
         # Get the updated cart count
         if request.user.is_authenticated:
