@@ -302,6 +302,35 @@ def cart_count(request):
 
     return JsonResponse({'count': cart_count})
 
+def merge_carts(request, user, session_cart):
+    session_cart_data = session_cart.get_decoded()
+    session_cart_items = session_cart_data.get('cart', {})
+
+    # Get or create the authenticated user's cart
+    user_cart, _ = Cart.objects.get_or_create(user=user)
+
+    # Merge items from session cart to user cart
+    for product_id, quantity in session_cart_items.items():
+        product = get_object_or_404(Product, pk=product_id)
+        print("Merging product:", product, "Quantity from session:", quantity)
+
+        # Get or create the CartItem instance
+        cart_item, created = CartItem.objects.get_or_create(cart=user_cart, product=product)
+
+        # If the item is newly created, set its quantity to the session quantity
+        if created:
+            cart_item.quantity = quantity
+            print("New quantity after merge:", cart_item.quantity)
+        else:
+            print("Existing quantity in user's cart:", cart_item.quantity)
+            # Update the quantity by adding the session quantity
+            cart_item.quantity = F('quantity') + quantity
+            print("New quantity after merge:", cart_item.quantity)
+
+        cart_item.save()
+
+    # Clear the session cart after merging
+    del request.session['cart']
 
 def return_policy(request):
     return render(request, 'ecommerce/return_policy.html')
@@ -352,10 +381,6 @@ def product_search(request):
         # Perform search query on Product model
         products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
 
-        # Calculate min and max prices for the searched products
-        min_price = products.aggregate(Min('new_price'))['new_price__min']
-        max_price = products.aggregate(Max('new_price'))['new_price__max']
-
         for product in products:
             # Calculate discount percentage
             if product.old_price is not None and product.old_price != 0:
@@ -368,11 +393,15 @@ def product_search(request):
             product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
             product.formatted_price = intcomma(int(product.new_price))
 
-            # Retrieve the quantity of the product in the user's cart
-            product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
+            # Check if the user is authenticated
+            if isinstance(request.user, AnonymousUser):
+                # If user is not authenticated, set cart_quantity to 0
+                product.cart_quantity = 0
+            else:
+                # Retrieve the quantity of the product in the user's cart
+                product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
 
-    return render(request, 'ecommerce/search_results.html', {'products': products, 'query': query, 'min_price': min_price, 'max_price': max_price})
-
+    return render(request, 'ecommerce/search_results.html', {'products': products, 'query': query})
 
 def autocomplete(request):
     query = request.GET.get('query', '')
@@ -381,32 +410,3 @@ def autocomplete(request):
     return JsonResponse(suggestions, safe=False)
 
 
-def merge_carts(request, user, session_cart):
-    session_cart_data = session_cart.get_decoded()
-    session_cart_items = session_cart_data.get('cart', {})
-
-    # Get or create the authenticated user's cart
-    user_cart, _ = Cart.objects.get_or_create(user=user)
-
-    # Merge items from session cart to user cart
-    for product_id, quantity in session_cart_items.items():
-        product = get_object_or_404(Product, pk=product_id)
-        print("Merging product:", product, "Quantity from session:", quantity)
-
-        # Get or create the CartItem instance
-        cart_item, created = CartItem.objects.get_or_create(cart=user_cart, product=product)
-
-        # If the item is newly created, set its quantity to the session quantity
-        if created:
-            cart_item.quantity = quantity
-            print("New quantity after merge:", cart_item.quantity)
-        else:
-            print("Existing quantity in user's cart:", cart_item.quantity)
-            # Update the quantity by adding the session quantity
-            cart_item.quantity = F('quantity') + quantity
-            print("New quantity after merge:", cart_item.quantity)
-
-        cart_item.save()
-
-    # Clear the session cart after merging
-    del request.session['cart']
