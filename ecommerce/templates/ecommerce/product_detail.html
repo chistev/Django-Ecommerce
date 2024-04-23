@@ -4,34 +4,19 @@
 
 {% block body %}
 
-
-<body class="bg-dark">
-    <div class="d-flex ms-5">
-        {% for item in breadcrumb %}
-            {% if not forloop.last %}
-                <h6 class="mt-4"><a href="{{ item.1 }}" class="text-decoration-none text-white">{{ item.0 }} ></a></h6>
-            {% else %}
-                <h6 class="mt-4 text-white">{{ item.0 }}</h6>
-            {% endif %}
-        {% endfor %}
-    </div>
-
     <div class="container mt-4">
-        <div class="row d-flex">
-            <div class="col-md-8 black-card ms-5">
-                   <!-- Product Card --> 
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="black-card mx-auto">
                     <div class="row">
-                        <div class="col-md-3 black-card ms-4">
+                        <div class="col-md-4">
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="top-selling-image img-fluid">
                             <hr>
                             <div>
-                            <b>
-                                SHARE THIS PRODUCT
-                            </b>
-                                
+                                <b>SHARE THIS PRODUCT</b>
                             </div>
                             <div class="social-icons mt-3 fs-5">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="me-3 text-white ">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="me-3 text-white">
                                     <i class="bi bi-facebook"></i>
                                 </a>                                
                                 <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank" class="me-3 text-white">
@@ -39,20 +24,22 @@
                                 </a>                                
                             </div>
                         </div>
-
-                        <div class="col-md-8 black-card ms-3 ">
-                            <div class="d-flex">
-                                <div class="ms-auto fs-4 ">
+                        <div class="col-md-8">
+                            <div class="d-flex justify-content-end">
+                                <div class="fs-4">
                                     <div class="me-3 text-white">
                                         {% if request.user.is_authenticated %}
                                         {% if saved_product %}
-                                                <i class="bi bi-balloon-heart-fill" data-product-id="{{ product.id }}"></i>
-                                            {% else %}
-                                                <i class="bi bi-balloon-heart" data-product-id="{{ product.id }}"></i>
-                                            {% endif %}
+                                        <i class="bi bi-balloon-heart-fill" data-product-id="{{ product.id }}"></i>
                                         {% else %}
-                                            <!-- Render heart icon as not saved if user is not authenticated -->
-                                            <i class="bi bi-balloon-heart" data-product-id="{{ product.id }}"></i>
+                                        <i class="bi bi-balloon-heart" data-product-id="{{ product.id }}"></i>
+                                        {% endif %}
+                                        {% else %}
+                                        <!-- Render heart icon as not saved if user is not authenticated -->
+                                        <a href="{% url 'accounts:login_or_register' %}" class="text-white">
+                                            <i class="bi bi-balloon-heart"></i>
+                                        </a>
+                                        
                                         {% endif %}
                                     </div>
                                 </div>
@@ -66,88 +53,90 @@
                                 <span class="badge bg-danger ms-2 fs-6">{{ product.discount_percentage }}%</span>
                                 {% endif %}
                             </div>
-                            <p style="font-size: small; color: grey;">
-                                In stock
-                                </p>
-                             <form id="add-to-cart-form" data-product-id="{{ product.id }}" method="POST">
+                            <p style="font-size: small; color: grey;">In stock</p>
+                            <form id="add-to-cart-form" data-product-id="{{ product.id }}" method="POST">
                                 {% csrf_token %}
                                 <button id="add-to-cart-btn" class="btn btn-primary mt-3 mb-2 d-flex justify-content-between align-items-center" style="width: 90%;">
                                     <i class="bi bi-cart"></i>
                                     <span class="text-center w-100">ADD TO CART</span>
                                 </button>
-
+    
                                 <div id="product-quantity" style="display: none;">
                                     <button id="remove-product" class="btn btn-primary me-3">
                                         <i class="bi bi-dash-lg"></i>
                                     </button>
                                     <span id="product-count">{{ user_cart_items.0.quantity|default:0 }}</span>
-                                    
+                                        
                                     <button id="add-product" class="btn btn-primary ms-3 me-3">
                                         <i class="bi bi-plus-lg"></i>
                                     </button>
                                     <span>(<span id="item-count">{{ user_cart_items.0.quantity|default:0 }}</span> item(s) added)</span>
                                 </div>
                             </form> 
-                            
-                            
                         </div>
                     </div>
+                </div>
             </div>
-
+    
             <!-- DELIVERY CARD -->
-            <div class="col-md-3 black-card ms-3">
-                <p class="fw-bold">DELIVERY & RETURNS</p>
-                <hr>
-                
-                <p class="fw-bold">Choose your location</p>
-                <div style="margin-top: -10px;">
+            <div class="col-lg-4 mt-sm-2">
+                <div class="black-card">
+                    <p class="fw-bold">DELIVERY & RETURNS</p>
+                    <hr>
+                    
+                    <p class="fw-bold">Choose your location</p>
+                    <div style="margin-top: -10px;">
                         <select class="form-select" id="state" name="state">
                             <option value="" disabled selected>State</option>
                             {% for state in states %}
-                                {% if user_address and user_address.first %}
-                                <option value="{{ state.id }}" {% if state.id == user_address.first.state.id %}selected{% endif %}>{{ state.name }}</option>
-                                {% else %}
-                                    <option value="{{ state.id }}">{{ state.name }}</option>
-                                {% endif %}
+                            {% if user_address and user_address.first %}
+                            <option value="{{ state.id }}" {% if state.id == user_address.first.state.id %}selected{% endif %}>{{ state.name }}</option>
+                            {% else %}
+                            <option value="{{ state.id }}">{{ state.name }}</option>
+                            {% endif %}
                             {% endfor %}
                         </select>
-                </div>
-
-                <div style="margin-top: 10px;">
+                    </div>
+    
+                    <div style="margin-top: 10px;">
                         <select class="form-select" id="city" name="city" disabled>
                             <option value="" disabled selected>City</option>
                             {% if user_address and user_address.first %}
-                                {% for city in user_address.first.state.city_set.all %}
-                                    <option value="{{ city.id }}" {% if city.id == user_address.first.city.id %}selected{% endif %}>{{ city.name }}</option>
-                                {% endfor %}
+                            {% for city in user_address.first.state.city_set.all %}
+                            <option value="{{ city.id }}" {% if city.id == user_address.first.city.id %}selected{% endif %}>{{ city.name }}</option>
+                            {% endfor %}
                             {% endif %}
                         </select>
+                    </div>
+                    <hr>
+                    <div>
+                        <p>Return Policy</p>
+                        <p>Free return within 7 days for ALL eligible items <a href="{% url 'ecommerce:return_policy' %}" class="text-decoration-none">Details</a></p>
+                    </div>
                 </div>
-                <hr>
-                <div>
-                    <p>Return Policy</p>
-                    <p>Free return within 7 days for ALL eligible items <a href="{% url 'ecommerce:return_policy' %}" class="text-decoration-none">Details</a></p>
-                </div>
-                
             </div>    
         </div>
 
-        <div class="row d-flex mt-2">
-            <div class="col-md-12 black-card ms-5">
-                <h5>Product Details</h5>
-                <hr>
-                <p>{{ product.description }}</p>
+        
+            <div class="row mt-2">
+                <div class="col-lg-12">
+                    <div class="black-card">
+                        <h5>Product Details</h5>
+                        <hr>
+                        <p>{{ product.description }}</p>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="row d-flex mt-2">
-            <div class="col-md-12 black-card ms-5">
-                    <h5>Recently Viewed</h5>
-                <hr>
-                <!-- Render the recently viewed products section -->
-                
+    
+        
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="black-card-beneath">
+                        <h5 class="top-selling-title">Recently Viewed</h5>
+                        {% render_recently_viewed_products request %}
+                    </div>
+                </div>
             </div>
-        </div>
     </div>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -358,10 +347,5 @@
 });
 
 </script>
-
-
-
-    
-</body>
 
 {% endblock %}
