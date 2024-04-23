@@ -131,8 +131,8 @@ console.log(removeCartUrl)
 e.preventDefault(); // Prevent default button behavior
 var productId = $(this).data('product-id');
  var addToCartUrl = $(this).closest('.product-card').find('.add-to-cart-btn').data('add-to-cart-url');
- var addToCartUrl = $(this).data('add-to-cart-url');
-console.log(productId, addToCartUrl)
+//  var addToCartUrl = $(this).data('add-to-cart-url');
+console.log("product_id:" + productId + "add to cart url:" + addToCartUrl)
 addToCart(productId, addToCartUrl);
 });
 

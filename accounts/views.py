@@ -2,6 +2,7 @@ import json
 import os
 from datetime import timedelta
 
+from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.utils import timezone
@@ -17,6 +18,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.urls import resolve, reverse
 
 from ecommerce.models import UserActivity, Order, OrderItem
+from ecommerce.views import merge_carts
 from .forms import RegistrationForm, LoginForm, AddressForm, EmailForm, PersonalDetailsForm, EditBasicDetailsForm, \
     ForgotPasswordForm, PasswordResetForm
 from .models import CustomUser, PersonalDetails, State, City, Address
@@ -167,6 +169,11 @@ def login(request, email=None):
             if user is not None:
                 # Log in the user
                 auth_login(request, user)
+                # Merge carts if user was previously non-authenticated
+                if 'cart' in request.session:
+                    session_key = request.session.session_key
+                    session_cart = Session.objects.get(session_key=session_key)
+                    merge_carts(request, user, session_cart)
                 return redirect('ecommerce:index')
             else:
                 messages.error(request, 'Invalid email or password')

@@ -3,7 +3,7 @@ from urllib.parse import unquote
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.contrib.sessions.models import Session
-from django.db.models import Min, Max, Sum, Q, OuterRef, Subquery
+from django.db.models import Min, Max, Sum, Q, OuterRef, Subquery, F
 from django.shortcuts import render, get_object_or_404
 
 
@@ -180,13 +180,23 @@ def add_to_cart(request):
         if request.user.is_authenticated:
             # For authenticated users, use the database-backed cart
             cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-            if not created:
+            if created:
+                # If the item is newly created, set the quantity to 1
+                cart_item.quantity = 1
+            else:
+                # If the item already exists, increment the quantity by 1
                 cart_item.quantity += 1
-                cart_item.save()
+            cart_item.save()
             product_quantity = cart_item.quantity
         else:
             cart_data = request.session.get('cart', {})
-            cart_data[str(product.id)] = cart_data.get(str(product.id), 0) + 1
+            if str(product.id) in cart_data:
+                # If the item already exists in the session cart, increment the quantity
+                cart_data[str(product.id)] += 1
+            else:
+                # If it's a new item, add it to the session cart with quantity 1
+                cart_data[str(product.id)] = 1
+
             request.session['cart'] = cart_data
             product_quantity = cart_data[str(product.id)]
 
@@ -204,12 +214,6 @@ def add_to_cart(request):
         else:
             subtotal = sum(product.new_price * quantity for product_id, quantity in cart_data.items())
         formatted_subtotal = 'N ' + intcomma(int(subtotal))
-
-        # Debugging prints
-        print("User:", request.user)
-        print("Cart count:", cart_count)
-        print("Product quantity:", product_quantity)
-        print("Subtotal:", formatted_subtotal)
 
         return {'status': 'success', 'cart_quantity': cart_count, 'product_quantity': product_quantity,
                 'subtotal': formatted_subtotal}
@@ -375,3 +379,34 @@ def autocomplete(request):
     matching_products = Product.objects.filter(name__icontains=query)[:5]  # Limit to 5 suggestions
     suggestions = [{'name': product.name} for product in matching_products]
     return JsonResponse(suggestions, safe=False)
+
+
+def merge_carts(request, user, session_cart):
+    session_cart_data = session_cart.get_decoded()
+    session_cart_items = session_cart_data.get('cart', {})
+
+    # Get or create the authenticated user's cart
+    user_cart, _ = Cart.objects.get_or_create(user=user)
+
+    # Merge items from session cart to user cart
+    for product_id, quantity in session_cart_items.items():
+        product = get_object_or_404(Product, pk=product_id)
+        print("Merging product:", product, "Quantity from session:", quantity)
+
+        # Get or create the CartItem instance
+        cart_item, created = CartItem.objects.get_or_create(cart=user_cart, product=product)
+
+        # If the item is newly created, set its quantity to the session quantity
+        if created:
+            cart_item.quantity = quantity
+            print("New quantity after merge:", cart_item.quantity)
+        else:
+            print("Existing quantity in user's cart:", cart_item.quantity)
+            # Update the quantity by adding the session quantity
+            cart_item.quantity = F('quantity') + quantity
+            print("New quantity after merge:", cart_item.quantity)
+
+        cart_item.save()
+
+    # Clear the session cart after merging
+    del request.session['cart']
