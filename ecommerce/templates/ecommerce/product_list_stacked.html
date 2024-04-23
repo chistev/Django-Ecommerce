@@ -30,11 +30,11 @@
                                             </div>
                                         {% endif %}
                                     </div>
-                                    <div>
+                                    <div class="">
                                         <button class="btn btn-primary mt-2 mb-2 add-to-cart-btn" data-product-id="{{ product.id }}"  data-add-to-cart-url="{% url 'ecommerce:add_to_cart' %}" style="width: 90%;">Add To Cart</button>
                                         <div class="d-flex justify-content-between" style="display: none !important">
                                             
-                                            <button id="remove-product" class="btn btn-primary ms-5 mb-2 remove-product-btn" data-product-id="{{ product.id }}" data-remove-from-cart-url="{% url 'ecommerce:remove_from_cart' %}">
+                                            <button id="remove-product" class="btn btn-primary mx-auto mb-2 remove-product-btn" data-product-id="{{ product.id }}" data-remove-from-cart-url="{% url 'ecommerce:remove_from_cart' %}">
                                                 <i class="bi bi-dash-lg"></i>
                                         </button>
 
@@ -42,7 +42,7 @@
                                             <span class="product-count" data-product-id="{{ product.id }}">{{ product.cart_quantity|default:0 }}</span>
 
 
-                                            <button id="add-product" class="btn btn-primary me-3 mb-2 add-product" data-product-id="{{ product.id }}">
+                                            <button id="add-product" class="btn btn-primary mx-auto mb-2 add-product" data-product-id="{{ product.id }}">
                                                 <i class="bi bi-plus-lg"></i>
                                             </button>
                                         </div>
