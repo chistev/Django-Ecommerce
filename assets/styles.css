@@ -23,13 +23,13 @@
 }
 
 @media (max-width: 1200px) {
-    .accounts-container, .cart-container{
+    .accounts-container, .cart-container, .index-container{
         margin-top: 5%;
     }
 }
 
 @media (max-width: 1100px) {
-    .accounts-container, .cart-container{
+    .accounts-container, .cart-container, .index-container{
         margin-top: 7% !important;
     }
 }
@@ -125,6 +125,16 @@ body{
 }
 
 /* Add the styles for the black-card class */
+.index-black-card {
+    background-color: black;
+    color: white; /* Set the text color to white or any other color that suits your design */
+    padding: 15px; /* Adjust the padding as needed */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    max-width: fit-content; /* Adjust the maximum width as needed */
+    cursor: default !important;
+    user-select: text; /* Ensure that text selection is enabled */
+}
+
 .black-card {
     background-color: black;
     color: white; /* Set the text color to white or any other color that suits your design */
@@ -142,10 +152,7 @@ body{
 
 
 .second-card{
-    background-color: black;
-    color: white; /* Set the text color to white or any other color that suits your design */
     border-radius: 10px; /* Optional: Add rounded corners */
-    margin-right: 10px;
     position: relative;
 }
 
@@ -328,8 +335,8 @@ body{
     font-size: 20px;
     border: none;
     outline: none;
-    background-color: black;
-    color: #fff;
+    background-color: blue;
+    color: white;
     cursor: pointer;
     border-radius: 50%;
     padding: 10px;

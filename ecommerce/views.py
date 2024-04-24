@@ -1,6 +1,7 @@
 from urllib.parse import unquote
 
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.humanize.templatetags import humanize
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.contrib.sessions.models import Session
 from django.db.models import Min, Max, Sum, Q, OuterRef, Subquery, F
@@ -10,14 +11,37 @@ from django.shortcuts import render, get_object_or_404
 from accounts.forms import AddressForm
 from accounts.models import Address, State
 
-from ecommerce.models import Product, Cart, CartItem, UserActivity, SuperCategory, Category
+from ecommerce.models import Product, Cart, CartItem, UserActivity, SuperCategory, Category, OrderItem
 
 from django.http import JsonResponse
 
 
 def index(request):
     breadcrumb = [('Home', '/')]
-    return render(request, 'ecommerce/index.html', {'breadcrumb': breadcrumb})
+    product_quantities = {}
+    order_items = OrderItem.objects.all()
+    for item in order_items:
+        if item.product.id in product_quantities:
+            product_quantities[item.product.id] += item.quantity
+        else:
+            product_quantities[item.product.id] = item.quantity
+
+    sorted_products = sorted(product_quantities.items(), key=lambda x: x[1], reverse=True)
+    top_selling_products = [Product.objects.get(id=prod_id) for prod_id, _ in
+                            sorted_products[:6]]
+
+    # Format the price with commas for each viewed product
+    for product in top_selling_products:
+        if product.old_price is not None and product.old_price != 0:
+            discount = (product.old_price - product.new_price) / product.old_price * 100
+            product.discount_percentage = round(discount, 2) * -1  # Make it negative
+        else:
+            product.discount_percentage = 0
+
+        product.formatted_old_price = humanize.intcomma(
+            int(product.old_price)) if product.old_price is not None else None
+        product.formatted_price = humanize.intcomma(int(product.new_price))
+    return render(request, 'ecommerce/index.html', {'breadcrumb': breadcrumb, 'top_selling_products': top_selling_products})
 
 
 def get_category_data(super_category_name, title):
@@ -406,5 +430,3 @@ def autocomplete(request):
     matching_products = Product.objects.filter(name__icontains=query)[:5]  # Limit to 5 suggestions
     suggestions = [{'name': product.name} for product in matching_products]
     return JsonResponse(suggestions, safe=False)
-
-
