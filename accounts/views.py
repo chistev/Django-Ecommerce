@@ -14,7 +14,7 @@ import requests
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, update_session_auth_hash
 from django.contrib.auth.views import LogoutView
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import resolve, reverse
 
 from ecommerce.models import UserActivity, Order, OrderItem
@@ -57,10 +57,8 @@ def login_or_register(request):
         form = EmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            # Check if the email exists in the database
             user = CustomUser.objects.filter(email=email).first()
             if user is not None:
-                # If the email exists, redirect to the login page
                 return redirect('accounts:login', email=email)
             else:
                 return redirect('accounts:register', email=email)
@@ -73,7 +71,6 @@ def login_or_register(request):
 # if no email is provided when calling the function, it is set to None.
 def register(request, email=None):
     if not email:
-        # Handle the case where email is not present
         return redirect('accounts:login_or_register')
 
     if request.method == 'POST':
@@ -83,29 +80,23 @@ def register(request, email=None):
             password2 = form.cleaned_data['password2']
 
             if password1 == password2:
-                # Check if a user with the provided email already exists
                 if CustomUser.objects.filter(email=email).exists():
-                    # User with the provided email already exists, display error message
                     messages.error(request, 'A user with that email already exists. Please log in.')
                     return redirect('accounts:login_or_register')
 
                 else:
-                    # Passwords match, store relevant details in the session until the registration process is complete
                     request.session['registration_data'] = {
-                        'email': email,  # refers to the value passed to the register function as a parameter
+                        'email': email,
                         'password': form.cleaned_data['password1'],
                     }
                     return redirect('accounts:personal_details')
             else:
                 messages.error(request, 'Passwords do not match')
         else:
-            # Form is invalid, and errors are already in the form object
-            # Displaying form errors using messages framework
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"{field.capitalize()}: {error}")
     else:
-        # GET request, render an empty form
         form = RegistrationForm(initial={'email': email})
 
     return render(request, 'accounts/register.html', {'form': form})
@@ -113,21 +104,17 @@ def register(request, email=None):
 
 @login_excluded('ecommerce:index')
 def personal_details(request):
-    # Retrieve stored details from the session
     registration_data = request.session.get('registration_data')
 
     if not registration_data:
-        # If no registration data is found, redirect to login_or_register
         return redirect('accounts:login_or_register')
 
     if request.method == 'POST':
         form = PersonalDetailsForm(request.POST)
         if form.is_valid():
-            # Retrieve email and password from session data
             email = registration_data['email']
             password = registration_data['password']
 
-            # Create a new user
             user = CustomUser.objects.create_user(email=email, password=password)
 
             # By using commit=False, Django returns an unsaved model instance, allowing you to modify its attributes
@@ -139,10 +126,8 @@ def personal_details(request):
             new_personal_details.user = user
             new_personal_details.save()
 
-            # Clear registration_data from the session
             del request.session['registration_data']
 
-            # Redirect to successful_registration view with first name as URL parameter
             return HttpResponseRedirect(
                 reverse('accounts:successful_registration', args=(new_personal_details.first_name,)))
 

@@ -33,5 +33,4 @@ urlpatterns = [
     path('security_code_reset', views.security_code_reset, name='security_code_reset'),
     path('resend_security_code/', views.resend_security_code, name='resend_security_code'),
     path('password_reset/', views.password_reset, name='password_reset'),
-
 ]

@@ -1,14 +1,16 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.http import HttpResponseRedirect
 
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
 from django.utils import timezone
 
-from accounts.forms import AddressForm, ForgotPasswordForm
+from accounts.forms import AddressForm, ForgotPasswordForm, PersonalDetailsForm
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
 from accounts.views import delete_account, send_security_code, forgot_password, password_reset
 
@@ -59,6 +61,20 @@ class RegisterViewTest(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)  # Check if one error message is displayed
         self.assertIn('Email', str(messages[0]))  # Check if the error message contains 'Email'
+
+
+class PersonalDetailsViewTest(TestCase):
+    def setUp(self):
+        # Create a session with registration data
+        self.client = Client()
+        self.registration_data = {'email': 'test@example.com', 'password': 'testpassword'}
+        self.client.session['registration_data'] = self.registration_data
+
+    def test_get_request(self):
+        # Test GET request to the view
+        response = self.client.get(reverse('accounts:personal_details'))
+        self.assertEqual(response.status_code, 302)  # Expecting a redirect
+        self.assertRedirects(response, '/accounts/login_or_register/')
 
 
 class MyAccountViewTest(TestCase):
@@ -223,4 +239,5 @@ class ForgotPasswordViewTest(TestCase):
         # Check if the form instance is present in the response context
         form = response.context['form']
         self.assertIsInstance(form, ForgotPasswordForm)
+
 
