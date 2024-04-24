@@ -23,7 +23,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 FLUTTERWAVE_API_KEY = os.getenv('FLUTTERWAVE_API_KEY')
-webhook_secret_hash = os.environ.get('WEBHOOK_SECRET_HASH')
 
 
 def calculate_delivery_dates():
@@ -177,7 +176,7 @@ def flutterwave_payment_view(request):
         tx_ref = order_number  # Assign the order number to tx_ref
         amount = float(total_amount)
         currency = "NGN"
-        redirect_url = "https://a030-197-211-59-151.ngrok-free.app/accounts/orders/"
+        redirect_url = "https://7375-129-205-124-170.ngrok-free.app/accounts/orders/"
 
         customer_email = user_email
         customer_name = user_first_name + ' ' + user_last_name
@@ -234,6 +233,7 @@ def flutterwave_webhook_view(request):
         # Parse webhook payload
         try:
             payload = json.loads(request.body)
+
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid payload"}, status=400)
 
@@ -252,6 +252,7 @@ def flutterwave_webhook_view(request):
             # Authenticate the user based on the email
             if user_email:
                 user = CustomUser.objects.filter(email=user_email).first()
+
             else:
                 # If email is not provided in the payload, return error
                 return JsonResponse({"error": "User email not provided in the payload"}, status=400)
@@ -268,10 +269,11 @@ def flutterwave_webhook_view(request):
 
             # Make a request to Flutterwave's transaction verification endpoint
             verification_url = f"https://api.flutterwave.com/v3/transactions/{transaction_id}/verify"
-            headers = {"Authorization": "Bearer " + FLUTTERWAVE_API_KEY},
+            headers = {"Authorization": "Bearer " + FLUTTERWAVE_API_KEY}
             response = requests.get(verification_url, headers=headers)
 
             if response.status_code == 200:
+
                 verification_data = response.json()
                 # Check if the payment is successful and matches the expected amount and currency
                 if (
@@ -284,7 +286,7 @@ def flutterwave_webhook_view(request):
                     total_amount = amount
 
                     # Set payment method
-                    payment_method = 'pay_on_delivery'
+                    payment_method = 'bank_transfer'
 
                     # Save the order to the database
                     order = Order.objects.create(
@@ -293,7 +295,6 @@ def flutterwave_webhook_view(request):
                         total_amount=total_amount,
                         payment_method=payment_method
                     )
-
                     # Retrieve cart items
                     cart_items = CartItem.objects.filter(cart__user=user)
 
