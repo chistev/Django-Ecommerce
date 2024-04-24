@@ -24,7 +24,7 @@ def cart_view(request):
         # Retrieve products using product IDs from the session
         cart_items = [CartItem(product_id=product_id, quantity=cart_data[product_id]) for product_id in product_ids]
         cart_count = sum(cart_data.values())
-        
+
     if cart_count is None:
         cart_count = 0  # Set the count to 0 if no items are found
 
@@ -60,22 +60,31 @@ def remove_all_from_cart(request):
         product = get_object_or_404(Product, pk=product_id)
         user = request.user
 
-        # Check if the user has a cart and the product is in the cart
-        cart_items = CartItem.objects.filter(cart__user=user, product=product)
-        if cart_items.exists():
-            # Delete all cart items related to the product
-            cart_items.delete()
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            # For authenticated users, remove the item from the database cart
+            cart_items = CartItem.objects.filter(cart__user=user, product=product)
+            if cart_items.exists():
+                cart_items.delete()
 
-            # Get the updated cart count
-            cart_count = CartItem.objects.filter(cart__user=user).aggregate(total_quantity=
-                                                                            Sum('quantity'))['total_quantity']
-            if cart_count is None:
-                cart_count = 0  # Set the count to 0 if no items are found
+                cart_count = CartItem.objects.filter(cart__user=user).aggregate(total_quantity=Sum('quantity'))['total_quantity']
+                if cart_count is None:
+                    cart_count = 0
 
-            return JsonResponse({'status': 'success', 'cart_quantity': cart_count})
+                return JsonResponse({'status': 'success', 'cart_quantity': cart_count})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Product not found in the cart'}, status=404)
         else:
-            # If the product is not in the cart, return an error
-            return JsonResponse({'status': 'error', 'message': 'Product not found in the cart'}, status=404)
+            # For non-authenticated users, remove the item from the session cart
+            session_cart = request.session.get('cart', {})
+            if str(product_id) in session_cart:
+                del session_cart[str(product_id)]
+                request.session['cart'] = session_cart
+
+                cart_count = sum(session_cart.values())
+                return JsonResponse({'status': 'success', 'cart_quantity': cart_count})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Product not found in the cart'}, status=404)
     else:
-        # If the request is not AJAX or not a POST request, return an error
         return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+

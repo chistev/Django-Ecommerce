@@ -30,6 +30,7 @@
                             <a href="{% url 'ecommerce:product_detail' cart_item.product.pk %}">
                                 <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="img-fluid mb-3">
                             </a>
+                            
                             <div><a href="" class="remove-button text-decoration-none text-primary " data-product-id="{{ cart_item.product.pk }}">
                                 <i class="bi bi-trash me-2"></i>REMOVE</a>
                             </div>
@@ -107,7 +108,8 @@
         </div>
     </div>      
 
-    <!-- Modal for confirmation dialog -->
+    <!-- Authenticated user's modal -->
+    {% if user.is_authenticated %}
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -131,7 +133,31 @@
             </div>
         </div>
     </div>
-        
+    
+    
+    
+<!-- non-authenticated user's Modal for confirmation dialog -->
+{% else %}
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Remove From Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Do you really want to remove this item from the cart?
+                </div>
+                <div class="modal-footer">
+                    <!-- Add remove icon to the "Remove" button -->
+                    <button type="button" class="btn btn-danger btn-block" style="width: 100%;" id="confirmRemove">
+                        <i class="bi bi-trash me-2"></i>Remove Item
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}    
     <div id="cartCountUrl" data-url="{% url 'ecommerce:cart_count' %}"></div>    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -141,6 +167,7 @@
                 e.preventDefault();
                 var productId = $(this).data('product-id');
                 $('#confirmationModal').modal('show');
+                
                 $('#confirmRemove').data('product-id', productId); // Store product ID in the "Remove" button
                 $('#confirmSave').data('product-id', productId); // Store product ID for "Save for Later" button
             });
