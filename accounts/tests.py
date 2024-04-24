@@ -1,4 +1,7 @@
-from django.contrib.auth import get_user_model
+from importlib import import_module
+
+from django.conf import settings
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages import get_messages
@@ -12,7 +15,9 @@ from django.utils import timezone
 
 from accounts.forms import AddressForm, ForgotPasswordForm, PersonalDetailsForm
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
-from accounts.views import delete_account, send_security_code, forgot_password, password_reset
+from accounts.views import delete_account, send_security_code, forgot_password, password_reset, login, orders, \
+    saved_items, account_management, change_password
+from ecommerce.models import Order, OrderItem, UserActivity, Product, Category, SuperCategory
 
 
 class LoginOrRegisterViewTest(TestCase):
@@ -220,6 +225,7 @@ class AddressBookEditViewTest(TestCase):
         self.assertEqual(updated_address.address, 'Updated Address')
         self.assertEqual(response.status_code, 302)  # Redirect status code
         self.assertEqual(response.url, reverse('accounts:address_book'))  # Redirected URL
+
 
 class ForgotPasswordViewTest(TestCase):
     def setUp(self):

@@ -149,10 +149,8 @@ def login(request, email=None):
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
 
-            # Authenticate user
             user = authenticate(request, email=email, password=password)
             if user is not None:
-                # Log in the user
                 auth_login(request, user)
                 # Merge carts if user was previously non-authenticated
                 if 'cart' in request.session:
@@ -162,15 +160,13 @@ def login(request, email=None):
                 return redirect('ecommerce:index')
             else:
                 messages.error(request, 'Invalid email or password')
-
     else:
-        # If it's a GET request, render the login form
         form = LoginForm(initial={'email': email})
     return render(request, 'accounts/login.html', {'form': form})
 
 
 class CustomLogoutView(LogoutView):
-    next_page = '/'  # Redirect to home page after logout
+    next_page = '/'
 
 
 @redirect_to_login_or_register
@@ -206,7 +202,6 @@ def calculate_delivery_dates(order_date):
 
 @redirect_to_login_or_register
 def orders(request):
-    # Query orders that have not been cancelled
     active_orders = Order.objects.filter(user=request.user, is_cancelled=False).order_by('-order_date')
     orders_with_dates = []
     for order in active_orders:
@@ -230,11 +225,9 @@ def orders(request):
 
 @redirect_to_login_or_register
 def closed_orders(request):
-    # Query cancelled orders and order them by cancellation_date in descending order
     cancelled_orders = Order.objects.filter(user=request.user, is_cancelled=True).order_by('-cancellation_date')
     cancelled_orders_with_items = []
     for order in cancelled_orders:
-        # Get the first order item associated with the order
         order_item = order.orderitem_set.first()
         if order_item:
             cancelled_orders_with_items.append({
@@ -250,25 +243,18 @@ def closed_orders(request):
 @redirect_to_login_or_register
 def order_details(request, order_number):
     order = Order.objects.get(order_number=order_number, user=request.user)
-    # Get the order items associated with the order
     order_items = OrderItem.objects.filter(order=order)
 
-    # Calculate the total number of items in the order
     total_items = sum(order_item.quantity for order_item in order_items)
 
-    # Calculate total cost
     total_items_cost = sum(order_item.product.new_price * order_item.quantity for order_item in order_items)
 
-    # Calculate total cost after subtracting total items cost from the order total amount
     delivery_fee = order.total_amount - total_items_cost
 
-    # Retrieve the user's address
     user_address = Address.objects.filter(user=request.user).first()
 
-    # Calculate the delivery dates using the calculate_delivery_dates function
     delivery_start_date, delivery_end_date = calculate_delivery_dates(order.order_date)
 
-    # Determine payment method
     payment_method = order.get_payment_method_display()
 
     return account_page(request, 'accounts/order_details.html', {'order': order, 'total_items': total_items,
@@ -297,14 +283,13 @@ def inbox(request):
 
 @redirect_to_login_or_register
 def saved_items(request):
-    # Retrieve the count of saved products
     saved_products_count = UserActivity.objects.filter(user=request.user, saved=True).count()
 
     saved_products = UserActivity.objects.filter(user=request.user, saved=True).select_related('product')
     for saved_product in saved_products:
         if saved_product.product.old_price is not None and saved_product.product.old_price != 0:
-            discount = ((
-                                    saved_product.product.old_price - saved_product.product.new_price) / saved_product.product.old_price) * 100
+            discount = ((saved_product.product.old_price - saved_product.product.new_price) /
+                        saved_product.product.old_price) * 100
             saved_product.product.discount_percentage = round(discount, 2) * -1  # Make it negative
         else:
             saved_product.product.discount_percentage = 0
@@ -321,11 +306,8 @@ def remove_saved_product(request):
         user = request.user
 
         if user.is_authenticated:
-            # Delete the UserActivity instance for the user and product
             UserActivity.objects.filter(user=user, product_id=product_id).delete()
-            # Retrieve the count of saved products after removal
             saved_products_count = UserActivity.objects.filter(user=user, saved=True).count()
-
             return JsonResponse({'status': 'success', 'saved_products_count': saved_products_count})
         else:
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
@@ -335,7 +317,7 @@ def remove_saved_product(request):
 
 @redirect_to_login_or_register
 def account_management(request):
-    user = request.user  # Get the logged-in user
+    user = request.user
     try:
         personal_details = user.personal_details
     except ObjectDoesNotExist:
@@ -346,7 +328,7 @@ def account_management(request):
 
 @redirect_to_login_or_register
 def basic_details(request):
-    user = request.user  # Get the logged-in user
+    user = request.user
     try:
         personal_details = user.personal_details
     except ObjectDoesNotExist:
@@ -387,7 +369,6 @@ def change_password(request):
 
         # Check if the current password provided matches the user's actual current password
         if not user.check_password(current_password):
-            # Display an error message if the current password doesn't match
             messages.error(request, 'Your current password is incorrect.')
         elif new_password == current_password:
             messages.error(request, 'Your new password cannot be the same as your current password.')
@@ -399,7 +380,6 @@ def change_password(request):
             user.save()
             # Update the session to prevent the user from being logged out
             update_session_auth_hash(request, user)
-            # Redirect to a success page or the account page
             messages.success(request, 'Your password has been changed successfully.')
             return redirect('accounts:basic_details')
 
@@ -411,17 +391,14 @@ def delete_account(request):
     if request.method == 'POST':
         # Check if the user confirms the deletion
         if request.POST.get('confirm_delete'):
-            user = request.user  # Get the logged-in user
-            entered_password = request.POST.get('Password')  # Get the password entered by the user
+            user = request.user
+            entered_password = request.POST.get('Password')
 
-            # Check if the entered password matches the user's actual password
             if user.check_password(entered_password):
-                # Password matches, proceed with deletion
                 user.delete()
                 messages.success(request, 'Your account has been successfully deleted.')
-                return redirect('ecommerce:index')  # Redirect to the index page or any other page
+                return redirect('ecommerce:index')
             else:
-                # Password doesn't match, show an error message
                 messages.error(request, 'Incorrect password. Please try again.')
 
     return render(request, 'accounts/delete_account.html')
@@ -430,7 +407,6 @@ def delete_account(request):
 @redirect_to_login_or_register
 def address_book(request):
     current_path = resolve(request.path_info).url_name
-    # Retrieve the user's addresses
     user_addresses = Address.objects.filter(user=request.user)
 
     context = {
@@ -443,14 +419,12 @@ def address_book(request):
 @redirect_to_login_or_register
 def save_address(request, form):
     if form.is_valid():
-        # Save or update personal details for the user
         user = request.user
         personal_details, created = PersonalDetails.objects.get_or_create(user=user)
         personal_details.first_name = form.cleaned_data['first_name']
         personal_details.last_name = form.cleaned_data['last_name']
         personal_details.save()
 
-        # Save address details
         address_instance = form.save(commit=False)
         address_instance.user = user
         address_instance.save()
@@ -486,16 +460,13 @@ def address_book_create(request):
 @redirect_to_login_or_register
 def address_book_edit(request, address_id):
     current_path = resolve(request.path_info).url_name
-    # Fetch the address object from the database
     address = get_object_or_404(Address, id=address_id, user=request.user)
     if request.method == 'POST':
-        # Create an instance of the AddressForm and populate it with the POST data and instance
         form = AddressForm(request.POST, instance=address)
         if form.is_valid():
             form.save()
-            return redirect('accounts:address_book')  # Redirect to the address book page after successful update
+            return redirect('accounts:address_book')
     else:
-        # Populate the form with the existing address details
         form = AddressForm(instance=address)
 
     context = {
@@ -560,7 +531,6 @@ def forgot_password(request, email=None):
 
 @redirect_to_login_or_register
 def send_security_code_email(email, security_code):
-    # Check for the presence of the API key
     api_key = os.environ.get('BREVO_API_KEY')
     if not api_key:
         raise ValueError("API key not found. Please set the 'BREVO_API_KEY' environment variable.")
@@ -568,20 +538,17 @@ def send_security_code_email(email, security_code):
     sender_email = 'stephenowabie@gmail.com'
     sender_name = 'Chistev'
 
-    # Fetch user details based on the provided email
     try:
         user = CustomUser.objects.get(email=email)
         personal_details = user.personal_details
         first_name = personal_details.first_name
     except ObjectDoesNotExist:
-        print("User not found for the provided email.")
         return
 
-    # Replace placeholder with actual security code and user's first name
     with open('accounts/templates/accounts/security_code_email.html', 'r') as file:
         custom_html_content = file.read()
 
-    # Replace placeholder with actual security code
+    # Replace placeholder with actual security code and user's first name
     custom_html_content = custom_html_content.replace('{security_code}', security_code)
     custom_html_content = custom_html_content.replace('{first_name}', first_name)
 
@@ -617,30 +584,24 @@ def send_security_code_email(email, security_code):
 def security_code_reset(request):
     reset_email = request.session.get('reset_email', None)
     if request.method == 'POST':
-        # Get the entered security code from the form
         entered_code = ''.join(request.POST.get(f'code{i}', '') for i in range(1, 5))
 
-        # Get the email associated with the security code from the session
         reset_email = request.session.get('reset_email', None)
         security_code = request.session.get('security_code', None)
         if reset_email and security_code:
             if security_code == entered_code:
-                # Redirect to the password reset page if the codes match
                 return redirect('accounts:password_reset')
             else:
                 messages.error(request, "This verification code is not valid. Please request a new one.")
         else:
             messages.error(request, "Session data not found. Please request a new verification code.")
-    # If the codes don't match or if the method is GET, render the security code reset page
     return render(request, 'accounts/security_code_reset.html', {'email': reset_email})
 
 
 @redirect_to_login_or_register
 def resend_security_code(request):
-    # Retrieve the email from the session
     reset_email = request.session.get('reset_email')
 
-    # Resend the security code
     if reset_email:
         # Generate a new security code and update the session
         new_security_code = send_security_code(reset_email)
@@ -649,30 +610,25 @@ def resend_security_code(request):
     else:
         messages.error(request, 'Session data not found. Please request a new verification code.')
 
-    # Redirect back to the security code reset page
     return redirect('accounts:security_code_reset')
 
 
 @redirect_to_login_or_register
 def password_reset(request):
-    # Retrieve the email from the session
     reset_email = request.session.get('reset_email')
     if request.method == 'POST':
         form = PasswordResetForm(request.POST)
         if form.is_valid():
-            # Get the cleaned data from the form
             password = form.cleaned_data['password']
 
-            # Update the user's password using reset_email
             user = CustomUser.objects.get(email=reset_email)
             user.set_password(password)
             user.save()
 
-            # clear/reset the reset_email session variable
             del request.session['reset_email']
 
-            # Log the user in Since "user" is obtained directly from the database, any changes made to the session
-            # after this point won't affect the authentication process.
+            # Log the user in. Since "user" is obtained directly from the database, any changes made to the session
+            # after that point won't affect the authentication process.
             user = authenticate(request, email=user.email, password=password)
             if user is not None:
                 login(request, user)
