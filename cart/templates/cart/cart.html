@@ -208,6 +208,32 @@
                     }
                 });
             });
+    
+            // Function to remove all products from the cart
+            function removeProductFromCart(productId) {
+                // Perform AJAX request to remove all products from cart
+                $.ajax({
+                    url: '{% url "cart:remove_all_from_cart" %}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        // Handle success response
+                        if (response.status === 'success') {
+                            window.location.reload(); // Reload the page
+                        } else {
+                            // Handle error response
+                            alert('Error removing all items from cart.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle AJAX error
+                        alert('Error removing all items from cart: ' + error);
+                    }
+                });
+            }
         });
     </script>
     

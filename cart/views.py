@@ -18,10 +18,13 @@ def cart_view(request):
         cart_count = CartItem.objects.filter(cart__user=request.user).aggregate(total_quantity=Sum('quantity'))[
             'total_quantity']
     else:
-        cart_items = CartItem.objects.filter(cart__user=None).select_related('product')
-        cart_count = CartItem.objects.filter(cart__user=None).aggregate(total_quantity=
-                                                                        Sum('quantity'))['total_quantity']
-
+        # For non-authenticated users, retrieve cart items from session
+        cart_data = request.session.get('cart', {})
+        product_ids = cart_data.keys()
+        # Retrieve products using product IDs from the session
+        cart_items = [CartItem(product_id=product_id, quantity=cart_data[product_id]) for product_id in product_ids]
+        cart_count = sum(cart_data.values())
+        
     if cart_count is None:
         cart_count = 0  # Set the count to 0 if no items are found
 

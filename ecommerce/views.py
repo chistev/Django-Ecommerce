@@ -364,9 +364,7 @@ def save_product(request):
                 # Create a new UserActivity instance if none exists
                 UserActivity.objects.create(user=request.user, product=product, saved=True)
                 status = 'save'
-            # Pass the updated save status of the product to the template
-            product_saved = product.is_saved(request.user)
-            return JsonResponse({'status': status, 'product_saved': product_saved})
+            return JsonResponse({'status': status})
         else:
             return JsonResponse({'status': 'error', 'message': 'User is not authenticated.'}, status=403)
     else:
