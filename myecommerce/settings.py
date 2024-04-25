@@ -102,10 +102,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 config = configparser.ConfigParser()
-config.read('settings.ini')
-
-SOCIAL_AUTH_FACEBOOK_KEY = config['Facebook']['APP_ID']
-SOCIAL_AUTH_FACEBOOK_SECRET = config['Facebook']['APP_SECRET']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
