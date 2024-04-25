@@ -2,7 +2,7 @@ import configparser
 # Load environment variables from .env file
 from dotenv import load_dotenv
 
-load_dotenv()
+
 """
 Django settings for myecommerce project.
 
@@ -16,9 +16,13 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Path to the .env file
+dotenv_path = os.path.join(BASE_DIR, '.env')
+
+load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
