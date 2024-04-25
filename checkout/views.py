@@ -4,6 +4,7 @@ from datetime import timedelta
 
 import requests
 from django.contrib import messages
+from django.db import transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -42,7 +43,6 @@ def calculate_delivery_fee(cart_items):
 @redirect_to_login_or_register
 def checkout_view(request):
     user = request.user
-    # Retrieve the user's address if available
     address = user.addresses.first() if hasattr(user, 'addresses') else None
 
     cart_items = CartItem.objects.filter(cart__user=user)
@@ -67,7 +67,7 @@ def checkout_view(request):
         if 'confirm_delivery' in request.POST:
             # Set a session variable to indicate that the delivery details have been confirmed
             request.session['delivery_details_confirmed'] = True
-            return HttpResponseRedirect(reverse('checkout:checkout')) # Redirect to the same page after POST
+            return HttpResponseRedirect(reverse('checkout:checkout'))  # Redirect to the same page after POST
 
         form = AddressForm(request.POST, user=user)
         if form.is_valid():
@@ -97,38 +97,41 @@ def checkout_view(request):
 
 @redirect_to_login_or_register
 def pay_on_delivery(request):
-    # Generate a unique order number using UUID
-    order_number = uuid.uuid4().hex.upper()[:10]
+    # Check if an order with the same user and not cancelled already exists
+    existing_order = Order.objects.filter(user=request.user, is_cancelled=False).first()
+
+    if existing_order:
+        order_number = existing_order.order_number
+    else:
+        order_number = uuid.uuid4().hex.upper()[:10]
 
     # Calculate the delivery start and end dates
     delivery_start_date, delivery_end_date = calculate_delivery_dates()
 
-    # Retrieve the user's cart items
     cart_items = CartItem.objects.filter(cart__user=request.user)
 
-    # Calculate total cost
     total_cost = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
 
     # Calculate delivery fee
     delivery_fee = calculate_delivery_fee(cart_items)
 
-    # Calculate total amount (delivery fee + total cost)
     total_amount = delivery_fee + total_cost
 
-    # Set payment method
     payment_method = 'pay_on_delivery'
 
-    # Create the order
-    order = Order.objects.create(order_number=order_number, user=request.user, total_amount=total_amount,
-                                 payment_method=payment_method)
+    with transaction.atomic():
+        order = existing_order if existing_order else Order.objects.create(
+            order_number=order_number,
+            user=request.user,
+            total_amount=total_amount,
+            payment_method=payment_method
+        )
 
-    # Add order items to the order
-    for cart_item in cart_items:
-        OrderItem.objects.create(order=order, product=cart_item.product, quantity=cart_item.quantity,
-                                 price=cart_item.product.new_price)
+        for cart_item in cart_items:
+            OrderItem.objects.create(order=order, product=cart_item.product, quantity=cart_item.quantity,
+                                     price=cart_item.product.new_price)
 
-    # Clear the user's cart
-    CartItem.objects.filter(cart__user=request.user).delete()
+        CartItem.objects.filter(cart__user=request.user).delete()
 
     return render(request, 'checkout/order_success.html', {'order_number': order_number,
                                                            'delivery_start_date': delivery_start_date,
@@ -140,10 +143,8 @@ def payment_method_view(request):
     if request.method == 'POST' and 'selected_payment_method' in request.POST:
         selected_payment_method = request.POST.get('selected_payment_method')
         if selected_payment_method == 'tap_and_relax':
-            # Redirect to the view for Tap & Relax payment
             return redirect('checkout:pay_on_delivery')
         elif selected_payment_method == 'bank_transfer':
-            # Redirect to the view for Bank Transfer payment with selected_payment_method as query parameter
             return HttpResponseRedirect(
                 reverse('checkout:flutterwave_payment') + f'?selected_payment_method={selected_payment_method}')
     messages.error(request, "Invalid payment method or request")
@@ -158,22 +159,17 @@ def flutterwave_payment_view(request):
         user_first_name = user_address.first_name
         user_last_name = user_address.last_name
 
-        # Generate a unique order number using UUID
-        order_number = uuid.uuid4().hex.upper()[:10]  # Take the first 10 characters of the UUID
+        order_number = uuid.uuid4().hex.upper()[:10]
 
-        # Retrieve the user's cart items
         cart_items = CartItem.objects.filter(cart__user=request.user)
 
-        # Calculate total cost
         total_cost = sum(cart_item.product.new_price * cart_item.quantity for cart_item in cart_items)
 
-        # Calculate delivery fee
         delivery_fee = calculate_delivery_fee(cart_items)
 
-        # Calculate total amount (delivery fee + total cost)
         total_amount = delivery_fee + total_cost
 
-        tx_ref = order_number  # Assign the order number to tx_ref
+        tx_ref = order_number
         amount = float(total_amount)
         currency = "NGN"
         redirect_url = "https://7375-129-205-124-170.ngrok-free.app/accounts/orders/"
@@ -181,7 +177,6 @@ def flutterwave_payment_view(request):
         customer_email = user_email
         customer_name = user_first_name + ' ' + user_last_name
 
-        # Assemble payment details
         payment_data = {
             "tx_ref": tx_ref,
             "amount": amount,
@@ -193,44 +188,33 @@ def flutterwave_payment_view(request):
             }
             # Add any other optional parameters as needed
         }
-        # Make POST request to Flutterwave API
-        print("Sending payment data to Flutterwave API:", payment_data)
         response = requests.post(
             "https://api.flutterwave.com/v3/payments",
             headers={"Authorization": "Bearer " + FLUTTERWAVE_API_KEY},
             json=payment_data
         )
 
-        print("Response status code:", response.status_code)
-        print("Response content:", response.content)
-
-        # Handle response from Flutterwave
         if response.status_code == 200:
             payment_link = response.json().get("data", {}).get("link")
             if payment_link:
-                # Redirect user to payment link
                 return redirect(payment_link)
         else:
-            # show an error message
             messages.error(request, "We're sorry, but we couldn't process your payment at this time. Please try again "
                                     "later or contact support for assistance.")
             return redirect("checkout:checkout")
     else:
-        # Handle other HTTP methods (POST, etc.)
         return redirect("checkout:checkout")
 
 
 @csrf_exempt
 def flutterwave_webhook_view(request):
     if request.method == 'POST':
-        # Verify webhook signature
         webhook_secret_hash = os.getenv("WEBHOOK_SECRET_HASH")
         signature = request.headers.get("verif-hash")
 
         if not signature or signature != webhook_secret_hash:
             return JsonResponse({"error": "Unauthorized"}, status=401)
 
-        # Parse webhook payload
         try:
             payload = json.loads(request.body)
 
@@ -242,7 +226,7 @@ def flutterwave_webhook_view(request):
         data = payload.get("data")
 
         if event == "charge.completed":
-            # Verify the payment details
+            # To verify the payment details
             transaction_id = data.get("id")
             amount = data.get("amount")
             currency = data.get("currency")
@@ -252,9 +236,7 @@ def flutterwave_webhook_view(request):
             # Authenticate the user based on the email
             if user_email:
                 user = CustomUser.objects.filter(email=user_email).first()
-
             else:
-                # If email is not provided in the payload, return error
                 return JsonResponse({"error": "User email not provided in the payload"}, status=400)
 
             if not user:
@@ -264,7 +246,6 @@ def flutterwave_webhook_view(request):
             # Check if the event has already been processed
             existing_event = PaymentEvent.objects.filter(transaction_id=transaction_id).first()
             if existing_event and existing_event.status == "success":
-                # The event has already been processed, return success response
                 return JsonResponse({"message": "Webhook event already processed"}, status=200)
 
             # Make a request to Flutterwave's transaction verification endpoint
@@ -285,20 +266,17 @@ def flutterwave_webhook_view(request):
                     order_number = data.get("tx_ref")
                     total_amount = amount
 
-                    # Set payment method
                     payment_method = 'bank_transfer'
 
-                    # Save the order to the database
                     order = Order.objects.create(
                         order_number=order_number,
                         user=user,
                         total_amount=total_amount,
                         payment_method=payment_method
                     )
-                    # Retrieve cart items
+
                     cart_items = CartItem.objects.filter(cart__user=user)
 
-                    # Add items to the order
                     for cart_item in cart_items:
                         OrderItem.objects.create(
                             order=order,
@@ -307,13 +285,10 @@ def flutterwave_webhook_view(request):
                             price=cart_item.product.new_price
                         )
 
-                    # Clear the user's cart
                     CartItem.objects.filter(cart__user=user).delete()
 
-                    # Mark the payment event as successful
                     PaymentEvent.objects.create(transaction_id=transaction_id, status="success")
 
-                    # Calculate delivery start and end dates
                     order_date = timezone.now()
                     delivery_start_date = order_date + timedelta(days=5)
                     delivery_end_date = order_date + timedelta(days=10)
