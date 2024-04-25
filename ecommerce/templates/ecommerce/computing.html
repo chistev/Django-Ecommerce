@@ -3,13 +3,14 @@
 
 {% block specific_content %}
 {% for category in categories %}
-<div class="col-lg-2 col-md-4">
-    <div class="position-relative ">
-            <a href="{% url 'ecommerce:category' category_name=category.name %}" style="position: relative; display: inline-block;">
+<div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+    <div class="position-relative">
+                <a href="{% url 'ecommerce:category' category_name=category.name %}" style="position: relative; display: inline-block;" class="bg-success">
             
-            <img src="{{ category.image.url }}" alt="Item 1" class="top-selling-image img-fluid">
-            <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>{{ category.name }}</b></div>
-        </a>
+                    <img src="{{ category.image.url }}" alt="Item 1" class="top-selling-image img-fluid">
+                    <div class="item-name text-center grains-rice-container">&nbsp;&nbsp;<b>{{ category.name }}</b></div>
+                </a>
+                        
     </div>
 </div>
 {% endfor %}
@@ -17,7 +18,5 @@
 {% endblock %}
 
 {% block description %}
-                <h5 class="mb-4">Welcome to Chistev's Online Supermarket Experience!</h5>
-                <h3>Get all you need in one click!</h3>
-                <p class="small">Discover the Ultimate Convenience of Chistev Supermarket Shopping, we're dedicated to enhancing the quality of your life with a simple click. Our commitment to convenience led us to establish an innovative online supermarket that caters to all your needs and desires. Say goodbye to the hassles of navigating through traffic-laden streets – now you can shop from the comfort of your home.</p>
+    {{ super_category_description|safe }}
 {% endblock %}
