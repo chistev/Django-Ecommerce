@@ -51,7 +51,9 @@ def get_category_data(super_category_name, title):
     breadcrumb = [('Home', '/'), (title, f'/{breadcrumb_title_link}/')]
     super_category = SuperCategory.objects.get(name=super_category_name)
     categories = Category.objects.filter(super_category=super_category)
-    return {'breadcrumb': breadcrumb, 'categories': categories}
+    super_category_description = super_category.description
+    return {'breadcrumb': breadcrumb, 'categories': categories,
+            'super_category_description': super_category_description,}
 
 
 def supermarket(request):

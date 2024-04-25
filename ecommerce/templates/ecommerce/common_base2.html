@@ -14,11 +14,10 @@
     </div>
     {% include 'ecommerce/ad.html' %}
 
+    <div class="container">
     <div class="black-card-beneath">
-        <!-- Images row with Bootstrap grid -->
         <div class="row" style="display: flex; justify-content: space-between;">
             {% block specific_content %}
-            <!-- Specific content for child templates goes here -->
             {% endblock %}
         </div>
 
@@ -30,6 +29,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
         

@@ -6,6 +6,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 
 class SuperCategory(models.Model):
     name = models.CharField(max_length=100)
+    description = CKEditor5Field('Text', config_name='extends', default="Quality product")
 
     def __str__(self):
         return self.name
