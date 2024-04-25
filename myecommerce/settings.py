@@ -1,4 +1,8 @@
 import configparser
+# Load environment variables from .env file
+from dotenv import load_dotenv
+
+load_dotenv()
 """
 Django settings for myecommerce project.
 
@@ -21,12 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f@%96+^p@f*1yikodhquahbuii*6nx&@xzl(w5lp8*f%&ds12z'
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'chistevstore.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'chistevstore.pythonanywhere.com']
 
 
 

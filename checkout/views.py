@@ -172,7 +172,7 @@ def flutterwave_payment_view(request):
         tx_ref = order_number
         amount = float(total_amount)
         currency = "NGN"
-        redirect_url = "https://7375-129-205-124-170.ngrok-free.app/accounts/orders/"
+        redirect_url = "https:chistevstore.pythonanywhere.com/accounts/orders/"
 
         customer_email = user_email
         customer_name = user_first_name + ' ' + user_last_name

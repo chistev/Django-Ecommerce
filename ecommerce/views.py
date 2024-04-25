@@ -381,3 +381,4 @@ def autocomplete(request):
     matching_products = Product.objects.filter(name__icontains=query)[:5]
     suggestions = [{'name': product.name} for product in matching_products]
     return JsonResponse(suggestions, safe=False)
+
