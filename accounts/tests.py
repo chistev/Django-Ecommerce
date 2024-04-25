@@ -1,23 +1,14 @@
-from importlib import import_module
-
-from django.conf import settings
-from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.messages import get_messages
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import HttpResponseRedirect
 
 from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse, resolve
-from django.utils import timezone
 
-from accounts.forms import AddressForm, ForgotPasswordForm, PersonalDetailsForm
+from accounts.forms import AddressForm, ForgotPasswordForm
 from accounts.models import CustomUser, Address, PersonalDetails, State, City
-from accounts.views import delete_account, send_security_code, forgot_password, password_reset, login, orders, \
-    saved_items, account_management, change_password
-from ecommerce.models import Order, OrderItem, UserActivity, Product, Category, SuperCategory
+from accounts.views import delete_account
 
 
 class LoginOrRegisterViewTest(TestCase):
