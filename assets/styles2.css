@@ -18,47 +18,14 @@
 }
 
 .grains-rice-container {
-    background-color: rgba(255, 255, 255, 0.2); /* Adjust the opacity as needed */
-    padding: 5px; /* Add padding as needed */
-    border-radius: 5px; /* Add border radius as needed */
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px; 
+    border-radius: 5px;
     position: absolute;
     bottom: 0; width: 100%;
     background-color: rgba(255, 255, 255, 0.7);
     padding: 5px;
     color: black;
-}
-
-/* Custom styles for the noUiSlider */
-#priceSlider {
-    margin-top: 10px;
-    width: 95%;
-    height: 8px;
-    background: #ddd;
-    border-radius: 5px;
-}
-
-#priceSlider .noUi-connect {
-    background: #007bff; /* Change the color of the slider track */
-}
-
-#priceSlider .noUi-handle {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #007bff; /* Change the color of the handles */
-    background: #fff;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-#priceSlider .noUi-handle:hover {
-    border-color: #0056b3; /* Change handle color on hover */
-}
-
-.priceInput{
-    width: 45%; 
-    padding: 1px; 
-    border-radius: 4px; 
-    border: 1px solid #ced4da;
 }
 
 .hide-cart-button {
@@ -143,9 +110,9 @@
 
 /* Add styles for the top-selling-image class */
 .saved-item-image {
-    width: 100px; /* Adjust the width as needed */
-    height: 100px; /* Adjust the height as needed */
-    border-radius: 5px; /* Optional: Add rounded corners */
+    width: 100px; 
+    height: 100px; 
+    border-radius: 5px; 
     object-fit: cover;
 }
 
@@ -155,7 +122,7 @@
 }
 
 .remove-button:hover {
-    color: red !important; /* Change to desired background color */
+    color: red !important; 
 }
 
 /* Style for the remove-product button */
@@ -203,15 +170,15 @@
 
 /* Add styles for the top-selling-image class */
 .checkout-image {
-    width: 50px; /* Adjust the width as needed */
-    height: 60px; /* Adjust the height as needed */
-    border-radius: 5px; /* Optional: Add rounded corners */
+    width: 50px; 
+    height: 60px; 
+    border-radius: 5px; 
     object-fit: cover;
 }
 
    /* Positioning the autocomplete suggestions container */
 #autocomplete-suggestions {
-    width: 88%; /* Adjust as needed */
+    width: 88%; 
     background-color: white;
     border: 1px solid #ccc;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

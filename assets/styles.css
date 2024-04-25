@@ -46,7 +46,7 @@
 /* Remove blue outline on focus */
 .form-control:focus {
     box-shadow: none;
-    border-color: #ced4da; /* You can adjust the border color if needed */
+    border-color: #ced4da;
 }
 
 /* Customize the search button color */
@@ -75,38 +75,22 @@
 .btn-signin {
     background-color: darkblue;
     border-color: darkblue;
-    color: white; /* Text color on the button */
-    font-weight: bold; /* Make the text bolder */
+    color: white; 
+    font-weight: bold; 
     width: 90%;
     border-radius: 5px;
     
 }
 
 .btn-signin:hover {
-    background-color: #3385ff; /* Lighter hover color */
+    background-color: #3385ff;
     border-color: #3385ff;
 }
 
 .under-account:hover{
     background-color: rgba(0, 123, 255, 0.2); /* Adjust the alpha value for transparency */
         border-color: transparent;
-        color: #212529; /* Set the desired text color */
-}
-
-/* Customize "Live Chat" button color */
-.btn-live-chat {
-    background-color: darkblue;
-    border-color: darkblue;
-    color: white; /* Text color on the button */
-    font-weight: bold; /* Make the text bolder */
-    width: 90%; /* Make the button full width of the dropdown */
-    display: block;
-    margin: 0 auto;
-}
-
-.btn-live-chat:hover {
-    background-color: #3385ff; /* Lighter hover color */
-    border-color: #3385ff;
+        color: #212529; 
 }
 
 /* Customize "Cart" button color */
@@ -115,7 +99,7 @@
 }
 
 .btn-cart:hover {
-    background-color: #3385ff; /* Lighter hover color */
+    background-color: #3385ff;
     border-color: #3385ff;
 }
 
@@ -127,20 +111,20 @@ body{
 /* Add the styles for the black-card class */
 .index-black-card {
     background-color: black;
-    color: white; /* Set the text color to white or any other color that suits your design */
-    padding: 15px; /* Adjust the padding as needed */
-    border-radius: 10px; /* Optional: Add rounded corners */
-    max-width: fit-content; /* Adjust the maximum width as needed */
+    color: white; 
+    padding: 15px;
+    border-radius: 10px; 
+    max-width: fit-content; 
     cursor: default !important;
-    user-select: text; /* Ensure that text selection is enabled */
+    user-select: text; 
 }
 
 .black-card {
     background-color: black;
-    color: white; /* Set the text color to white or any other color that suits your design */
-    padding: 15px; /* Adjust the padding as needed */
-    border-radius: 10px; /* Optional: Add rounded corners */
-    /* max-width: 200px; */ /* Adjust the maximum width as needed */
+    color: white; 
+    padding: 15px; 
+    border-radius: 10px; 
+    /* max-width: 200px; */
     cursor: default !important;
     user-select: text; /* Ensure that text selection is enabled */
 }
@@ -150,120 +134,45 @@ body{
 }
 
 
-
 .second-card{
-    border-radius: 10px; /* Optional: Add rounded corners */
+    border-radius: 10px; 
     position: relative;
 }
 
 .custom-list {
-    list-style-type: none; /* Remove default list styles */
+    list-style-type: none; 
     padding: 0;
-    margin-bottom: 0; /* Ensure no margin at the bottom of the list */
+    margin-bottom: 0; 
 }
 
 .custom-list li {
-    margin-bottom: 10px; /* Adjust the margin between list items */
+    margin-bottom: 10px;
 }
 
 .custom-list li:last-child {
-    margin-bottom: 0; /* No margin after the last list item */
+    margin-bottom: 0; 
 }
 
 .custom-list a {
     text-decoration: none;
-    color: white; /* Set the link color */
+    color: white; 
     display: flex;
-    align-items: center; /* Align text and icon vertically */
-    transition: color 0.3s; /* Add transition for a smooth effect */
+    align-items: center; 
+    transition: color 0.3s; 
 }
 
 .custom-list i {
-    margin-right: 8px; /* Adjust the margin between text and icon */
+    margin-right: 8px;
 }
 
 .custom-list a.active,
 .custom-list a:hover {
-    color: #3385ff; /* Change the background color on hover */
+    color: #3385ff; 
     background-color: transparent;
-}
-
-
-
-.slideshow-container {
-    max-width: 100%;
-    position: relative;
-    margin: auto;
-    height: 500px; /* Set the desired height for the slideshow container */
-    overflow: hidden; /* Hide overflow content */
-}
-
-.mySlides {
-    display: none;
-    height: 100%; /* Set the height of each slide to 100% of the container */
-}
-
-.slide-image {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-.arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 5em;
-    color: white;
-    cursor: pointer;
-    opacity: 0; /* Initially hidden */
-    transition: opacity 0.3s;
-}
-
-.arrow:hover {
-    opacity: 5; /* Visible on hover */
-}
-
-.left-arrow {
-    left: 10px;
-}
-
-.right-arrow {
-    right: 10px;
-}
-
-/* Add styles for the navigation circles */
-.slide-navigation {
-    position: absolute;
-    bottom: 5px; /* Adjust this value to your preference */
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.dot {
-    height: 15px;
-    width: 15px;
-    margin: 0 5px;
-    background-color: #bbb; /* color for inactive circles */
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
 }
 
 .active {
     background-color: #3385ff; /* Blue color for active circle */
-}
-
-/* Add styles for the third-card class */
-.third-card, .fourth-card {
-    background-color: black;
-    border-radius: 10px;
-    margin-left: -4px; /* Adjust the margin to create space between the second and third cards */
-    padding: 0px;
-    width: 250px;
 }
 
 /* Add styles for the black-card-beneath class */
@@ -282,8 +191,8 @@ body{
     
 }
 .position-relative:hover{
-    transform: translateY(-5px); /* Adjust the translateY value based on your preference */
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.5); /* Adjust the color and intensity of the box-shadow */
+    transform: translateY(-5px); 
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.5);
 }
 
 .position-relative a{
@@ -305,9 +214,9 @@ body{
 
 /* Add styles for the top-selling-image class */
 .top-selling-image {
-    width: 100%; /* Adjust the width as needed */
-    height: 200px; /* Adjust the height as needed */
-    border-radius: 5px; /* Optional: Add rounded corners */
+    width: 100%; 
+    height: 200px; 
+    border-radius: 5px; 
     object-fit: cover;
 }
 
@@ -350,24 +259,24 @@ body{
 
 .custom-table {
     background-color: black;
-    border: 1px solid white; /* Add a white border around the table */
-    border-radius: 10px; /* Optional: Add rounded corners */
-    padding: 15px; /* Adjust the padding as needed */
-    margin-bottom: 20px; /* Optional: Add margin at the bottom */
+    border: 1px solid white; 
+    border-radius: 10px; 
+    padding: 15px; 
+    margin-bottom: 20px; 
     
 }
 
 .custom-table th {
-    background-color: black; /* Set the background color to black */
-    color: white; /* Set the text color to white or any other color that suits your design */
-    border: 1px solid white; /* Add a white border around the table header */
-    border-radius: 10px 10px 0 0; /* Optional: Add rounded corners to the top */
-    padding: 10px; /* Adjust the padding as needed */
+    background-color: black; 
+    color: white; 
+    border: 1px solid white; 
+    border-radius: 10px 10px 0 0; 
+    padding: 10px; 
 }
 
 .custom-table th, .custom-table td {
-    background-color: transparent !important; /* Set the background color to transparent */
-    color: white; /* Set the text color to white or any other color that suits your design */
+    background-color: transparent !important; 
+    color: white; 
 }
 
 #add-default-address:hover{
@@ -382,18 +291,15 @@ body{
 }
 
 
-/* Media query for smaller screens (adjust the breakpoint as needed) */
-/* this affects the width of the search forn */
 @media (min-width: 992px) {
     .form-control {
-      width: 600px !important; /* Adjust the width as needed */
+      width: 600px !important; 
     }
   }
 
-  /* Media query for small screens */
 @media (max-width: 767px) {
     .third-card {
-        margin-top: 20px; /* Adjust the top margin as needed */
+        margin-top: 20px; 
     }
 
      .position-relative{
