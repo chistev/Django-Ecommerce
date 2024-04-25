@@ -8,15 +8,10 @@ register = template.Library()
 
 @register.inclusion_tag('ecommerce/recently_viewed_products.html')
 def render_recently_viewed_products(request):
-    # Retrieve recently viewed products
-    recently_viewed = []
-
     if not request.user.is_authenticated:
-        # For non-authenticated users, retrieve recently viewed products from session
         recently_viewed_product_ids = request.session.get('recently_viewed', [])
         recently_viewed = Product.objects.filter(id__in=recently_viewed_product_ids)
     else:
-        # For authenticated users, retrieve recently viewed products using UserActivity
         user = request.user
         subquery = UserActivity.objects.filter(
             user=user,
@@ -28,7 +23,6 @@ def render_recently_viewed_products(request):
             ).values('product')
         )[:6]
 
-    # Format the price with commas for each viewed product
     for product in recently_viewed:
         if product.old_price is not None and product.old_price != 0:
             discount = (product.old_price - product.new_price) / product.old_price * 100
@@ -36,7 +30,8 @@ def render_recently_viewed_products(request):
         else:
             product.discount_percentage = 0
 
-        product.formatted_old_price = humanize.intcomma(int(product.old_price)) if product.old_price is not None else None
+        product.formatted_old_price = humanize.intcomma(int(product.old_price)) if product.old_price is not None else \
+            None
         product.formatted_price = humanize.intcomma(int(product.new_price))
 
     return {'recently_viewed': recently_viewed}

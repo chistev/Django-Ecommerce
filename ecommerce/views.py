@@ -4,7 +4,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.humanize.templatetags import humanize
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.contrib.sessions.models import Session
-from django.db.models import Min, Max, Sum, Q, OuterRef, Subquery, F
+from django.db.models import Sum, Q, F
 from django.shortcuts import render, get_object_or_404
 
 
@@ -17,7 +17,6 @@ from django.http import JsonResponse
 
 
 def index(request):
-    breadcrumb = [('Home', '/')]
     product_quantities = {}
     order_items = OrderItem.objects.all()
     for item in order_items:
@@ -26,11 +25,12 @@ def index(request):
         else:
             product_quantities[item.product.id] = item.quantity
 
+    # Sort the products based on their total quantities in descending order
     sorted_products = sorted(product_quantities.items(), key=lambda x: x[1], reverse=True)
+
     top_selling_products = [Product.objects.get(id=prod_id) for prod_id, _ in
                             sorted_products[:6]]
 
-    # Format the price with commas for each viewed product
     for product in top_selling_products:
         if product.old_price is not None and product.old_price != 0:
             discount = (product.old_price - product.new_price) / product.old_price * 100
@@ -41,7 +41,7 @@ def index(request):
         product.formatted_old_price = humanize.intcomma(
             int(product.old_price)) if product.old_price is not None else None
         product.formatted_price = humanize.intcomma(int(product.new_price))
-    return render(request, 'ecommerce/index.html', {'breadcrumb': breadcrumb, 'top_selling_products': top_selling_products})
+    return render(request, 'ecommerce/index.html', {'top_selling_products': top_selling_products})
 
 
 def get_category_data(super_category_name, title):
@@ -98,7 +98,6 @@ def get_products_data(request, category):
         product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
         product.formatted_price = intcomma(int(product.new_price))
 
-        # Fetch cart quantity for the product if the user is authenticated
         if request.user.is_authenticated:
             cart_quantity = CartItem.objects.filter(
                 cart__user=request.user,
@@ -111,24 +110,18 @@ def get_products_data(request, category):
     return {'products': products}
 
 
-
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
 
-    # Record the user's activity for viewing this product
     if not request.user.is_authenticated:
-        # For non-authenticated users, update recently viewed products in session
         viewed_product_ids = request.session.get('recently_viewed', [])
         if product.id not in viewed_product_ids:
             viewed_product_ids.append(product.id)
             request.session['recently_viewed'] = viewed_product_ids
     else:
-        # Record the user's activity for viewing this product
         if request.user.is_authenticated:
-            # Check if the user has already viewed this product
             viewed_product = UserActivity.objects.filter(user=request.user, product=product).exists()
             if not viewed_product:
-                # If not, create a new UserActivity instance
                 UserActivity.objects.create(user=request.user, product=product, saved=False)
 
     if product.old_price is not None and product.old_price != 0:
@@ -141,28 +134,22 @@ def product_detail(request, product_id):
     if request.user.is_authenticated:
         user_cart_items = CartItem.objects.filter(cart__user=request.user, product=product)
 
-        # Check if the product is saved by the user
         saved_product = UserActivity.objects.filter(user=request.user, product=product, saved=True).exists()
     else:
-        # Retrieve cart items from session for non-authenticated users
         cart_data = request.session.get('cart', {})
-        print(cart_data)
         product_id_str = str(product.id)
         if product_id_str in cart_data:
             user_cart_items = [{'product': product, 'quantity': cart_data[product_id_str]}]
         else:
             user_cart_items = []
-        print("user cart items: " + str(user_cart_items))
-    # Format the price with commas
+
     product.formatted_old_price = intcomma(int(product.old_price)) if product.old_price is not None else None
     product.formatted_price = intcomma(int(product.new_price))  # Cast to int to remove decimals
 
-    # Retrieve the user's addresses
     user_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
     form = AddressForm(user=request.user) if request.user.is_authenticated else None
-    states = State.objects.all()  # Retrieve all states from the database
+    states = State.objects.all()
 
-    # Render the product detail page
     return render(request, 'ecommerce/product_detail.html', {
         'product': product,
         'user_address': user_addresses,
@@ -181,17 +168,13 @@ def process_cart_action(request, action):
         if request.user.is_authenticated:
             user = request.user
         else:
-            # If the user is not authenticated, set user to None
             user = None
 
-        # Ensure user has a cart
         if user:
             cart, created = Cart.objects.get_or_create(user=user)
         else:
-            print("Anonymous user")
             cart, created = Cart.objects.get_or_create(user=None)
 
-        # Perform action on cart
         response_data = action(request, product, cart)
 
         return JsonResponse(response_data)
@@ -202,36 +185,28 @@ def process_cart_action(request, action):
 def add_to_cart(request):
     def add_to_cart_action(request, product, cart):
         if request.user.is_authenticated:
-            # For authenticated users, use the database-backed cart
             cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
             if created:
-                # If the item is newly created, set the quantity to 1
                 cart_item.quantity = 1
             else:
-                # If the item already exists, increment the quantity by 1
                 cart_item.quantity += 1
             cart_item.save()
             product_quantity = cart_item.quantity
         else:
             cart_data = request.session.get('cart', {})
             if str(product.id) in cart_data:
-                # If the item already exists in the session cart, increment the quantity
                 cart_data[str(product.id)] += 1
             else:
-                # If it's a new item, add it to the session cart with quantity 1
                 cart_data[str(product.id)] = 1
 
             request.session['cart'] = cart_data
             product_quantity = cart_data[str(product.id)]
 
-
-        # Get the updated cart count
         if request.user.is_authenticated:
             cart_count = CartItem.objects.filter(cart=cart).aggregate(total_quantity=Sum('quantity'))['total_quantity']
         else:
             cart_count = sum(cart_data.values())
 
-        # Calculate subtotal
         if request.user.is_authenticated:
             cart_items = CartItem.objects.filter(cart=cart)
             subtotal = sum(item.product.new_price * item.quantity for item in cart_items)
@@ -245,34 +220,26 @@ def add_to_cart(request):
     return process_cart_action(request, add_to_cart_action)
 
 
-
 def remove_from_cart(request):
     def remove_from_cart_action(request, product, cart):
         if request.user.is_authenticated:
-            # If the user is authenticated, remove the item from their cart
             cart_item = CartItem.objects.filter(cart__user=request.user, product=product).first()
             if cart_item:
                 if cart_item.quantity > 1:
-                    # If the quantity is more than 1, decrement the quantity
                     cart_item.quantity -= 1
                     cart_item.save()
                 else:
                     cart_item.delete()
         else:
-            # If the user is not authenticated, use session-based cart
-            session_key = request.session.session_key
             cart_data = request.session.get('cart', {})
             if str(product.id) in cart_data:
                 if cart_data[str(product.id)] > 1:
-                    # If the quantity is more than 1, decrement the quantity in session
                     cart_data[str(product.id)] -= 1
                     request.session['cart'] = cart_data
                 else:
-                    # If the quantity is 1, remove the item from the session cart
                     del cart_data[str(product.id)]
                     request.session['cart'] = cart_data
 
-        # Get the updated cart count
         if request.user.is_authenticated:
             cart_count = CartItem.objects.filter(cart=cart_item.cart).aggregate(total_quantity=Sum('quantity'))['total_quantity']
         else:
@@ -281,13 +248,11 @@ def remove_from_cart(request):
         if cart_count is None:
             cart_count = 0
 
-        # Get the quantity of the specific product in the cart
         if request.user.is_authenticated:
             product_quantity = cart_item.quantity if cart_item else 0
         else:
             product_quantity = cart_data.get(str(product.id), 0)
 
-        # Calculate subtotal
         if request.user.is_authenticated:
             cart_items = CartItem.objects.filter(cart=cart_item.cart)
             subtotal = sum(item.product.new_price * item.quantity for item in cart_items)
@@ -301,11 +266,10 @@ def remove_from_cart(request):
     return process_cart_action(request, remove_from_cart_action)
 
 
-
-
 def cart_count(request):
     if request.user.is_authenticated:
-        cart_count = CartItem.objects.filter(cart__user=request.user).aggregate(total_quantity=Sum('quantity'))['total_quantity']
+        cart_count = CartItem.objects.filter(cart__user=request.user).aggregate(total_quantity=
+                                                                                Sum('quantity'))['total_quantity']
     else:
         session_key = request.session.session_key
         if not session_key:
@@ -321,40 +285,32 @@ def cart_count(request):
     if cart_count is None:
         cart_count = 0
 
-    # Debugging prints
-    print("Cart Count:", cart_count)    # Debugging statement
-
     return JsonResponse({'count': cart_count})
+
 
 def merge_carts(request, user, session_cart):
     session_cart_data = session_cart.get_decoded()
     session_cart_items = session_cart_data.get('cart', {})
 
-    # Get or create the authenticated user's cart
+    # _ is a dummy variable used to discard the second element of the tuple, which is a boolean indicating whether the
+    # instance was newly created (True) or retrieved from the database (False). Since we are only interested in the
+    # user_cart variable, we use _ to discard the second element
     user_cart, _ = Cart.objects.get_or_create(user=user)
 
-    # Merge items from session cart to user cart
     for product_id, quantity in session_cart_items.items():
         product = get_object_or_404(Product, pk=product_id)
-        print("Merging product:", product, "Quantity from session:", quantity)
 
-        # Get or create the CartItem instance
         cart_item, created = CartItem.objects.get_or_create(cart=user_cart, product=product)
 
-        # If the item is newly created, set its quantity to the session quantity
         if created:
             cart_item.quantity = quantity
-            print("New quantity after merge:", cart_item.quantity)
         else:
-            print("Existing quantity in user's cart:", cart_item.quantity)
-            # Update the quantity by adding the session quantity
             cart_item.quantity = F('quantity') + quantity
-            print("New quantity after merge:", cart_item.quantity)
 
         cart_item.save()
 
-    # Clear the session cart after merging
     del request.session['cart']
+
 
 def return_policy(request):
     return render(request, 'ecommerce/return_policy.html')
@@ -366,7 +322,6 @@ def save_product(request):
         product = get_object_or_404(Product, pk=product_id)
 
         if request.user.is_authenticated:
-            # Query for UserActivity instances for the user and product
             user_activities = UserActivity.objects.filter(user=request.user, product=product)
 
             if user_activities.exists():
@@ -385,7 +340,6 @@ def save_product(request):
                 else:
                     return JsonResponse({'status': status})
             else:
-                # Create a new UserActivity instance if none exists
                 UserActivity.objects.create(user=request.user, product=product, saved=True)
                 status = 'save'
             return JsonResponse({'status': status})
@@ -400,33 +354,23 @@ def product_search(request):
     products = []
 
     if query:
-        # Perform search query on Product model
         products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
 
         for product in products:
-            # Calculate discount percentage
             if product.old_price is not None and product.old_price != 0:
                 discount = ((product.old_price - product.new_price) / product.old_price) * 100
                 product.discount_percentage = round(discount, 2) * -1  # Make it negative
             else:
                 product.discount_percentage = 0
 
-            # Format the prices with commas
             product.formatted_old_price = intcomma(int(product.old_price) if product.old_price is not None else 0)
             product.formatted_price = intcomma(int(product.new_price))
 
-            # Check if the user is authenticated
-            if isinstance(request.user, AnonymousUser):
-                # If user is not authenticated, set cart_quantity to 0
-                product.cart_quantity = 0
-            else:
-                # Retrieve the quantity of the product in the user's cart
-                product.cart_quantity = CartItem.objects.filter(cart__user=request.user, product=product).aggregate(Sum('quantity'))['quantity__sum'] or 0
-
     return render(request, 'ecommerce/search_results.html', {'products': products, 'query': query})
+
 
 def autocomplete(request):
     query = request.GET.get('query', '')
-    matching_products = Product.objects.filter(name__icontains=query)[:5]  # Limit to 5 suggestions
+    matching_products = Product.objects.filter(name__icontains=query)[:5]
     suggestions = [{'name': product.name} for product in matching_products]
     return JsonResponse(suggestions, safe=False)
