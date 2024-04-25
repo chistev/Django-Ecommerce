@@ -1,6 +1,4 @@
 from urllib.parse import unquote
-
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.humanize.templatetags import humanize
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.contrib.sessions.models import Session
@@ -62,11 +60,6 @@ def supermarket(request):
 
 def home_and_office(request):
     return render(request, 'ecommerce/home_and_office.html', get_category_data('Home & Office', 'Home and Office'))
-
-
-def phones_and_accessories(request):
-    return render(request, 'ecommerce/phones_and_accessories.html', get_category_data('Phones & Accessories',
-                                                                                      'Phones and Accessories'))
 
 
 def computing(request):

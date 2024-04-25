@@ -9,7 +9,6 @@ urlpatterns = [
     path('supermarket/', views.supermarket, name='supermarket'),
     re_path(r'^category/(?P<category_name>[\w\s&-]+)/$', views.category_products, name='category'),
     path('home_and_office/', views.home_and_office, name='home_and_office'),
-    path('phones_and_accessories/', views.phones_and_accessories, name='phones_and_accessories'),
     path('computing/', views.computing, name='computing'),
     path('gaming/', views.gaming, name='gaming'),
     path('product_detail/<int:product_id>/', views.product_detail, name='product_detail'),
