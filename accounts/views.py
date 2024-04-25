@@ -434,7 +434,10 @@ def save_address(request, form):
 def address_book_create(request):
     current_path = resolve(request.path_info).url_name
     user = request.user
-    personal_details = user.personal_details
+    try:
+        personal_details = user.personal_details
+    except ObjectDoesNotExist:
+        personal_details = None
 
     if request.method == 'POST':
         form = AddressForm(request.POST, user=request.user)

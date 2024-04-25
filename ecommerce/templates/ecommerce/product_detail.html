@@ -2,6 +2,16 @@
 {% load static %}
 {% load custom_tags %}
 
+{% block css %}
+{{ block.super }}
+<style>
+    /* CSS styles for images */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    </style>
+{% endblock %}
 {% block body %}
 
     <div class="container mt-4">
@@ -130,7 +140,7 @@
                 </div>
             </div>
     
-        
+            {% if recently_viewed  %}
             <div class="row">
                 <div class="col-lg-12">
                     <div class="black-card-beneath">
@@ -139,6 +149,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
     </div>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

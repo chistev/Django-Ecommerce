@@ -10,7 +10,10 @@ register = template.Library()
 def render_recently_viewed_products(request):
     if not request.user.is_authenticated:
         recently_viewed_product_ids = request.session.get('recently_viewed', [])
-        recently_viewed = Product.objects.filter(id__in=recently_viewed_product_ids)
+        if recently_viewed_product_ids:
+            recently_viewed = Product.objects.filter(id__in=recently_viewed_product_ids)
+        else:
+            return {}
     else:
         user = request.user
         subquery = UserActivity.objects.filter(

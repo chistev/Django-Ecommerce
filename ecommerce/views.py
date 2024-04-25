@@ -15,6 +15,8 @@ from ecommerce.models import Product, Cart, CartItem, UserActivity, SuperCategor
 
 from django.http import JsonResponse
 
+from ecommerce.templatetags.custom_tags import render_recently_viewed_products
+
 
 def index(request):
     product_quantities = {}
@@ -78,6 +80,11 @@ def category_products(request, category_name):
     category = get_object_or_404(Category, name=decoded_category_name)
     # Retrieve product data using the get_products_data function
     products_data = get_products_data(request, category)
+
+    recently_viewed = render_recently_viewed_products(request)
+
+    # Add recently viewed products to the context dictionary
+    products_data['recently_viewed'] = recently_viewed
 
     return render(request, 'ecommerce/category.html', products_data)
 
@@ -149,6 +156,7 @@ def product_detail(request, product_id):
     user_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
     form = AddressForm(user=request.user) if request.user.is_authenticated else None
     states = State.objects.all()
+    recently_viewed = render_recently_viewed_products(request)
 
     return render(request, 'ecommerce/product_detail.html', {
         'product': product,
@@ -156,7 +164,8 @@ def product_detail(request, product_id):
         'form': form,
         'states': states,
         'user_cart_items': user_cart_items,
-        'saved_product': saved_product
+        'saved_product': saved_product,
+        'recently_viewed': recently_viewed
     })
 
 
