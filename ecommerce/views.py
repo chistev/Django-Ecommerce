@@ -13,7 +13,7 @@ from ecommerce.models import Product, Cart, CartItem, UserActivity, SuperCategor
 
 from django.http import JsonResponse
 
-from ecommerce.templatetags.custom_tags import render_recently_viewed_products
+from ecommerce.templatetags.custom_tags import render_recently_viewed_products, update_recently_viewed
 
 
 def index(request):
@@ -114,6 +114,9 @@ def get_products_data(request, category):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
+
+    # Call the function to update recently viewed products
+    update_recently_viewed(request, product)
 
     if not request.user.is_authenticated:
         viewed_product_ids = request.session.get('recently_viewed', [])
