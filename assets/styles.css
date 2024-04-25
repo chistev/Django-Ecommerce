@@ -112,7 +112,7 @@ body{
 .index-black-card {
     background-color: black;
     color: white; 
-    padding: 15px;
+    padding: 50px;
     border-radius: 10px; 
     max-width: fit-content; 
     cursor: default !important;
