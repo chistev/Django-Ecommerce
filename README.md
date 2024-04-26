@@ -24,3 +24,16 @@ you can run the project with this command -
 
   ![Screenshot 2024-04-26 114544](https://github.com/chistev/Django-Ecommerce/assets/115540580/51810d34-b9c5-4cc0-87b7-721343d9f5f6)
 
+**1. Account Management::**
+* Users can view and edit their basic details.
+
+  ![Screenshot 2024-04-26 120556](https://github.com/chistev/Django-Ecommerce/assets/115540580/5552e355-28f1-40a8-b807-8470668bafa7)
+
+* Users can change their passwords and delete their accounts.
+
+  ![Screenshot 2024-04-26 121046](https://github.com/chistev/Django-Ecommerce/assets/115540580/922476b4-39c0-4d39-99b5-f03c8489ea01)
+
+  ![Screenshot 2024-04-26 120840](https://github.com/chistev/Django-Ecommerce/assets/115540580/f831efc0-d355-448c-a3db-b4b1b96395ea)
+  
+* Address book management allows users to add and edit addresses for shipping.
+  
