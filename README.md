@@ -50,3 +50,27 @@ you can run the project with this command -
 * Users can save products for later viewing.
   ![Screenshot 2024-04-26 131929](https://github.com/chistev/Django-Ecommerce/assets/115540580/6915fd09-e1d7-452a-b482-feba8f0f6c69)
 
+**5. Cart Management::**
+* Users can view their cart contents.
+* Cart items are displayed with product details, quantities, prices, and discounts.
+* Subtotal is calculated based on the sum of product prices multiplied by quantities.
+
+  ![Screenshot 2024-04-26 142039](https://github.com/chistev/Django-Ecommerce/assets/115540580/e547a864-582e-45d7-a756-7f9534f76719)
+
+**6. Authentication Handling:**
+* Authenticated users' carts are stored in the database.
+* Anonymous users' carts are stored in session data.
+
+**7. Adding and Removing Items:**
+* Users can add and remove items from the cart.
+* Products can be removed individually or all at once.
+* Quantity updates are reflected in real-time.
+
+**8. Responsive UI:**
+* Empty cart messages are displayed when appropriate.
+  
+![Screenshot 2024-04-26 142528](https://github.com/chistev/Django-Ecommerce/assets/115540580/629e1176-cfaf-42b1-8324-2328217afdea)
+
+
+**9. Error Handling::**
+  * Proper error messages are returned for invalid requests or missing products.
