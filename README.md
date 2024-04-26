@@ -98,3 +98,23 @@ you can run the project with this command -
 **13. Error Handling:**
 * Provides error messages for invalid requests or payment failures.
 * Ensures data integrity and security throughout the checkout process.
+
+**14. Homepage:**
+* Displays top-selling products based on order history.
+
+**14. Product Categories:**
+* Segregates products into categories like Supermarket, Home & Office, Computing, and Gaming.
+* Renders category-specific pages with product listings.
+* Supports breadcrumb navigation for easy category exploration.
+
+**15. Product Details:**
+* Shows detailed information about each product.
+* Allows users to view product descriptions, prices, and images.
+* Tracks user activity, including recently viewed products.
+
+  ![Screenshot 2024-04-26 150749](https://github.com/chistev/Django-Ecommerce/assets/115540580/57769b97-2e5e-40ca-9b2d-3a7a46576d3c)
+
+**16. Search Functionality:**
+* Facilitates product search using keywords.
+* Displays search results with matching products and descriptions.
+* Provides autocomplete suggestions for efficient search input.
