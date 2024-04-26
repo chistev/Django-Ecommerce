@@ -1,0 +1,197 @@
+.advertisement {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px; /* Adjust margin-top as needed */
+}
+
+.close-button {
+    position: absolute;
+    top: -10px;
+    right: 470px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+}
+
+.grains-rice-container {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px; 
+    border-radius: 5px;
+    position: absolute;
+    bottom: 0; width: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 5px;
+    color: black;
+}
+
+.hide-cart-button {
+    display: none;
+}
+
+.product-card:hover .hide-cart-button {
+    display: block;
+}
+
+/* Hide the default radio button */
+.circle {
+    opacity: 0;
+    position: absolute;
+}
+
+/* Style the container for the custom radio button */
+.container {
+    display: inline-block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    user-select: none;
+}
+
+/* Create the custom radio button */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+
+/* Style the dot (inside the custom radio button) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the dot (inside the custom radio button) when radio button is checked */
+.container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Position the dot (inside the custom radio button) */
+.container .checkmark:after {
+    top: 9px;
+    left: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+
+/* Style the custom radio button on hover */
+.container:hover .checkmark {
+    background-color: #ccc;
+}
+
+/* Style the custom radio button when checked */
+.container input:checked ~ .checkmark {
+    background-color: #007bff;
+}
+
+.star{
+    color: #007bff;
+}
+
+.star-none{
+    color: grey;
+}
+
+.bi-facebook:hover, .bi-twitter-x:hover{
+    color: #007bff;
+}
+
+/* Add styles for the top-selling-image class */
+.saved-item-image {
+    width: 100px; 
+    height: 100px; 
+    border-radius: 5px; 
+    object-fit: cover;
+}
+
+.remove-button {
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+    color: red !important; 
+}
+
+/* Style for the remove-product button */
+.remove-product {
+    display: inline-block;
+    font-weight: 400;
+    margin-right: 10px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.remove-product:hover {
+    color: #fff;
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.remove-product:active {
+    color: #fff;
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.remove-product.disabled,
+.remove-product:disabled {
+    pointer-events: none;
+    opacity: 0.65;
+}
+
+.disabled {
+    opacity: 0.5; /* Reduce opacity to visually indicate the button is disabled */
+    cursor: not-allowed; /* Change cursor to indicate it's not clickable */
+}
+
+/* Add styles for the top-selling-image class */
+.checkout-image {
+    width: 50px; 
+    height: 60px; 
+    border-radius: 5px; 
+    object-fit: cover;
+}
+
+   /* Positioning the autocomplete suggestions container */
+#autocomplete-suggestions {
+    width: 88%; 
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Styling for individual suggestion elements */
+#autocomplete-suggestions .suggestion {
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Hover effect for suggestion elements */
+#autocomplete-suggestions .suggestion:hover {
+    background-color: #f0f0f0;
+}

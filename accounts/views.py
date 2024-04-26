@@ -545,7 +545,7 @@ def send_security_code_email(email, security_code):
     except ObjectDoesNotExist:
         return
 
-    with open('accounts/templates/accounts/security_code_email.html', 'r') as file:
+    with open('/home/chistevstore/Django-Ecommerce/accounts/templates/accounts/security_code_email.html', 'r') as file:
         custom_html_content = file.read()
 
     # Replace placeholder with actual security code and user's first name

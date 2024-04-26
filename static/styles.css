@@ -1,0 +1,330 @@
+/* Login or Register Page styles */
+
+.email-input:focus {
+    border-color: #007bff !important;
+    caret-color: #007bff;
+}
+
+/* Register Page styles */
+
+.input-group input {
+    flex: 1 !important;
+}
+
+.form-control.register-password {
+    width: 100% !important;
+}
+
+/* Saved items and Cart page styles */
+
+.my-account-card{
+    width: 300px;
+    align-self: flex-start;
+}
+
+@media (max-width: 1200px) {
+    .accounts-container, .cart-container, .index-container{
+        margin-top: 5%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .accounts-container, .cart-container, .index-container{
+        margin-top: 7% !important;
+    }
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-custom {
+    background-color: black;
+}
+
+/* Remove blue outline on focus */
+.form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+/* Customize the search button color */
+.btn-search {
+    background-color: darkblue;
+    border-color: darkblue;
+    font-weight: bold;
+}
+
+.btn-search:hover, .btn-help:hover {
+    background-color: #3385ff;
+    border-color: #3385ff;
+}
+
+/* Adjust margins for the "Account" button */
+.btn-account, .btn-help, .btn-cart {
+    border: none;
+}
+
+/* Change background color of "Account" button on hover */
+.navbar-custom .btn-account:hover {
+    background-color: #3385ff; /* Same hover color as the search button */
+}
+
+/* Customize "Sign in" button color */
+.btn-signin {
+    background-color: darkblue;
+    border-color: darkblue;
+    color: white; 
+    font-weight: bold; 
+    width: 90%;
+    border-radius: 5px;
+    
+}
+
+.btn-signin:hover {
+    background-color: #3385ff;
+    border-color: #3385ff;
+}
+
+.under-account:hover{
+    background-color: rgba(0, 123, 255, 0.2); /* Adjust the alpha value for transparency */
+        border-color: transparent;
+        color: #212529; 
+}
+
+/* Customize "Cart" button color */
+.btn-cart {
+    border: none;
+}
+
+.btn-cart:hover {
+    background-color: #3385ff;
+    border-color: #3385ff;
+}
+
+body{
+    background-color: royalblue;
+    padding-top: 60px;
+}
+
+/* Add the styles for the black-card class */
+.index-black-card {
+    background-color: black;
+    color: white; 
+    padding: 50px;
+    border-radius: 10px; 
+    max-width: fit-content; 
+    cursor: default !important;
+    user-select: text; 
+}
+
+.black-card {
+    background-color: black;
+    color: white; 
+    padding: 15px; 
+    border-radius: 10px; 
+    /* max-width: 200px; */
+    cursor: default !important;
+    user-select: text; /* Ensure that text selection is enabled */
+}
+
+.cart-card{
+    height: 100% !important;
+}
+
+
+.second-card{
+    border-radius: 10px; 
+    position: relative;
+}
+
+.custom-list {
+    list-style-type: none; 
+    padding: 0;
+    margin-bottom: 0; 
+}
+
+.custom-list li {
+    margin-bottom: 10px;
+}
+
+.custom-list li:last-child {
+    margin-bottom: 0; 
+}
+
+.custom-list a {
+    text-decoration: none;
+    color: white; 
+    display: flex;
+    align-items: center; 
+    transition: color 0.3s; 
+}
+
+.custom-list i {
+    margin-right: 8px;
+}
+
+.custom-list a.active,
+.custom-list a:hover {
+    color: #3385ff; 
+    background-color: transparent;
+}
+
+.active {
+    background-color: #3385ff; /* Blue color for active circle */
+}
+
+/* Add styles for the black-card-beneath class */
+.black-card-beneath {
+    background-color: black;
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 15px;
+    width: 100%;
+    
+}
+
+.position-relative{
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    
+}
+.position-relative:hover{
+    transform: translateY(-5px); 
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.5);
+}
+
+.position-relative a{
+    text-decoration: none;
+}
+
+.price-reduction-badge{
+    position: absolute; 
+    right: 29%; 
+    top: 5%; 
+    transform: translate(-50%, -50%)
+}
+
+/* Add styles for the top-selling-title class */
+.top-selling-title {
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* Add styles for the top-selling-image class */
+.top-selling-image {
+    width: 100% ; 
+    height: 200px; 
+    border-radius: 5px; 
+    object-fit: cover;
+}
+
+/* Add styles for the item-name class */
+.item-name {
+    max-width: 100%;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: white;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item-price {
+    font-size: 12px;
+}
+
+/* Styles for Scroll-to-Top Button */
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.scroll-to-top-btn:hover {
+    background-color: #0056b3;
+}
+
+.custom-table {
+    background-color: black;
+    border: 1px solid white; 
+    border-radius: 10px; 
+    padding: 15px; 
+    margin-bottom: 20px; 
+    
+}
+
+.custom-table th {
+    background-color: black; 
+    color: white; 
+    border: 1px solid white; 
+    border-radius: 10px 10px 0 0; 
+    padding: 10px; 
+}
+
+.custom-table th, .custom-table td {
+    background-color: transparent !important; 
+    color: white; 
+}
+
+#add-default-address:hover{
+    color: #80b3ff; 
+}
+
+.closed-orders, .open-orders{
+    color: white;
+}
+.closed-orders:hover, .open-orders:hover{
+    color: #3385ff;
+}
+
+
+@media (min-width: 992px) {
+    .form-control {
+      width: 600px !important; 
+    }
+  }
+
+@media (max-width: 767px) {
+    .third-card {
+        margin-top: 20px; 
+    }
+
+     .position-relative{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    } 
+}
+
+.advertisement {
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 24% !important;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

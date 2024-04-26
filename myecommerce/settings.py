@@ -20,7 +20,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Path to the .env file
-dotenv_path = os.path.join(BASE_DIR, '.env')
+dotenv_path = '/home/chistevstore/Django-Ecommerce/.env'
 
 load_dotenv()
 
@@ -34,7 +34,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'chistevstore.pythonanywhere.com']
 
