@@ -74,3 +74,27 @@ you can run the project with this command -
 
 **9. Error Handling::**
   * Proper error messages are returned for invalid requests or missing products.
+
+**9. Delivery Management:**
+* Estimates delivery dates based on the order date.
+* Calculates delivery fees based on total order value.
+
+**10. Payment Methods:**
+* Supports two payment methods: "Pay on Delivery" and "Bank Transfer".
+  
+  ![Screenshot 2024-04-26 144338](https://github.com/chistev/Django-Ecommerce/assets/115540580/31a1f6f5-91f9-4f9c-b54c-22f90cea698f)
+
+* Redirects users to payment gateways accordingly.
+
+**11. Order Processing:**
+* Processes "Pay on Delivery" orders immediately.
+* For bank transfers, initiates orders upon successful payment verification.
+* Handles order creation, item allocation, and cart clearance.
+
+**12. External Payment Integration:**
+* Integrates with Flutterwave for payment processing.
+* Generates payment links and verifies transactions asynchronously via webhooks.
+
+**13. Error Handling:**
+* Provides error messages for invalid requests or payment failures.
+* Ensures data integrity and security throughout the checkout process.
