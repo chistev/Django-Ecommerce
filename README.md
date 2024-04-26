@@ -24,7 +24,7 @@ you can run the project with this command -
 
   ![Screenshot 2024-04-26 114544](https://github.com/chistev/Django-Ecommerce/assets/115540580/51810d34-b9c5-4cc0-87b7-721343d9f5f6)
 
-**1. Account Management::**
+**2. Account Management::**
 * Users can view and edit their basic details.
 
   ![Screenshot 2024-04-26 120556](https://github.com/chistev/Django-Ecommerce/assets/115540580/5552e355-28f1-40a8-b807-8470668bafa7)
@@ -36,4 +36,14 @@ you can run the project with this command -
   ![Screenshot 2024-04-26 120840](https://github.com/chistev/Django-Ecommerce/assets/115540580/f831efc0-d355-448c-a3db-b4b1b96395ea)
   
 * Address book management allows users to add and edit addresses for shipping.
+
+**3. Order Management::**
+* Users can view their active and cancelled orders.
+  
+  ![Screenshot 2024-04-26 123253](https://github.com/chistev/Django-Ecommerce/assets/115540580/fc5dfb05-1b8e-4ee9-89cb-529bffc59834)
+
+* Detailed order views provide information about order items, delivery dates, and payment methods.
+  
+  ![Screenshot 2024-04-26 123416](https://github.com/chistev/Django-Ecommerce/assets/115540580/ce648ca4-4340-4737-9556-fe630cc172c6)
+
   
