@@ -490,7 +490,6 @@ def terms_and_conditions(request):
     return render(request, 'accounts/terms_and_conditions.html')
 
 
-@redirect_to_login_or_register
 def send_security_code(email):
     # Generate 4-digit security code
     security_code = ''.join(random.choices('0123456789', k=4))
@@ -511,7 +510,6 @@ def send_security_code(email):
     return security_code  # Return the security code for verification in the security code reset view
 
 
-@login_excluded('ecommerce:index')
 def forgot_password(request, email=None):
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
@@ -532,7 +530,6 @@ def forgot_password(request, email=None):
     return render(request, 'accounts/forgot_password.html', {'email': email, 'form': form})
 
 
-@redirect_to_login_or_register
 def send_security_code_email(email, security_code):
     api_key = os.environ.get('BREVO_API_KEY')
     if not api_key:
@@ -583,7 +580,6 @@ def send_security_code_email(email, security_code):
         print("Failed to send security code email.")
 
 
-@redirect_to_login_or_register
 def security_code_reset(request):
     reset_email = request.session.get('reset_email', None)
     if request.method == 'POST':
@@ -601,7 +597,6 @@ def security_code_reset(request):
     return render(request, 'accounts/security_code_reset.html', {'email': reset_email})
 
 
-@redirect_to_login_or_register
 def resend_security_code(request):
     reset_email = request.session.get('reset_email')
 
@@ -616,7 +611,6 @@ def resend_security_code(request):
     return redirect('accounts:security_code_reset')
 
 
-@redirect_to_login_or_register
 def password_reset(request):
     reset_email = request.session.get('reset_email')
     if request.method == 'POST':
