@@ -46,4 +46,5 @@ you can run the project with this command -
   
   ![Screenshot 2024-04-26 123416](https://github.com/chistev/Django-Ecommerce/assets/115540580/ce648ca4-4340-4737-9556-fe630cc172c6)
 
-  
+**4. Saved Items::**
+* Users can view their active and cancelled orders.
