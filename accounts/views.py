@@ -383,7 +383,10 @@ def change_password(request):
             messages.success(request, 'Your password has been changed successfully.')
             return redirect('accounts:basic_details')
 
-    return render(request, 'accounts/change_password.html')
+    personal_details = None
+    if hasattr(request.user, 'personal_details'):
+        personal_details = request.user.personal_details
+    return render(request, 'accounts/change_password.html', {'personal_details': personal_details})
 
 
 @redirect_to_login_or_register
@@ -400,8 +403,10 @@ def delete_account(request):
                 return redirect('ecommerce:index')
             else:
                 messages.error(request, 'Incorrect password. Please try again.')
-
-    return render(request, 'accounts/delete_account.html')
+    personal_details = None
+    if hasattr(request.user, 'personal_details'):
+        personal_details = request.user.personal_details
+    return render(request, 'accounts/delete_account.html', {'personal_details': personal_details})
 
 
 @redirect_to_login_or_register

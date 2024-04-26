@@ -44,9 +44,12 @@ def update_recently_viewed(request, product):
         request.session['recently_viewed'] = recently_viewed_product_ids[:6]
     else:
         user = request.user
-        # Update UserActivity
-        UserActivity.objects.filter(user=user, product=product).delete()
-        UserActivity.objects.create(user=user, product=product, saved=False)
+        # Update or create UserActivity record
+        user_activity, created = UserActivity.objects.get_or_create(user=user, product=product)
+        # Set saved status to False if not already saved
+        if created:
+            user_activity.saved = False
+            user_activity.save()
         # Retrieve the 6 most recent activities
         recent_activities = UserActivity.objects.filter(user=user).order_by('-timestamp')[:6]
         # Extract product IDs from the recent activities
@@ -66,5 +69,11 @@ def update_recently_viewed(request, product):
         product.formatted_old_price = humanize.intcomma(
             int(product.old_price)) if product.old_price is not None else None
         product.formatted_price = humanize.intcomma(int(product.new_price))
+
+        # Check if the product is saved by the user and update saved status
+        if request.user.is_authenticated:
+            product.saved = UserActivity.objects.filter(user=user, product=product, saved=True).exists()
+        else:
+            product.saved = False  # Default to False if user is not authenticated
 
     return recently_viewed
